@@ -6,6 +6,7 @@ body {
     align-items: center;
     text-align: center;
     background-color: aliceblue;
+    position: relative;
 }
 
 h1{
@@ -29,23 +30,45 @@ h1{
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
         font-size: 14px; 
         color: white;
-        background-color: blue;
-        border: none;
+        background-color: rgb(99, 99, 248);
+        border-radius: 10px;
         padding: 10px 20px;
         cursor: pointer;
         align-items: center;
+        
     
         }
+
+    .button-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
 
     .action-button, .form-actions button {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         font-size: 14px;
         color: white;
-        background-color: blue;
-        border: none;
-        padding: 10px 18px;
+        border-radius: 10px;
+        background-color: rgb(99, 99, 248);
+        padding: 8px 10px;
         margin: 10px 6px;
         cursor: pointer;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .visible {
+        display: block;
+    }
+
+    #Voltar {
+        position: absolute;
+        top: 10px;
+        left: 10px;
     }
 
     #pedidoFormContainer,
@@ -95,4 +118,24 @@ h1{
         justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
+    }
+
+    table {
+        width: 100%;
+        max-width: 800px;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    th, td {
+        border: 1px solid #aac;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f0f0f0;
+        font-weight: 600;
     }

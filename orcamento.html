@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="Voltar" class="action-button" onclick="window.location.href='index.html'">Voltar</button>
     <h1>Orçamento</h1>
     <p>Cadastre aqui os produtos que você deseja incluir no orçamento.</p>
 
@@ -37,26 +38,6 @@
         </form>
     </div>
 
-    <script>
-        const novoProdutoBtn = document.getElementById('novoProdutoBtn');
-        const produtoFormContainer = document.getElementById('produtoFormContainer');
-        const cancelarProdutoBtn = document.getElementById('cancelarProdutoBtn');
-        const produtoForm = document.getElementById('produtoForm');
-
-        novoProdutoBtn.addEventListener('click', () => {
-            produtoFormContainer.classList.toggle('visible');
-        });
-
-        cancelarProdutoBtn.addEventListener('click', () => {
-            produtoFormContainer.classList.remove('visible');
-        });
-
-        produtoForm.addEventListener('submit', event => {
-            event.preventDefault();
-            alert('Produto cadastrado no orçamento com sucesso!');
-            produtoForm.reset();
-            produtoFormContainer.classList.remove('visible');
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
