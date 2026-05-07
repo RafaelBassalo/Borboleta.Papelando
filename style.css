@@ -1,0 +1,98 @@
+@charset "UTF-8";
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: aliceblue;
+}
+
+h1{
+
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 20px; 
+    color: rgba(56, 21, 252, 0.952);
+
+    }   
+
+  p{
+
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
+        font-size: 16px; 
+        color: black;
+    
+        }
+ 
+    #Orçamento, #Pedidos{
+
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; 
+        font-size: 14px; 
+        color: white;
+        background-color: blue;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        align-items: center;
+    
+        }
+
+    .action-button, .form-actions button {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        color: white;
+        background-color: blue;
+        border: none;
+        padding: 10px 18px;
+        margin: 10px 6px;
+        cursor: pointer;
+    }
+
+    #pedidoFormContainer,
+    #produtoFormContainer {
+        width: 100%;
+        max-width: 420px;
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #aac;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        display: none;
+    }
+
+    #pedidoFormContainer.visible,
+    #produtoFormContainer.visible {
+        display: block;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 14px;
+        width: 100%;
+    }
+
+    .form-field label {
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #333;
+        width: 100%;
+        text-align: left;
+    }
+
+    .form-field input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #aac;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }

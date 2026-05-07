@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Pedidos</h1>
+    <p>Use o botão abaixo para cadastrar um novo pedido nesta página.</p>
+
+    <button id="novoPedidoBtn">Novo Pedido</button>
+
+    <div id="pedidoFormContainer" class="hidden">
+        <form id="pedidoForm">
+            <div class="form-field">
+                <label for="cliente">Nome do Cliente</label>
+                <input type="text" id="cliente" name="cliente" required>
+            </div>
+            <div class="form-field">
+                <label for="produto">Produto</label>
+                <input type="text" id="produto" name="produto" required>
+            </div>
+            <div class="form-field">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" id="quantidade" name="quantidade" min="1" value="1" required>
+            </div>
+            <div class="form-field">
+                <label for="data">Data do Pedido</label>
+                <input type="date" id="data" name="data" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit">Salvar Pedido</button>
+                <button type="button" id="cancelarPedidoBtn">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const novoPedidoBtn = document.getElementById('novoPedidoBtn');
+        const pedidoFormContainer = document.getElementById('pedidoFormContainer');
+        const cancelarPedidoBtn = document.getElementById('cancelarPedidoBtn');
+        const pedidoForm = document.getElementById('pedidoForm');
+
+        novoPedidoBtn.addEventListener('click', () => {
+            pedidoFormContainer.classList.toggle('visible');
+        });
+
+        cancelarPedidoBtn.addEventListener('click', () => {
+            pedidoFormContainer.classList.remove('visible');
+        });
+
+        pedidoForm.addEventListener('submit', event => {
+            event.preventDefault();
+            alert('Pedido cadastrado com sucesso!');
+            pedidoForm.reset();
+            pedidoFormContainer.classList.remove('visible');
+        });
+    </script>
+</body>
+</html>
