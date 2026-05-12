@@ -59,6 +59,13 @@
                     <option value="entregue">Entregue</option>
                 </select>
             </div>
+            <div class="form-field">
+                <label for="pagamento">Pagamento</label>
+                <select id="pagamento" name="pagamento" required>
+                    <option value="nao_pago">Não pago</option>
+                    <option value="pago">Pago</option>
+                </select>
+            </div>
             <div class="form-actions">
                 <button type="submit">Salvar Pedido</button>
                 <button type="button" id="cancelarPedidoBtn">Cancelar</button>
@@ -92,8 +99,9 @@
                 <th>Cliente</th>
                 <th>Produto</th>
                 <th>Valor</th>
-                <th>Data</th>
+                <th>Data Entrega</th>
                 <th>Status</th>
+                <th>Pago</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -103,10 +111,34 @@
             <tr>
                 <td colspan="2"><strong>Total do mês</strong></td>
                 <td id="pedidosTotalValor"><strong>R$ 0,00</strong></td>
-                <td colspan="2"></td>
+                <td colspan="4"></td>
             </tr>
         </tfoot>
     </table>
+
+    <section style="margin-top: 32px;">
+        <h2>Resumo por cliente</h2>
+        <table id="resumoClientesTable">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Total Pedidos</th>
+                    <th>Total Pago</th>
+                    <th>Total Devido</th>
+                </tr>
+            </thead>
+            <tbody id="resumoClientesTableBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Total geral</strong></td>
+                    <td id="resumoTotalPedidos">R$ 0,00</td>
+                    <td id="resumoTotalPago">R$ 0,00</td>
+                    <td id="resumoTotalDevido">R$ 0,00</td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
     <script src="script.js"></script>   
 </body>
 
