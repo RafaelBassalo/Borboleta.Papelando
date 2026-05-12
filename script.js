@@ -32,6 +32,54 @@ if (produtoForm) {
         localStorage.setItem('custosFixos', JSON.stringify(custos));
     }
 
+    function loadTempoProducaoTotal() {
+        return Number(localStorage.getItem('tempoProducaoTotal')) || 0;
+    }
+
+    function saveTempoProducaoTotal(tempo) {
+        localStorage.setItem('tempoProducaoTotal', Number(tempo) || 0);
+    }
+
+    function loadNomeCliente() {
+        return localStorage.getItem('nomeCliente') || '';
+    }
+
+    function saveNomeCliente(nome) {
+        localStorage.setItem('nomeCliente', nome);
+    }
+
+    function loadProdutoFinal() {
+        return localStorage.getItem('produtoFinal') || '';
+    }
+
+    function saveProdutoFinal(produto) {
+        localStorage.setItem('produtoFinal', produto);
+    }
+
+    function loadMesPedidoOrcamento() {
+        return localStorage.getItem('mesPedidoOrcamento') || '2026-05';
+    }
+
+    function saveMesPedidoOrcamento(mes) {
+        localStorage.setItem('mesPedidoOrcamento', mes);
+    }
+
+    function loadStatusPedidoOrcamento() {
+        return localStorage.getItem('statusPedidoOrcamento') || 'pendente';
+    }
+
+    function saveStatusPedidoOrcamento(status) {
+        localStorage.setItem('statusPedidoOrcamento', status);
+    }
+
+    function loadPagamentoPedidoOrcamento() {
+        return localStorage.getItem('pagamentoPedidoOrcamento') || 'nao_pago';
+    }
+
+    function savePagamentoPedidoOrcamento(pagamento) {
+        localStorage.setItem('pagamentoPedidoOrcamento', pagamento);
+    }
+
     function formatBRL(value) {
         const number = Number(value) || 0;
         return number.toLocaleString('pt-BR', {
@@ -58,46 +106,66 @@ if (produtoForm) {
 
     function updateConfeccaoTable() {
         const tbody = document.getElementById('confeccaoTableBody');
-        const totalTempoCell = document.getElementById('confeccaoTotalTempo');
-        const custoHoraCell = document.getElementById('confeccaoCustoHora');
-        const totalValorCell = document.getElementById('confeccaoTotalValor');
-        if (!tbody || !totalTempoCell || !custoHoraCell || !totalValorCell) return;
+        if (!tbody) return;
 
         const produtos = loadOrcamentoProdutos();
         const custoHora = calculateCustoHora();
+        const totalTempoMin = loadTempoProducaoTotal();
+        const totalTempoHoras = totalTempoMin / 60;
+        const totalValor = custoHora * totalTempoHoras;
+
         tbody.innerHTML = '';
-        let totalTempo = 0;
-        let totalValor = 0;
+        const row = tbody.insertRow();
 
-        produtos.forEach(produto => {
-            const row = tbody.insertRow();
-            row.insertCell(0).textContent = produto.nomeProduto;
-
-            const tempoCell = row.insertCell(1);
-            const tempoInput = document.createElement('input');
-            tempoInput.type = 'number';
-            tempoInput.min = '0';
-            tempoInput.step = '0.5';
-            tempoInput.value = produto.tempoConfeccao || 0;
-            tempoInput.className = 'small-input';
-            tempoInput.addEventListener('input', () => {
-                produto.tempoConfeccao = tempoInput.value;
-                saveOrcamentoProdutos(produtos);
-                updateConfeccaoTable();
-            });
-            tempoCell.appendChild(tempoInput);
-
-            row.insertCell(2).textContent = formatBRL(custoHora);
-            const valorConfeccao = custoHora * (Number(produto.tempoConfeccao) || 0);
-            row.insertCell(3).textContent = formatBRL(valorConfeccao);
-
-            totalTempo += Number(produto.tempoConfeccao) || 0;
-            totalValor += valorConfeccao;
+        const tempoCell = row.insertCell(0);
+        const tempoInput = document.createElement('input');
+        tempoInput.type = 'number';
+        tempoInput.min = '0';
+        tempoInput.step = '1';
+        tempoInput.value = totalTempoMin;
+        tempoInput.className = 'small-input';
+        tempoInput.addEventListener('change', () => {
+            saveTempoProducaoTotal(tempoInput.value);
+            updateConfeccaoTable();
         });
+        tempoCell.appendChild(tempoInput);
 
-        totalTempoCell.textContent = totalTempo;
-        custoHoraCell.textContent = formatBRL(custoHora);
-        totalValorCell.textContent = formatBRL(totalValor);
+        row.insertCell(1).textContent = formatBRL(custoHora);
+        row.insertCell(2).textContent = formatBRL(totalValor);
+
+        updateResultadoTable();
+    }
+
+    function updateResultadoTable() {
+        const tbody = document.getElementById('resultadoTableBody');
+        if (!tbody) return;
+
+        const produtos = loadOrcamentoProdutos();
+        const custoHora = calculateCustoHora();
+        const totalMaterial = produtos.reduce((sum, produto) => sum + calculateSpent(produto), 0);
+        const totalTempoMin = loadTempoProducaoTotal();
+        const totalTempoHoras = totalTempoMin / 60;
+        const totalProducao = custoHora * totalTempoHoras;
+        const totalGeral = totalMaterial + totalProducao;
+
+        tbody.innerHTML = '';
+        const row = tbody.insertRow();
+        
+        const clienteCell = row.insertCell(0);
+        const clienteInput = document.createElement('input');
+        clienteInput.type = 'text';
+        clienteInput.value = loadNomeCliente();
+        clienteInput.className = 'small-input';
+        clienteInput.placeholder = 'Nome do cliente';
+        clienteInput.addEventListener('change', () => {
+            saveNomeCliente(clienteInput.value);
+        });
+        clienteCell.appendChild(clienteInput);
+
+        row.insertCell(1).textContent = loadProdutoFinal() || '-';
+        row.insertCell(2).textContent = formatBRL(totalMaterial);
+        row.insertCell(3).textContent = formatBRL(totalProducao);
+        row.insertCell(4).textContent = formatBRL(totalGeral);
     }
 
     function updateOrcamentoTable() {
@@ -128,6 +196,7 @@ if (produtoForm) {
                 const gasto = calculateSpent(produto);
                 valorGastoCell.textContent = formatBRL(gasto);
                 totalGasto.textContent = formatBRL(produtos.reduce((sum, item) => sum + calculateSpent(item), 0));
+                updateResultadoTable();
             });
             quantidadeUsadaCell.appendChild(quantidadeUsadaInput);
 
@@ -135,35 +204,7 @@ if (produtoForm) {
             const gastoAtual = calculateSpent(produto);
             valorGastoCell.textContent = formatBRL(gastoAtual);
 
-            const tempoCriacaoCell = row.insertCell(5);
-            const tempoCriacaoInput = document.createElement('input');
-            tempoCriacaoInput.type = 'number';
-            tempoCriacaoInput.min = '0';
-            tempoCriacaoInput.step = '0.5';
-            tempoCriacaoInput.value = produto.tempoCriacao || 0;
-            tempoCriacaoInput.className = 'small-input';
-            tempoCriacaoInput.addEventListener('input', () => {
-                produto.tempoCriacao = tempoCriacaoInput.value;
-                saveOrcamentoProdutos(produtos);
-                updateOrcamentoTable();
-            });
-            tempoCriacaoCell.appendChild(tempoCriacaoInput);
-
-            const tempoProducaoCell = row.insertCell(6);
-            const tempoProducaoInput = document.createElement('input');
-            tempoProducaoInput.type = 'number';
-            tempoProducaoInput.min = '0';
-            tempoProducaoInput.step = '0.5';
-            tempoProducaoInput.value = produto.tempoProducao || 0;
-            tempoProducaoInput.className = 'small-input';
-            tempoProducaoInput.addEventListener('input', () => {
-                produto.tempoProducao = tempoProducaoInput.value;
-                saveOrcamentoProdutos(produtos);
-                updateOrcamentoTable();
-            });
-            tempoProducaoCell.appendChild(tempoProducaoInput);
-
-            const actionsCell = row.insertCell(7);
+            const actionsCell = row.insertCell(5);
             actionsCell.style.display = 'flex';
             actionsCell.style.gap = '8px';
             
@@ -197,6 +238,7 @@ if (produtoForm) {
 
         totalGasto.textContent = formatBRL(total);
         updateConfeccaoTable();
+        updateResultadoTable();
     }
 
     produtoForm.addEventListener('submit', event => {
@@ -222,7 +264,7 @@ if (produtoForm) {
                 quantidadePacote: formData.get('quantidadePacote'),
                 valorProduto: formData.get('valorProduto'),
                 quantidadeUtilizada: 0,
-                tempoConfeccao: 0
+                tempoProducao: 0
             };
             produtos.push(novoProduto);
         }
@@ -235,7 +277,44 @@ if (produtoForm) {
         produtoFormContainer.classList.remove('visible');
     });
 
+    function initializeOrcamentoExtras() {
+        const produtoFinalInput = document.getElementById('produtoFinal');
+        const mesPedidoSelect = document.getElementById('mesPedidoOrcamento');
+        const statusPedidoSelect = document.getElementById('statusPedidoOrcamento');
+        const pagamentoPedidoSelect = document.getElementById('pagamentoPedidoOrcamento');
+
+        if (produtoFinalInput) {
+            produtoFinalInput.value = loadProdutoFinal();
+            produtoFinalInput.addEventListener('change', () => {
+                saveProdutoFinal(produtoFinalInput.value);
+                updateResultadoTable();
+            });
+        }
+
+        if (mesPedidoSelect) {
+            mesPedidoSelect.value = loadMesPedidoOrcamento();
+            mesPedidoSelect.addEventListener('change', () => {
+                saveMesPedidoOrcamento(mesPedidoSelect.value);
+            });
+        }
+
+        if (statusPedidoSelect) {
+            statusPedidoSelect.value = loadStatusPedidoOrcamento();
+            statusPedidoSelect.addEventListener('change', () => {
+                saveStatusPedidoOrcamento(statusPedidoSelect.value);
+            });
+        }
+
+        if (pagamentoPedidoSelect) {
+            pagamentoPedidoSelect.value = loadPagamentoPedidoOrcamento();
+            pagamentoPedidoSelect.addEventListener('change', () => {
+                savePagamentoPedidoOrcamento(pagamentoPedidoSelect.value);
+            });
+        }
+    }
+
     updateOrcamentoTable();
+    initializeOrcamentoExtras();
 }
 
 const novoCustoBtn = document.getElementById('novoCustoBtn');
@@ -276,6 +355,7 @@ if (custoForm) {
             inss: formData.get('inss')
         };
         saveCustosFixos(custos);
+        updateConfeccaoTable();
         alert('Custos fixos salvos com sucesso!');
         custoForm.reset();
         custoFormContainer.classList.remove('visible');
@@ -290,8 +370,165 @@ if (custoForm) {
     document.getElementById('inss').value = custosFixos.inss || 0;
 }
 
-const pedidoFormContainer = document.getElementById('pedidoFormContainer');
-const cancelarPedidoBtn = document.getElementById('cancelarPedidoBtn');
+    // Funções para gerenciar orçamentos salvos
+    function loadOrcamentosSalvos() {
+        return JSON.parse(localStorage.getItem('orcamentosSalvos')) || [];
+    }
+
+    function saveOrcamentoSalvo(orcamento) {
+        const orcamentos = loadOrcamentosSalvos();
+        orcamentos.push(orcamento);
+        localStorage.setItem('orcamentosSalvos', JSON.stringify(orcamentos));
+    }
+
+    function deleteOrcamentoSalvo(id) {
+        const orcamentos = loadOrcamentosSalvos();
+        const novoOrcamentos = orcamentos.filter(item => item.id !== id);
+        localStorage.setItem('orcamentosSalvos', JSON.stringify(novoOrcamentos));
+        updateOrcamentosSalvosTable();
+    }
+
+    function limparOrcamento() {
+        const produtos = loadOrcamentoProdutos();
+        produtos.forEach(produto => {
+            produto.quantidadeUtilizada = 0;
+        });
+        saveOrcamentoProdutos(produtos);
+        localStorage.removeItem('tempoProducaoTotal');
+        localStorage.removeItem('nomeCliente');
+        localStorage.removeItem('produtoFinal');
+        localStorage.removeItem('mesPedidoOrcamento');
+        localStorage.removeItem('statusPedidoOrcamento');
+        localStorage.removeItem('pagamentoPedidoOrcamento');
+        updateOrcamentoTable();
+        updateConfeccaoTable();
+        updateResultadoTable();
+        initializeOrcamentoExtras();
+    }
+
+    function salvarOrcamento() {
+        const nomeCliente = loadNomeCliente();
+        if (!nomeCliente.trim()) {
+            alert('Por favor, informe o nome do cliente');
+            return;
+        }
+
+        const produtos = loadOrcamentoProdutos();
+        if (produtos.length === 0) {
+            alert('Adicione pelo menos um produto ao orçamento');
+            return;
+        }
+
+        const custoHora = calculateCustoHora();
+        const totalMaterial = produtos.reduce((sum, produto) => sum + calculateSpent(produto), 0);
+        const totalTempoMin = loadTempoProducaoTotal();
+        const totalTempoHoras = totalTempoMin / 60;
+        const totalProducao = custoHora * totalTempoHoras;
+        const totalGeral = totalMaterial + totalProducao;
+
+        const orcamento = {
+            id: Date.now(),
+            cliente: nomeCliente,
+            produto: loadProdutoFinal() || (produtos[0] ? produtos[0].nomeProduto : 'Orçamento'),
+            material: totalMaterial,
+            producao: totalProducao,
+            total: totalGeral,
+            data: new Date().toLocaleDateString('pt-BR'),
+            mes: loadMesPedidoOrcamento(),
+            status: loadStatusPedidoOrcamento(),
+            pagamento: loadPagamentoPedidoOrcamento(),
+            produtos: JSON.stringify(produtos)
+        };
+
+        saveOrcamentoSalvo(orcamento);
+        alert('Orçamento salvo com sucesso!');
+        limparOrcamento();
+        updateOrcamentosSalvosTable();
+    }
+
+    function updateOrcamentosSalvosTable() {
+        const tbody = document.getElementById('orcamentosSalvosBody');
+        if (!tbody) return;
+
+        const orcamentos = loadOrcamentosSalvos();
+        tbody.innerHTML = '';
+
+        orcamentos.forEach(orcamento => {
+            const row = tbody.insertRow();
+            row.insertCell(0).textContent = orcamento.cliente;
+            row.insertCell(1).textContent = orcamento.produto || '-';
+            row.insertCell(2).textContent = formatBRL(orcamento.material);
+            row.insertCell(3).textContent = formatBRL(orcamento.producao);
+            row.insertCell(4).textContent = formatBRL(orcamento.total);
+            row.insertCell(5).textContent = orcamento.data;
+
+            const actionsCell = row.insertCell(6);
+            actionsCell.style.display = 'flex';
+            actionsCell.style.gap = '8px';
+
+            const transformarButton = document.createElement('button');
+            transformarButton.type = 'button';
+            transformarButton.className = 'action-button';
+            transformarButton.textContent = 'Transformar em Pedido';
+            transformarButton.addEventListener('click', () => {
+                transformarEmPedido(orcamento);
+            });
+            actionsCell.appendChild(transformarButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'action-button';
+            deleteButton.textContent = 'Excluir';
+            deleteButton.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja excluir este orçamento?')) {
+                    deleteOrcamentoSalvo(orcamento.id);
+                }
+            });
+            actionsCell.appendChild(deleteButton);
+        });
+    }
+
+    function transformarEmPedido(orcamento) {
+        const hoje = new Date().toISOString().split('T')[0];
+        const mesAtual = hoje.substring(0, 7);
+
+        const novoPedido = {
+            id: Date.now(),
+            cliente: orcamento.cliente,
+            produto: orcamento.produto || ('Orçamento - ' + orcamento.data),
+            valor: orcamento.total,
+            data: hoje,
+            mes: orcamento.mes || mesAtual,
+            status: orcamento.status || 'pendente',
+            pagamento: orcamento.pagamento || 'nao_pago'
+        };
+
+        // Carregar pedidos do mês atual e adicionar o novo
+        const pedidosAtuais = JSON.parse(localStorage.getItem('pedidos-' + mesAtual)) || [];
+        pedidosAtuais.push(novoPedido);
+        localStorage.setItem('pedidos-' + mesAtual, JSON.stringify(pedidosAtuais));
+
+        alert('Orçamento transformado em pedido com sucesso!');
+        window.location.href = 'pedido.html';
+    }
+
+    // Botões de controle
+    const limparBtn = document.getElementById('limparOrcamentoBtn');
+    const salvarBtn = document.getElementById('salvarOrcamentoBtn');
+
+    if (limparBtn) {
+        limparBtn.addEventListener('click', () => {
+            if (confirm('Deseja limpar todos os campos do orçamento?')) {
+                limparOrcamento();
+            }
+        });
+    }
+
+    if (salvarBtn) {
+        salvarBtn.addEventListener('click', salvarOrcamento);
+    }
+
+    updateOrcamentosSalvosTable();
 const pedidoForm = document.getElementById('pedidoForm');
 
 if (novoPedidoBtn) {

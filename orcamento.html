@@ -35,7 +35,7 @@
         </form>
     </div>
 
-    <button id="novoCustoBtn" class="action-button">Novos Custos Fixos</button>
+    <button id="novoCustoBtn" class="action-button">Custos Fixos</button>
 
     <div id="custoFormContainer" class="hidden">
         <form id="custoForm">
@@ -44,7 +44,7 @@
                 <input type="number" id="salario" name="salario" min="0" step="0.01" required>
             </div>
             <div class="form-field">
-                <label for="agua">\u00c1gua</label>
+                <label for="agua">Agua</label>
                 <input type="number" id="agua" name="agua" min="0" step="0.01" required>
             </div>
             <div class="form-field">
@@ -63,6 +63,10 @@
                 <label for="inss">INSS</label>
                 <input type="number" id="inss" name="inss" min="0" step="0.01" required>
             </div>
+            <div class="form-field">
+                <label for="ferias">Férias</label>
+                <input type="number" id="ferias" name="ferias" min="0" step="0.01" required>
+            </div>
             <div class="form-actions">
                 <button type="submit">Salvar Custos</button>
                 <button type="button" id="cancelarCustoBtn">Cancelar</button>
@@ -72,8 +76,8 @@
 
     <section style="margin-top: 32px;">
         <h2>Orçamento de Produtos e Custos de Arte</h2>
-        <div style="display: flex; gap: 32px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 500px;">
+        <div style="display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;">
+            <div style="flex: 1 1 420px; min-width: 220px; max-width: 50%;">
                 <h3>Itens do Orçamento</h3>
         <table id="orcamentoTable">
             <thead>
@@ -83,8 +87,6 @@
                     <th>Valor do pacote</th>
                     <th>Qtd utilizada</th>
                     <th>Valor gasto</th>
-                    <th>Tempo criação (h)</th>
-                    <th>Tempo produção (h)</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -93,34 +95,102 @@
                 <tr>
                     <td colspan="4"><strong>Total gasto</strong></td>
                     <td id="orcamentoTotalGasto"><strong>R$ 0,00</strong></td>
-                    <td colspan="3"></td>
+                    <td></td>
                 </tr>
             </tfoot>
         </table>
             </div>
-            <div style="flex: 1; min-width: 400px;">
-                <h3>Custo de Confecção</h3>
-                <table id="confeccaoTable">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Tempo (h)</th>
-                            <th>Custo/h</th>
-                            <th>Valor de confecção</th>
-                        </tr>
-                    </thead>
-                    <tbody id="confeccaoTableBody"></tbody>
-                    <tfoot>
-                        <tr>
-                            <td><strong>Total</strong></td>
-                            <td id="confeccaoTotalTempo">0</td>
-                            <td id="confeccaoCustoHora">R$ 0,00</td>
-                            <td id="confeccaoTotalValor">R$ 0,00</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div style="flex: 0 0 420px; min-width: 360px; display: flex; flex-direction: column; gap: 32px;">
+                <div>
+                    <h3>Custo de Produção</h3>
+                    <table id="confeccaoTable">
+                        <thead>
+                            <tr>
+                                <th>Tempo produção (min)</th>
+                                <th>Custo/h</th>
+                                <th>Valor de produção</th>
+                            </tr>
+                        </thead>
+                        <tbody id="confeccaoTableBody"></tbody>
+                    </table>
+                </div>
+                <div>
+                    <h3>Valor Final do Produto</h3>
+                    <table id="resultadoTable">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Produto</th>
+                                <th>Valor Material</th>
+                                <th>Valor Produção</th>
+                                <th>Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultadoTableBody"></tbody>
+                    </table>
+                    <div id="orcamentoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-top: 16px;">
+                        <div class="form-field" style="min-width: 240px;">
+                            <label for="produtoFinal">Produto</label>
+                            <input type="text" id="produtoFinal" name="produtoFinal" placeholder="Nome do produto" required>
+                        </div>
+                        <div class="form-field" style="min-width: 180px;">
+                            <label for="mesPedidoOrcamento">Mês do Pedido</label>
+                            <select id="mesPedidoOrcamento" name="mesPedidoOrcamento" required>
+                                <option value="2026-01">Janeiro 2026</option>
+                                <option value="2026-02">Fevereiro 2026</option>
+                                <option value="2026-03">Março 2026</option>
+                                <option value="2026-04">Abril 2026</option>
+                                <option value="2026-05" selected>Maio 2026</option>
+                                <option value="2026-06">Junho 2026</option>
+                                <option value="2026-07">Julho 2026</option>
+                                <option value="2026-08">Agosto 2026</option>
+                                <option value="2026-09">Setembro 2026</option>
+                                <option value="2026-10">Outubro 2026</option>
+                                <option value="2026-11">Novembro 2026</option>
+                                <option value="2026-12">Dezembro 2026</option>
+                            </select>
+                        </div>
+                        <div class="form-field" style="min-width: 180px;">
+                            <label for="statusPedidoOrcamento">Status do Pedido</label>
+                            <select id="statusPedidoOrcamento" name="statusPedidoOrcamento" required>
+                                <option value="pendente">Produção</option>
+                                <option value="confirmado">Confeccionado</option>
+                                <option value="entregue">Entregue</option>
+                            </select>
+                        </div>
+                        <div class="form-field" style="min-width: 180px;">
+                            <label for="pagamentoPedidoOrcamento">Pagamento</label>
+                            <select id="pagamentoPedidoOrcamento" name="pagamentoPedidoOrcamento" required>
+                                <option value="nao_pago">Não pago</option>
+                                <option value="pago">Pago</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                    <button id="limparOrcamentoBtn" class="action-button">Limpar Tudo</button>
+                    <button id="salvarOrcamentoBtn" class="action-button">Salvar Orçamento</button>
+                </div>
             </div>
         </div>
+    </section>
+
+    <section style="margin-top: 32px;">
+        <h2>Orçamentos Salvos</h2>
+        <table id="orcamentosSalvosTable">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Produto</th>
+                    <th>Valor Material</th>
+                    <th>Valor Produção</th>
+                    <th>Valor Total</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="orcamentosSalvosBody"></tbody>
+        </table>
     </section>
 
     <script src="script.js"></script>
