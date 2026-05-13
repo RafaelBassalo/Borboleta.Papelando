@@ -25,7 +25,21 @@ if (produtoForm) {
     }
 
     function loadCustosFixos() {
-        return JSON.parse(localStorage.getItem('custosFixos')) || { salario: 0, agua: 0, luz: 0, telefone: 0, internet: 0, inss: 0 };
+        return JSON.parse(localStorage.getItem('custosFixos')) || {
+            salario: 0,
+            agua: 0,
+            luz: 0,
+            telefone: 0,
+            internet: 0,
+            mei: 0,
+            plano: 0,
+            outros: 0,
+            horasDia: 8,
+            diasMes: 20,
+            markup: 1.33,
+            investimentoPercent: 0,
+            lucroPercent: 0
+        };
     }
 
     function saveCustosFixos(custos) {
@@ -98,10 +112,13 @@ if (produtoForm) {
 
     function calculateCustoHora() {
         const custos = loadCustosFixos();
-        const totalCustos = [custos.salario, custos.agua, custos.luz, custos.telefone, custos.internet, custos.inss]
+        const totalCustos = [custos.salario, custos.agua, custos.luz, custos.telefone, custos.internet, custos.mei, custos.plano, custos.outros]
             .map(valor => Number(valor) || 0)
             .reduce((sum, valor) => sum + valor, 0);
-        return totalCustos / 160;
+        const horasPorDia = Number(custos.horasDia) || 8;
+        const diasPorMes = Number(custos.diasMes) || 20;
+        const totalHoras = horasPorDia * diasPorMes || 160;
+        return totalCustos / totalHoras;
     }
 
     function updateConfeccaoTable() {
@@ -109,10 +126,12 @@ if (produtoForm) {
         if (!tbody) return;
 
         const produtos = loadOrcamentoProdutos();
+        const custos = loadCustosFixos();
+        const markup = Number(custos.markup) || 1.33;
         const custoHora = calculateCustoHora();
         const totalTempoMin = loadTempoProducaoTotal();
         const totalTempoHoras = totalTempoMin / 60;
-        const totalValor = custoHora * totalTempoHoras;
+        const totalValor = custoHora * totalTempoHoras * markup;
 
         tbody.innerHTML = '';
         const row = tbody.insertRow();
@@ -141,12 +160,18 @@ if (produtoForm) {
         if (!tbody) return;
 
         const produtos = loadOrcamentoProdutos();
-        const custoHora = calculateCustoHora();
+        const custos = loadCustosFixos();
+        const markup = Number(custos.markup) || 1.33;
+        const investimentoPercent = Number(custos.investimentoPercent) || 0;
+        const lucroPercent = Number(custos.lucroPercent) || 0;
         const totalMaterial = produtos.reduce((sum, produto) => sum + calculateSpent(produto), 0);
         const totalTempoMin = loadTempoProducaoTotal();
         const totalTempoHoras = totalTempoMin / 60;
-        const totalProducao = custoHora * totalTempoHoras;
-        const totalGeral = totalMaterial + totalProducao;
+        const totalProducao = calculateCustoHora() * totalTempoHoras * markup;
+        const totalBruto = totalMaterial + totalProducao;
+        const valorInvestimento = totalBruto * investimentoPercent / 100;
+        const valorLucro = totalBruto * lucroPercent / 100;
+        const totalGeral = totalBruto + valorInvestimento + valorLucro;
 
         tbody.innerHTML = '';
         const row = tbody.insertRow();
@@ -162,10 +187,27 @@ if (produtoForm) {
         });
         clienteCell.appendChild(clienteInput);
 
-        row.insertCell(1).textContent = loadProdutoFinal() || '-';
+        const produtoCell = row.insertCell(1);
+        const produtoInput = document.createElement('input');
+        produtoInput.type = 'text';
+        produtoInput.value = loadProdutoFinal();
+        produtoInput.className = 'small-input';
+        produtoInput.placeholder = 'Nome do produto';
+        produtoInput.addEventListener('change', () => {
+            saveProdutoFinal(produtoInput.value);
+        });
+        produtoCell.appendChild(produtoInput);
+
         row.insertCell(2).textContent = formatBRL(totalMaterial);
         row.insertCell(3).textContent = formatBRL(totalProducao);
         row.insertCell(4).textContent = formatBRL(totalGeral);
+
+        const investimentoValor = document.getElementById('investimentoValor');
+        const lucroValor = document.getElementById('lucroValor');
+        const markupValor = document.getElementById('markupValor');
+        if (investimentoValor) investimentoValor.textContent = formatBRL(valorInvestimento);
+        if (lucroValor) lucroValor.textContent = formatBRL(valorLucro);
+        if (markupValor) markupValor.textContent = markup.toFixed(2);
     }
 
     function updateOrcamentoTable() {
@@ -336,7 +378,21 @@ if (cancelarCustoBtn) {
 
 if (custoForm) {
     function loadCustosFixos() {
-        return JSON.parse(localStorage.getItem('custosFixos')) || { salario: 0, agua: 0, luz: 0, telefone: 0, internet: 0, inss: 0 };
+        return JSON.parse(localStorage.getItem('custosFixos')) || {
+            salario: 0,
+            agua: 0,
+            luz: 0,
+            telefone: 0,
+            internet: 0,
+            mei: 0,
+            plano: 0,
+            outros: 0,
+            horasDia: 8,
+            diasMes: 20,
+            markup: 1.33,
+            investimentoPercent: 0,
+            lucroPercent: 0
+        };
     }
 
     function saveCustosFixos(custos) {
@@ -352,7 +408,14 @@ if (custoForm) {
             luz: formData.get('luz'),
             telefone: formData.get('telefone'),
             internet: formData.get('internet'),
-            inss: formData.get('inss')
+            mei: formData.get('mei'),
+            plano: formData.get('plano'),
+            outros: formData.get('outros'),
+            horasDia: formData.get('horasDia'),
+            diasMes: formData.get('diasMes'),
+            markup: formData.get('markup'),
+            investimentoPercent: formData.get('investimentoPercent'),
+            lucroPercent: formData.get('lucroPercent')
         };
         saveCustosFixos(custos);
         updateConfeccaoTable();
@@ -367,7 +430,14 @@ if (custoForm) {
     document.getElementById('luz').value = custosFixos.luz || 0;
     document.getElementById('telefone').value = custosFixos.telefone || 0;
     document.getElementById('internet').value = custosFixos.internet || 0;
-    document.getElementById('inss').value = custosFixos.inss || 0;
+    document.getElementById('mei').value = custosFixos.mei || 0;
+    document.getElementById('plano').value = custosFixos.plano || 0;
+    document.getElementById('outros').value = custosFixos.outros || 0;
+    document.getElementById('horasDia').value = custosFixos.horasDia || 8;
+    document.getElementById('diasMes').value = custosFixos.diasMes || 20;
+    document.getElementById('markup').value = custosFixos.markup || 1.33;
+    document.getElementById('investimentoPercent').value = custosFixos.investimentoPercent || 0;
+    document.getElementById('lucroPercent').value = custosFixos.lucroPercent || 0;
 }
 
     // Funções para gerenciar orçamentos salvos
@@ -457,12 +527,15 @@ if (custoForm) {
             const row = tbody.insertRow();
             row.insertCell(0).textContent = orcamento.cliente;
             row.insertCell(1).textContent = orcamento.produto || '-';
-            row.insertCell(2).textContent = formatBRL(orcamento.material);
-            row.insertCell(3).textContent = formatBRL(orcamento.producao);
-            row.insertCell(4).textContent = formatBRL(orcamento.total);
-            row.insertCell(5).textContent = orcamento.data;
+            row.insertCell(2).textContent = orcamento.mes || '-';
+            row.insertCell(3).textContent = orcamento.status || '-';
+            row.insertCell(4).textContent = (orcamento.pagamento === 'pago' ? 'Pago' : 'Não pago');
+            row.insertCell(5).textContent = formatBRL(orcamento.material);
+            row.insertCell(6).textContent = formatBRL(orcamento.producao);
+            row.insertCell(7).textContent = formatBRL(orcamento.total);
+            row.insertCell(8).textContent = orcamento.data;
 
-            const actionsCell = row.insertCell(6);
+            const actionsCell = row.insertCell(9);
             actionsCell.style.display = 'flex';
             actionsCell.style.gap = '8px';
 
@@ -491,6 +564,7 @@ if (custoForm) {
     function transformarEmPedido(orcamento) {
         const hoje = new Date().toISOString().split('T')[0];
         const mesAtual = hoje.substring(0, 7);
+        const pedidoMes = orcamento.mes || mesAtual;
 
         const novoPedido = {
             id: Date.now(),
@@ -498,16 +572,18 @@ if (custoForm) {
             produto: orcamento.produto || ('Orçamento - ' + orcamento.data),
             valor: orcamento.total,
             data: hoje,
-            mes: orcamento.mes || mesAtual,
+            mes: pedidoMes,
             status: orcamento.status || 'pendente',
             pagamento: orcamento.pagamento || 'nao_pago'
         };
 
-        // Carregar pedidos do mês atual e adicionar o novo
-        const pedidosAtuais = JSON.parse(localStorage.getItem('pedidos-' + mesAtual)) || [];
+        // Carregar pedidos do mês do orçamento e adicionar o novo
+        const pedidosAtuais = JSON.parse(localStorage.getItem('pedidos-' + pedidoMes)) || [];
         pedidosAtuais.push(novoPedido);
-        localStorage.setItem('pedidos-' + mesAtual, JSON.stringify(pedidosAtuais));
+        localStorage.setItem('pedidos-' + pedidoMes, JSON.stringify(pedidosAtuais));
 
+        // Remover orçamento salvo do armazenamento após transformar em pedido
+        deleteOrcamentoSalvo(orcamento.id);
         alert('Orçamento transformado em pedido com sucesso!');
         window.location.href = 'pedido.html';
     }

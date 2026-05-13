@@ -118,8 +118,20 @@ h1{
     .form-actions {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
+    }
+
+    #resultadoExtras,
+    #pedidoExtras {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(200px, 1fr));
+        gap: 16px;
+        align-items: start;
+    }
+
+    #resultadoExtras .form-field,
+    #pedidoExtras .form-field {
+        width: 100%;
+        min-width: 0;
     }
 
     table {

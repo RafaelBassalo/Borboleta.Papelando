@@ -44,11 +44,11 @@
                 <input type="number" id="salario" name="salario" min="0" step="0.01" required>
             </div>
             <div class="form-field">
-                <label for="agua">Agua</label>
+                <label for="agua">Água</label>
                 <input type="number" id="agua" name="agua" min="0" step="0.01" required>
             </div>
             <div class="form-field">
-                <label for="luz">Luz</label>
+                <label for="luz">Energia</label>
                 <input type="number" id="luz" name="luz" min="0" step="0.01" required>
             </div>
             <div class="form-field">
@@ -60,12 +60,36 @@
                 <input type="number" id="internet" name="internet" min="0" step="0.01" required>
             </div>
             <div class="form-field">
-                <label for="inss">INSS</label>
-                <input type="number" id="inss" name="inss" min="0" step="0.01" required>
+                <label for="mei">MEI</label>
+                <input type="number" id="mei" name="mei" min="0" step="0.01" required>
             </div>
             <div class="form-field">
-                <label for="ferias">Férias</label>
-                <input type="number" id="ferias" name="ferias" min="0" step="0.01" required>
+                <label for="plano">Plano de Saúde</label>
+                <input type="number" id="plano" name="plano" min="0" step="0.01" required>
+            </div>
+            <div class="form-field">
+                <label for="outros">Outros</label>
+                <input type="number" id="outros" name="outros" min="0" step="0.01" required>
+            </div>
+            <div class="form-field">
+                <label for="horasDia">Horas trabalhadas por dia</label>
+                <input type="number" id="horasDia" name="horasDia" min="1" step="0.1" value="8" required>
+            </div>
+            <div class="form-field">
+                <label for="diasMes">Dias trabalhados no mês</label>
+                <input type="number" id="diasMes" name="diasMes" min="1" step="1" value="20" required>
+            </div>
+            <div class="form-field">
+                <label for="markup">Markup</label>
+                <input type="number" id="markup" name="markup" min="1" step="0.01" value="1.33" readonly>
+            </div>
+            <div class="form-field">
+                <label for="investimentoPercent">Investimento empresa (%)</label>
+                <input type="number" id="investimentoPercent" name="investimentoPercent" min="0" step="0.1" value="0" required>
+            </div>
+            <div class="form-field">
+                <label for="lucroPercent">Lucro empresa (%)</label>
+                <input type="number" id="lucroPercent" name="lucroPercent" min="0" step="0.1" value="0" required>
             </div>
             <div class="form-actions">
                 <button type="submit">Salvar Custos</button>
@@ -128,13 +152,23 @@
                         </thead>
                         <tbody id="resultadoTableBody"></tbody>
                     </table>
-                    <div id="orcamentoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-top: 16px;">
-                        <div class="form-field" style="min-width: 240px;">
-                            <label for="produtoFinal">Produto</label>
-                            <input type="text" id="produtoFinal" name="produtoFinal" placeholder="Nome do produto" required>
+                    <div id="resultadoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; justify-content:flex-start; margin-top: 16px;">
+                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
+                            <strong>Markup</strong>
+                            <div id="markupValor">1,33</div>
                         </div>
-                        <div class="form-field" style="min-width: 180px;">
-                            <label for="mesPedidoOrcamento">Mês do Pedido</label>
+                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
+                            <strong>Investimento</strong>
+                            <div id="investimentoValor">R$ 0,00</div>
+                        </div>
+                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
+                            <strong>Lucro</strong>
+                            <div id="lucroValor">R$ 0,00</div>
+                        </div>
+                    </div>
+                    <div id="pedidoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; justify-content:flex-start; margin-top: 16px;">
+                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
+                            <label for="mesPedidoOrcamento">Mês</label>
                             <select id="mesPedidoOrcamento" name="mesPedidoOrcamento" required>
                                 <option value="2026-01">Janeiro 2026</option>
                                 <option value="2026-02">Fevereiro 2026</option>
@@ -150,15 +184,15 @@
                                 <option value="2026-12">Dezembro 2026</option>
                             </select>
                         </div>
-                        <div class="form-field" style="min-width: 180px;">
-                            <label for="statusPedidoOrcamento">Status do Pedido</label>
+                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
+                            <label for="statusPedidoOrcamento">Status</label>
                             <select id="statusPedidoOrcamento" name="statusPedidoOrcamento" required>
                                 <option value="pendente">Produção</option>
                                 <option value="confirmado">Confeccionado</option>
                                 <option value="entregue">Entregue</option>
                             </select>
                         </div>
-                        <div class="form-field" style="min-width: 180px;">
+                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
                             <label for="pagamentoPedidoOrcamento">Pagamento</label>
                             <select id="pagamentoPedidoOrcamento" name="pagamentoPedidoOrcamento" required>
                                 <option value="nao_pago">Não pago</option>
@@ -182,6 +216,9 @@
                 <tr>
                     <th>Cliente</th>
                     <th>Produto</th>
+                    <th>Mês</th>
+                    <th>Status</th>
+                    <th>Pagamento</th>
                     <th>Valor Material</th>
                     <th>Valor Produção</th>
                     <th>Valor Total</th>
