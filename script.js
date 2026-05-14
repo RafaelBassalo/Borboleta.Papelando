@@ -252,8 +252,7 @@ if (produtoForm) {
             
             const editButton = document.createElement('button');
             editButton.type = 'button';
-            editButton.className = 'action-button';
-            editButton.textContent = 'Editar';
+            editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
             editButton.addEventListener('click', () => {
                 document.getElementById('produtoId').value = produto.id;
                 document.getElementById('nomeProduto').value = produto.nomeProduto;
@@ -266,8 +265,7 @@ if (produtoForm) {
             
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
-            deleteButton.className = 'action-button';
-            deleteButton.textContent = 'Excluir';
+            deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
             deleteButton.addEventListener('click', () => {
                 const restantes = produtos.filter(item => String(item.id) !== String(produto.id));
                 saveOrcamentoProdutos(restantes);
@@ -549,9 +547,8 @@ if (custoForm) {
             actionsCell.appendChild(transformarButton);
 
             const deleteButton = document.createElement('button');
-            deleteButton.type = 'button';
-            deleteButton.className = 'action-button';
-            deleteButton.textContent = 'Excluir';
+            deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';     
+            deleteButton.type = 'button';        
             deleteButton.addEventListener('click', () => {
                 if (confirm('Tem certeza que deseja excluir este orçamento?')) {
                     deleteOrcamentoSalvo(orcamento.id);
@@ -736,17 +733,15 @@ if (pedidoForm) {
             row.insertCell(5).textContent = (pedido.pagamento || 'nao_pago') === 'pago' ? 'Pago' : 'Não pago';
             const actionsCell = row.insertCell(6);
             const editButton = document.createElement('button');
-            editButton.textContent = 'Editar';
+            editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
             editButton.type = 'button';
-            editButton.className = 'action-button';
             editButton.addEventListener('click', () => {
                 fillPedidoForm(pedido);
             });
 
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'Excluir';
+            deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
             deleteButton.type = 'button';
-            deleteButton.className = 'action-button';
             deleteButton.addEventListener('click', () => {
                 if (!confirm('Deseja realmente excluir este pedido?')) return;
                 const pedidosAtuais = loadPedidos(month);

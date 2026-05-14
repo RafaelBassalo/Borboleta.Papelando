@@ -10,11 +10,13 @@
 
 </head>
 <body>
-    <button id="Voltar" class="action-button" onclick="window.location.href='index.html'">Voltar</button>
+    <button id="Voltar" class="action-button1" onclick="window.location.href='index.html'">
+        <img src="./imagens/icons8-à-esquerda-dentro-de-um-círculo-50.png" alt="Voltar">
+    </button>
     <h1>Orçamento</h1>
     <p>Cadastre aqui os produtos que você deseja incluir no orçamento.</p>
 
-    <button id="novoProdutoBtn" class="action-button">Novo Produto</button>
+    <button id="novoProdutoBtn" class="action-button2">Novo Produto</button>
 
     <div id="produtoFormContainer" class="hidden">
         <form id="produtoForm">
@@ -31,14 +33,18 @@
                 <label for="valorProduto">Valor</label>
                 <input type="number" id="valorProduto" name="valorProduto" min="0" step="0.01" required>
             </div>
-            <div class="form-actions">
-                <button type="submit">Salvar Produto</button>
-                <button type="button" id="cancelarProdutoBtn">Cancelar</button>
+            <div class="form-actions1">
+                <button type="submit">
+                    <img src="./imagens/icons8-botão-salvar-48.png" alt="Salvar">                  
+                </button>
+                <button type="button" id="cancelarProdutoBtn">
+                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
+                </button>
             </div>
         </form>
     </div>
 
-    <button id="novoCustoBtn" class="action-button">Custos Fixos</button>
+    <button id="novoCustoBtn" class="action-button2">Custos Fixos</button>
 
     <div id="custoFormContainer" class="hidden">
         <form id="custoForm">
@@ -94,9 +100,13 @@
                 <label for="lucroPercent">Lucro empresa (%)</label>
                 <input type="number" id="lucroPercent" name="lucroPercent" min="0" step="0.1" value="0" required>
             </div>
-            <div class="form-actions">
-                <button type="submit">Salvar Custos</button>
-                <button type="button" id="cancelarCustoBtn">Cancelar</button>
+            <div class="form-actions1">
+                <button type="submit">
+                    <img src="./imagens/icons8-botão-salvar-48.png" alt="Salvar">
+                </button>
+                <button type="button" id="cancelarCustoBtn">
+                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
+                </button>
             </div>
         </form>
     </div>
@@ -205,8 +215,8 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 16px;">
-                    <button id="limparOrcamentoBtn" class="action-button">Limpar Tudo</button>
-                    <button id="salvarOrcamentoBtn" class="action-button">Salvar Orçamento</button>
+                    <button id="limparOrcamentoBtn" class="action-button2">Limpar Tudo</button>
+                    <button id="salvarOrcamentoBtn" class="action-button2">Salvar Orçamento</button>
                 </div>
             </div>
         </div>
