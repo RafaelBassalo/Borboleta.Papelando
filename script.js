@@ -539,8 +539,7 @@ if (custoForm) {
 
             const transformarButton = document.createElement('button');
             transformarButton.type = 'button';
-            transformarButton.className = 'action-button';
-            transformarButton.textContent = 'Transformar em Pedido';
+            transformarButton.innerHTML = '<img src="./imagens/icons8-ordem-de-compra-64.png" alt="Transformar"> Transformar em Pedido';
             transformarButton.addEventListener('click', () => {
                 transformarEmPedido(orcamento);
             });
