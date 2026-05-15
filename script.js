@@ -47,7 +47,9 @@ if (produtoForm) {
     }
 
     function loadTempoProducaoTotal() {
-        return Number(localStorage.getItem('tempoProducaoTotal')) || 0;
+        
+        return Number(localStorage.getItem('tempoProducaoTotal')) || '';
+        
     }
 
     function saveTempoProducaoTotal(tempo) {
@@ -141,7 +143,8 @@ if (produtoForm) {
         tempoInput.type = 'number';
         tempoInput.min = '0';
         tempoInput.step = '1';
-        tempoInput.value = totalTempoMin;
+        tempoInput.value = totalTempoMin || '';
+        tempoInput.placeholder = 'Tempo total (min)';
         tempoInput.className = 'small-input';
         tempoInput.addEventListener('change', () => {
             saveTempoProducaoTotal(tempoInput.value);
@@ -229,8 +232,8 @@ if (produtoForm) {
             const quantidadeUsadaInput = document.createElement('input');
             quantidadeUsadaInput.type = 'number';
             quantidadeUsadaInput.min = '0';
-            quantidadeUsadaInput.step = '1';
-            quantidadeUsadaInput.value = produto.quantidadeUtilizada || 0;
+            quantidadeUsadaInput.step = '0.5';
+            quantidadeUsadaInput.value = produto.quantidadeUtilizada || '';
             quantidadeUsadaInput.className = 'small-input';
             quantidadeUsadaInput.addEventListener('input', () => {
                 produto.quantidadeUtilizada = quantidadeUsadaInput.value;
@@ -252,6 +255,7 @@ if (produtoForm) {
             
             const editButton = document.createElement('button');
             editButton.type = 'button';
+            editButton.style.cursor = 'pointer';
             editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
             editButton.addEventListener('click', () => {
                 document.getElementById('produtoId').value = produto.id;
@@ -265,6 +269,7 @@ if (produtoForm) {
             
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
+            deleteButton.style.cursor = 'pointer';
             deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
             deleteButton.addEventListener('click', () => {
                 const restantes = produtos.filter(item => String(item.id) !== String(produto.id));
@@ -377,19 +382,19 @@ if (cancelarCustoBtn) {
 if (custoForm) {
     function loadCustosFixos() {
         return JSON.parse(localStorage.getItem('custosFixos')) || {
-            salario: 0,
-            agua: 0,
-            luz: 0,
-            telefone: 0,
-            internet: 0,
-            mei: 0,
-            plano: 0,
-            outros: 0,
-            horasDia: 8,
-            diasMes: 20,
-            markup: 1.33,
-            investimentoPercent: 0,
-            lucroPercent: 0
+            salario: '',
+            agua: '',
+            luz: '',
+            telefone: '',
+            internet: '',
+            mei: '',
+            plano: '',
+            outros: '',
+            horasDia: '',
+            diasMes: '',
+            markup: '',
+            investimentoPercent: '',
+            lucroPercent: ''
         };
     }
 
@@ -423,19 +428,19 @@ if (custoForm) {
     });
 
     const custosFixos = loadCustosFixos();
-    document.getElementById('salario').value = custosFixos.salario || 0;
-    document.getElementById('agua').value = custosFixos.agua || 0;
-    document.getElementById('luz').value = custosFixos.luz || 0;
-    document.getElementById('telefone').value = custosFixos.telefone || 0;
-    document.getElementById('internet').value = custosFixos.internet || 0;
-    document.getElementById('mei').value = custosFixos.mei || 0;
-    document.getElementById('plano').value = custosFixos.plano || 0;
-    document.getElementById('outros').value = custosFixos.outros || 0;
-    document.getElementById('horasDia').value = custosFixos.horasDia || 8;
-    document.getElementById('diasMes').value = custosFixos.diasMes || 20;
-    document.getElementById('markup').value = custosFixos.markup || 1.33;
-    document.getElementById('investimentoPercent').value = custosFixos.investimentoPercent || 0;
-    document.getElementById('lucroPercent').value = custosFixos.lucroPercent || 0;
+    document.getElementById('salario').value = custosFixos.salario || '';
+    document.getElementById('agua').value = custosFixos.agua || '';
+    document.getElementById('luz').value = custosFixos.luz || '';
+    document.getElementById('telefone').value = custosFixos.telefone || '';
+    document.getElementById('internet').value = custosFixos.internet || '';
+    document.getElementById('mei').value = custosFixos.mei || '';
+    document.getElementById('plano').value = custosFixos.plano || '';
+    document.getElementById('outros').value = custosFixos.outros || '';
+    document.getElementById('horasDia').value = custosFixos.horasDia || '';
+    document.getElementById('diasMes').value = custosFixos.diasMes || '';
+    document.getElementById('markup').value = custosFixos.markup || '';
+    document.getElementById('investimentoPercent').value = custosFixos.investimentoPercent || '';
+    document.getElementById('lucroPercent').value = custosFixos.lucroPercent || '';
 }
 
     // Funções para gerenciar orçamentos salvos
@@ -524,9 +529,9 @@ if (custoForm) {
         orcamentos.forEach(orcamento => {
             const row = tbody.insertRow();
             row.insertCell(0).textContent = orcamento.cliente;
-            row.insertCell(1).textContent = orcamento.produto || '-';
-            row.insertCell(2).textContent = orcamento.mes || '-';
-            row.insertCell(3).textContent = orcamento.status || '-';
+            row.insertCell(1).textContent = orcamento.produto || '';
+            row.insertCell(2).textContent = orcamento.mes || '';
+            row.insertCell(3).textContent = orcamento.status || '';
             row.insertCell(4).textContent = (orcamento.pagamento === 'pago' ? 'Pago' : 'Não pago');
             row.insertCell(5).textContent = formatBRL(orcamento.material);
             row.insertCell(6).textContent = formatBRL(orcamento.producao);
@@ -539,6 +544,7 @@ if (custoForm) {
 
             const transformarButton = document.createElement('button');
             transformarButton.type = 'button';
+            transformarButton.style.cursor = 'pointer';
             transformarButton.innerHTML = '<img src="./imagens/icons8-ordem-de-compra-64.png" alt="Transformar"> Transformar em Pedido';
             transformarButton.addEventListener('click', () => {
                 transformarEmPedido(orcamento);
@@ -547,7 +553,8 @@ if (custoForm) {
 
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';     
-            deleteButton.type = 'button';        
+            deleteButton.type = 'button';  
+            deleteButton.style.cursor = 'pointer';      
             deleteButton.addEventListener('click', () => {
                 if (confirm('Tem certeza que deseja excluir este orçamento?')) {
                     deleteOrcamentoSalvo(orcamento.id);
@@ -734,6 +741,7 @@ if (pedidoForm) {
             const editButton = document.createElement('button');
             editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
             editButton.type = 'button';
+            editButton.style.cursor = 'pointer';
             editButton.addEventListener('click', () => {
                 fillPedidoForm(pedido);
             });
@@ -741,6 +749,7 @@ if (pedidoForm) {
             const deleteButton = document.createElement('button');
             deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
             deleteButton.type = 'button';
+            deleteButton.style.cursor = 'pointer';
             deleteButton.addEventListener('click', () => {
                 if (!confirm('Deseja realmente excluir este pedido?')) return;
                 const pedidosAtuais = loadPedidos(month);
