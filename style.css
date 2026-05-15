@@ -43,6 +43,8 @@ h1{
         cursor: pointer;
         align-items: center;
         
+
+        
     
         }
 
@@ -50,14 +52,22 @@ h1{
         display: flex;
         gap: 10px;
         justify-content: center;
+        
     }
 
     .action-button {
         cursor: pointer;
+        border: none;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
     }
  
     .form-actions1 button {
         cursor: pointer;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
     }
 
 
@@ -70,6 +80,9 @@ h1{
         padding: 8px 10px;
         margin: 10px 6px;
         cursor: pointer;
+        box-shadow: none;
+        outline: none;
+        background-color: transparent;
     }
 
     .hidden {
@@ -84,6 +97,16 @@ h1{
         position: absolute;
         top: 10px;
         left: 10px;
+        border-radius: 50%;
+        border: none;
+        box-shadow: none;
+        outline: none;
+    }
+
+     #Voltar:hover {
+        background-color:   rgb(184, 176, 176);
+        transition: background-color 0.3s ease;
+        cursor: pointer;
     }
 
     #pedidoFormContainer,
@@ -112,6 +135,11 @@ h1{
         align-items: flex-start;
         margin-bottom: 14px;
         width: 100%;
+        
+    }
+    .form-field input {
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .form-field label {
@@ -149,21 +177,7 @@ h1{
         min-width: 0;
     }
 
-    #Voltar {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        border-radius: 50%;
-        border: none;
-        box-shadow: none;
-        outline: none;
-    }
-
-     #Voltar:hover {
-        background-color:   rgb(184, 176, 176);
-        transition: background-color 0.3s ease;
-        cursor: pointer;
-    }
+    
 
     table {
         width: 100%;
