@@ -3,8 +3,50 @@ const produtoFormContainer = document.getElementById('produtoFormContainer');
 const cancelarProdutoBtn = document.getElementById('cancelarProdutoBtn');
 const produtoForm = document.getElementById('produtoForm');
 
+const novoCadastroProduto = document.getElementById('novoCadastroProduto');
+const cadastroProdutoContainer = document.getElementById('cadastroProdutoContainer');
+const cancelarCadastroProdutoBtn = document.getElementById('cancelarCadastroProdutoBtn');
+const cadastroProdutoForm = document.getElementById('cadastroProdutoForm');
+
+if (novoCadastroProduto) {
+    novoCadastroProduto.addEventListener('click', () => {
+        pedidoFormContainer.classList.remove('visible');
+        cadastroProdutoContainer.classList.toggle('visible');
+    });
+}
+
+if (cancelarCadastroProdutoBtn) {
+    cancelarCadastroProdutoBtn.addEventListener('click', () => {
+        cadastroProdutoContainer.classList.remove('visible');
+        cadastroProdutoForm.reset();
+    });
+}
+
+if (cadastroProdutoForm) {
+    cadastroProdutoForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData = new FormData(cadastroProdutoForm);
+        const produtos = loadProdutosCadastrados();
+        produtos.push({
+            id: Date.now(),
+            nome: formData.get('nomeProdutoCadastro'),
+            valor: formData.get('valorProdutoCadastro')
+        });
+        saveProdutosCadastrados(produtos);
+        updateProdutosDatalist();
+        cadastroProdutoForm.reset();
+        cadastroProdutoContainer.classList.remove('visible');
+        alert('Produto cadastrado com sucesso!');
+    });
+}
+
 if (novoProdutoBtn) {
     novoProdutoBtn.addEventListener('click', () => {
+        custoFormContainer.classList.remove('visible'); // fecha custos
+        produtoForm.reset();
+        document.getElementById('produtoId').value = '';
+        document.querySelector('#produtoForm button[type="submit"]').innerHTML = 
+            '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
         produtoFormContainer.classList.toggle('visible');
     });
 }
@@ -262,7 +304,8 @@ if (produtoForm) {
                 document.getElementById('nomeProduto').value = produto.nomeProduto;
                 document.getElementById('quantidadePacote').value = produto.quantidadePacote;
                 document.getElementById('valorProduto').value = produto.valorProduto;
-                document.querySelector('#produtoForm button[type="submit"]').textContent = 'Atualizar Produto';
+                document.querySelector('#produtoForm button[type="submit"]').innerHTML = 
+    '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Atualizar';
                 produtoFormContainer.classList.add('visible');
             });
             actionsCell.appendChild(editButton);
@@ -318,9 +361,14 @@ if (produtoForm) {
         updateOrcamentoTable();
         produtoForm.reset();
         document.getElementById('produtoId').value = '';
-        document.querySelector('#produtoForm button[type="submit"]').textContent = 'Salvar Produto';
+        document.querySelector('#produtoForm button[type="submit"]').innerHTML = 
+    '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
         produtoFormContainer.classList.remove('visible');
     });
+
+    
+
+
 
     function initializeOrcamentoExtras() {
         const produtoFinalInput = document.getElementById('produtoFinal');
@@ -369,6 +417,7 @@ const custoForm = document.getElementById('custoForm');
 
 if (novoCustoBtn) {
     novoCustoBtn.addEventListener('click', () => {
+         produtoFormContainer.classList.remove('visible'); // fecha produtos
         custoFormContainer.classList.toggle('visible');
     });
 }
@@ -612,6 +661,7 @@ const pedidoForm = document.getElementById('pedidoForm');
 
 if (novoPedidoBtn) {
     novoPedidoBtn.addEventListener('click', () => {
+         cadastroProdutoContainer.classList.remove('visible');
         pedidoFormContainer.classList.toggle('visible');
     });
 }
