@@ -192,7 +192,7 @@
 
     <!-- Form: Cadastro de produto -->
     <div id="cadastroProdutoContainer" class="hidden">
-        <form id="cadastroProdutoForm">
+        <form id="novoCadastroProduto">
             <div class="form-field">
                 <label for="nomeProdutoCadastro">Nome do Produto</label>
                 <input type="text" id="nomeProdutoCadastro" name="nomeProdutoCadastro" required>
@@ -283,7 +283,10 @@
     </div>
 
     <!-- Modal: Selecionar produto cadastrado -->
-    <div id="modalProdutos">
+    <div id="modalProdutos" class="hidden" style="
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1000;
+    align-items: center; justify-content: center;">
         <div class="modal-inner">
             <h3>Selecionar Produto</h3>
             <ul id="listaProdutosCadastrados"></ul>
@@ -421,65 +424,11 @@
             </table>
         </div>
 
-    </div><!-- /abaFaturamento -->
+    </div>
 
-    <script>
-        // ── Troca de abas ──────────────────────────────────────
-        function ativarAba(id, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if (btn) btn.classList.add('active');
-            if (id === 'abaFaturamento' && typeof renderFaturamento === 'function') {
-                renderFaturamento();
-            }
-        }
 
-        // ── Modal: selecionar produto cadastrado ──────────────
-        function formatBRLModal(value) {
-            return (Number(value) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-        }
-
-        function abrirModalProdutos() {
-            const modal  = document.getElementById('modalProdutos');
-            const lista  = document.getElementById('listaProdutosCadastrados');
-            const produtos = JSON.parse(localStorage.getItem('produtosCadastrados')) || [];
-
-            lista.innerHTML = '';
-
-            if (produtos.length === 0) {
-                lista.innerHTML = '<li class="sem-produtos">Nenhum produto cadastrado ainda.</li>';
-            } else {
-                produtos.forEach(p => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="prod-nome">${p.nome}</span>
-                                    <span class="prod-valor">${formatBRLModal(p.valor)}</span>`;
-                    li.addEventListener('click', () => {
-                        document.getElementById('produto').value = p.nome;
-                        // Preenche o valor automaticamente se o campo estiver vazio
-                        const campoValor = document.getElementById('valor');
-                        if (!campoValor.value) campoValor.value = p.valor;
-                        fecharModalProdutos();
-                    });
-                    lista.appendChild(li);
-                });
-            }
-
-            modal.classList.add('visible');
-        }
-
-        function fecharModalProdutos() {
-            document.getElementById('modalProdutos').classList.remove('visible');
-        }
-
-        document.getElementById('selecionarProdutoBtn').addEventListener('click', abrirModalProdutos);
-        document.getElementById('fecharModalProdutos').addEventListener('click', fecharModalProdutos);
-        document.getElementById('modalProdutos').addEventListener('click', function (e) {
-            if (e.target === this) fecharModalProdutos(); // clica fora → fecha
-        });
-    </script>
 
     <script src="script.js"></script>
-    <script src="faturamento.js"></script>
+    
 </body>
 </html>

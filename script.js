@@ -60,88 +60,72 @@ function updateProdutosDatalist() {
 }
 const selecionarProdutoBtn = document.getElementById('selecionarProdutoBtn');
 const modalProdutos = document.getElementById('modalProdutos');
-const fecharModalProdutos = document.getElementById('fecharModalProdutos');
+const fecharModalProdutosBtn = document.getElementById('fecharModalProdutos');
 const listaProdutosCadastrados = document.getElementById('listaProdutosCadastrados');
 
-if (selecionarProdutoBtn) {
-    selecionarProdutoBtn.addEventListener('click', () => {
-        const produtos = loadProdutosCadastrados();
-        listaProdutosCadastrados.innerHTML = '';
-
-        if (produtos.length === 0) {
-            listaProdutosCadastrados.innerHTML = '<li>Nenhum produto cadastrado.</li>';
-        } else {
-          produtos.forEach(p => {
-                const li = document.createElement('li');
-                li.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eee;';
-
-                const span = document.createElement('span');
-                span.textContent = `${p.nome} — ${formatBRL(p.valor)}`;
-                span.style.cssText = 'flex: 1; cursor: pointer; padding: 4px;';
-                span.addEventListener('mouseover', () => span.style.background = '#f0f0f0');
-                span.addEventListener('mouseout', () => span.style.background = '');
-                span.addEventListener('click', () => {
-                    document.getElementById('produto').value = p.nome;
-                    document.getElementById('valor').value = p.valor;
-                    modalProdutos.classList.add('hidden');
-                });
-                li.appendChild(span);
-
-                const editBtn = document.createElement('button');
-                editBtn.type = 'button';
-                editBtn.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
-                editBtn.style.cursor = 'pointer';
-                editBtn.addEventListener('click', () => {
-                    const novoNome = prompt('Novo nome do produto:', p.nome);
-                    if (novoNome === null) return;
-                    const novoValor = prompt('Novo valor:', p.valor);
-                    if (novoValor === null) return;
-                    const todos = loadProdutosCadastrados();
-                    const index = todos.findIndex(item => String(item.id) === String(p.id));
-                    if (index !== -1) {
-                        todos[index].nome = novoNome;
-                        todos[index].valor = novoValor;
-                        saveProdutosCadastrados(todos);
-                        updateProdutosDatalist();
-                        selecionarProdutoBtn.click();
-                    }
-                });
-                li.appendChild(editBtn);
-
-                const delBtn = document.createElement('button');
-                delBtn.type = 'button';
-                delBtn.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
-                delBtn.style.cursor = 'pointer';
-                delBtn.addEventListener('click', () => {
-                    if (!confirm(`Excluir "${p.nome}"?`)) return;
-                    const todos = loadProdutosCadastrados();
-                    const restantes = todos.filter(item => String(item.id) !== String(p.id));
-                    saveProdutosCadastrados(restantes);
-                    updateProdutosDatalist();
-                    selecionarProdutoBtn.click();
-                });
-                li.appendChild(delBtn);
-
-                listaProdutosCadastrados.appendChild(li);
-            });
+ // ── Troca de abas ──────────────────────────────────────
+        function ativarAba(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (id === 'abaFaturamento' && typeof renderFaturamento === 'function') {
+                renderFaturamento();
+            }
         }
 
-        modalProdutos.classList.remove('hidden');
-    });
-}
+        // ── Modal: selecionar produto cadastrado ──────────────
+        function formatBRLModal(value) {
+            return (Number(value) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
 
-if (fecharModalProdutos) {
-    fecharModalProdutos.addEventListener('click', () => {
+        function abrirModalProdutos() {
+            const modal  = document.getElementById('modalProdutos');
+            const lista  = document.getElementById('listaProdutosCadastrados');
+            const produtos = JSON.parse(localStorage.getItem('produtosCadastrados')) || [];
+
+            lista.innerHTML = '';
+
+            if (fecharModalProdutosBtn) {
+    fecharModalProdutosBtn.addEventListener('click', () => {
         modalProdutos.classList.add('hidden');
     });
 }
 
-// Fechar clicando fora do modal
-if (modalProdutos) {
-    modalProdutos.addEventListener('click', (e) => {
-        if (e.target === modalProdutos) modalProdutos.classList.add('hidden');
-    });
+if (fecharModalProdutosBtn) {
+    fecharModalProdutosBtn.addEventListener('click', fecharModalProdutosFunc);
 }
+
+            if (produtos.length === 0) {
+                lista.innerHTML = '<li class="sem-produtos">Nenhum produto cadastrado ainda.</li>';
+            } else {
+                produtos.forEach(p => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="prod-nome">${p.nome}</span>
+                                    <span class="prod-valor">${formatBRLModal(p.valor)}</span>`;
+                    li.addEventListener('click', () => {
+                        document.getElementById('produto').value = p.nome;
+                        // Preenche o valor automaticamente se o campo estiver vazio
+                        const campoValor = document.getElementById('valor');
+                        if (!campoValor.value) campoValor.value = p.valor;
+                        fecharModalProdutosBtn.click();
+                    });
+                    lista.appendChild(li);
+                });
+            }
+
+            modal.classList.add('visible');
+        }
+
+        function fecharModalProdutosFunc() {
+            document.getElementById('modalProdutos').classList.remove('visible');
+        }
+
+        
+
+
+
+
 
 
 // ============================================================
@@ -229,6 +213,8 @@ function deleteOrcamentoSalvo(id) {
     localStorage.setItem('orcamentosSalvos', JSON.stringify(orcamentos));
     updateOrcamentosSalvosTable();
 }
+
+
 
 
 // ============================================================
@@ -417,7 +403,7 @@ function updateOrcamentoTable() {
 
         const editButton = document.createElement('button');
         editButton.type  = 'button';
-        editButton.style.cursor = 'pointer';
+        editButton.className = 'icon-btn';
         editButton.innerHTML    = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
         editButton.addEventListener('click', () => {
             document.getElementById('produtoId').value          = produto.id;
@@ -432,7 +418,7 @@ function updateOrcamentoTable() {
 
         const deleteButton = document.createElement('button');
         deleteButton.type  = 'button';
-        deleteButton.style.cursor = 'pointer';
+        deleteButton.className = 'icon-btn';
         deleteButton.innerHTML    = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
         deleteButton.addEventListener('click', () => {
             saveOrcamentoProdutos(produtos.filter(item => String(item.id) !== String(produto.id)));
@@ -478,15 +464,40 @@ function updateOrcamentosSalvosTable() {
 
         const transformarButton = document.createElement('button');
         transformarButton.type  = 'button';
-        transformarButton.style.cursor = 'pointer';
+        transformarButton.className = 'icon-btn';
         transformarButton.innerHTML    =
             '<img src="./imagens/icons8-ordem-de-compra-64.png" alt="Transformar"> Transformar em Pedido';
         transformarButton.addEventListener('click', () => transformarEmPedido(orcamento));
         actionsCell.appendChild(transformarButton);
 
+        const pdfButton = document.createElement('button');
+         pdfButton.type = 'button';
+         pdfButton.className = 'icon-btn';
+         pdfButton.innerHTML =
+         '<img src="./imagens/pdf.png" alt="PDF"> PDF';
+         pdfButton.addEventListener('click', () => {
+         gerarPDFOrcamentoSalvo(orcamento);
+        
+         });
+
+        const whatsappButton =
+         document.createElement('button');
+         whatsappButton.type = 'button';
+         whatsappButton.className = 'icon-btn';
+         whatsappButton.style.cursor = 'pointer';
+         whatsappButton.innerHTML =
+         '<img src="./imagens/whatsapp.png" alt="WhatsApp"> WhatsApp';
+         whatsappButton.addEventListener('click', () => {
+         compartilharOrcamentoWhatsApp(orcamento);
+         });
+
+actionsCell.appendChild(whatsappButton);
+
+actionsCell.appendChild(pdfButton);
+
         const deleteButton = document.createElement('button');
         deleteButton.type  = 'button';
-        deleteButton.style.cursor = 'pointer';
+        deleteButton.className = 'icon-btn';
         deleteButton.innerHTML    = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
         deleteButton.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja excluir este orçamento?')) {
@@ -582,6 +593,74 @@ function transformarEmPedido(orcamento) {
     window.location.href = 'pedido.html';
 }
 
+async function compartilharOrcamentoWhatsApp(orcamento) {
+
+    // ==========================
+    // GERAR PDF
+    // ==========================
+
+    await gerarPDFOrcamentoSalvo(orcamento);
+
+    // ==========================
+    // DADOS
+    // ==========================
+
+    const cliente =
+        orcamento.cliente || 'Cliente';
+
+    const produto =
+        orcamento.produto || 'Produto';
+
+    const valor =
+        formatBRL(orcamento.total);
+
+    const validade =
+        '5 dias';
+
+    const whatsappEmpresa =
+        localStorage.getItem('whatsappEmpresa') || '';
+
+    const instagram =
+        localStorage.getItem('instagramEmpresa') || '';
+
+    // ==========================
+    // MENSAGEM
+    // ==========================
+
+    const mensagem = `Olá ${cliente} 😊
+
+Seu orçamento está pronto.
+
+📦 Produto:
+${produto}
+
+💰 Valor:
+${valor}
+
+📅 Validade:
+${validade}
+
+📲 WhatsApp:
+${whatsappEmpresa}
+
+📸 Instagram:
+${instagram}
+
+📎 O PDF do orçamento foi baixado automaticamente.
+Basta anexar no WhatsApp 😊
+
+Obrigado pela preferência ❤️`;
+
+    // ==========================
+    // ABRIR WHATSAPP
+    // ==========================
+
+    const url =
+        `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
+
+    window.open(url, '_blank');
+}
+
 function initializeOrcamentoExtras() {
     const bindings = [
         { id: 'produtoFinal',            load: loadProdutoFinal,           save: saveProdutoFinal,           extra: updateResultadoTable },
@@ -600,7 +679,397 @@ function initializeOrcamentoExtras() {
         });
     });
 }
+async function gerarPDFOrcamentoSalvo(orcamento) {
 
+    const { jsPDF } = window.jspdf;
+
+   const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4'
+   });
+
+    // =========================================
+    // DADOS
+    // =========================================
+
+    const cliente =
+        orcamento.cliente || 'Cliente';
+
+    const produto =
+        orcamento.produto || 'Produto';
+
+    const total =
+        Number(orcamento.total) || 0;
+
+    const data =
+        orcamento.data || '';
+
+    const validade = '5 dias';
+
+    // PIX
+    const pixCode =
+        localStorage.getItem('pixCode') || '';
+
+    const chavePix =
+        localStorage.getItem('chavePix') || '';
+
+    const whatsapp =
+        localStorage.getItem('whatsappEmpresa') || '';
+
+    const instagram =
+        localStorage.getItem('instagramEmpresa') || '';
+
+    // =========================================
+    // FUNDO
+    // =========================================
+
+    doc.setFillColor(248, 248, 248);
+
+    doc.rect(0, 0, 210, 297, 'F');
+
+    // =========================================
+    // TOPO
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.setDrawColor(235);
+    doc.setLineWidth(0.3);
+
+    doc.roundedRect(
+        10,
+        10,
+        190,
+        38,
+        6,
+        6,
+        'F'
+    );
+
+    // LOGO
+    doc.setDrawColor(220);
+
+    const empresaNome =
+    localStorage.getItem('empresaNome') || 'Minha Empresa';
+
+doc.setFontSize(18);
+
+doc.setTextColor(40);
+
+doc.text(
+    empresaNome,
+    68,
+    26
+);
+
+   const logoEmpresa =
+    localStorage.getItem('logoEmpresa');
+
+if (logoEmpresa) {
+
+    doc.addImage(
+        logoEmpresa,
+        logoEmpresa.includes('image/png') ? 'PNG' : 'JPEG',
+        18,
+        14,
+        42,
+        28
+    );
+
+} else {
+
+    doc.setDrawColor(220);
+
+    doc.roundedRect(
+        18,
+        17,
+        42,
+        24,
+        4,
+        4
+    );
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(120);
+
+    doc.text(
+        'LOGO DA EMPRESA',
+        21,
+        30
+    );
+
+}
+
+  
+
+    // TÍTULO
+    doc.setFontSize(24);
+
+    doc.setTextColor(40);
+
+    doc.text(
+        'ORÇAMENTO',
+        128,
+        30
+    );
+
+    // =========================================
+    // CLIENTE
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        10,
+        58,
+        190,
+        42,
+        5,
+        5,
+        'F'
+    );
+
+    doc.setFontSize(12);
+
+    doc.setTextColor(60);
+
+    doc.text(
+        `Cliente: ${cliente}`,
+        18,
+        74
+    );
+
+    doc.text(
+        `Data: ${data}`,
+        18,
+        84
+    );
+
+    doc.text(
+        `Validade: ${validade}`,
+        120,
+        84
+    );
+
+    // =========================================
+    // PRODUTO
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        10,
+        110,
+        190,
+        55,
+        5,
+        5,
+        'F'
+    );
+
+    doc.setFontSize(15);
+
+    doc.setTextColor(30);
+
+    doc.text(
+        'Descrição do Produto',
+        18,
+        128
+    );
+
+    doc.setDrawColor(235);
+
+    doc.line(18, 133, 188, 133);
+
+    doc.setFontSize(12);
+
+    doc.setTextColor(70);
+
+    doc.text(
+        produto,
+        18,
+        148
+    );
+
+    // =========================================
+    // VALOR
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        10,
+        178,
+        92,
+        60,
+        5,
+        5,
+        'F'
+    );
+
+    doc.setFontSize(12);
+
+    doc.setTextColor(120);
+
+    doc.text(
+        'VALOR TOTAL',
+        18,
+        198
+    );
+
+    doc.setFontSize(24);
+
+    doc.setTextColor(20);
+
+    doc.text(
+        formatBRL(total),
+        18,
+        220
+    );
+
+    // =========================================
+    // QR CODE PIX
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        112,
+        178,
+        88,
+        60,
+        5,
+        5,
+        'F'
+    );
+
+    if (pixCode) {
+
+        const qrContainer =
+            document.createElement('div');
+
+        new QRCode(qrContainer, {
+            text: pixCode,
+            width: 120,
+            height: 120
+        });
+
+        const qrImage =
+            qrContainer.querySelector('img');
+
+        if (qrImage) {
+
+            await new Promise(resolve => {
+                qrImage.onload = resolve;
+            });
+
+            doc.addImage(
+                qrImage.src,
+                'PNG',
+                138,
+                186,
+                35,
+                35
+            );
+        }
+
+        doc.setFontSize(10);
+
+        doc.setTextColor(100);
+
+        doc.text(
+            'Pagamento via PIX',
+            132,
+            230
+        );
+    }
+
+    // =========================================
+    // CHAVE PIX
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        10,
+        248,
+        190,
+        20,
+        5,
+        5,
+        'F'
+    );
+
+    doc.setFontSize(11);
+
+    doc.setTextColor(90);
+
+    doc.text(
+        `Chave PIX: ${chavePix}`,
+        18,
+        261
+    );
+
+    // =========================================
+    // REDES SOCIAIS
+    // =========================================
+
+    doc.setFillColor(255, 255, 255);
+
+    doc.roundedRect(
+        10,
+        275,
+        190,
+        12,
+        4,
+        4,
+        'F'
+    );
+
+    doc.setFontSize(10);
+
+    doc.setTextColor(120);
+
+    doc.text(
+        `WhatsApp: ${whatsapp}`,
+        18,
+        283
+    );
+
+    doc.text(
+        `Instagram: ${instagram}`,
+        120,
+        283
+    );
+
+    // =========================================
+    // RODAPÉ
+    // =========================================
+
+    doc.setFontSize(9);
+
+    doc.setTextColor(150);
+
+    doc.text(
+        'Obrigado pela preferência!',
+        105,
+        293,
+        { align: 'center' }
+    );
+
+    // =========================================
+    // SALVAR
+    // =========================================
+
+   const nomeArquivo =
+    `orcamento-${cliente}.pdf`;
+
+doc.save(nomeArquivo);
+
+return nomeArquivo;
+}
 
 // ============================================================
 //  TABELAS DE PEDIDOS
@@ -732,7 +1201,161 @@ function fillPedidoForm(pedido) {
 //  INICIALIZAÇÃO DOS EVENTOS (DOM pronto)
 // ============================================================
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
+
+    
+// =====================================
+// CONFIGURAÇÕES EMPRESA
+// =====================================
+
+const configBtn =
+    document.getElementById('configBtn');
+
+const configModal =
+    document.getElementById('configModal');
+
+const fecharConfig =
+    document.getElementById('fecharConfig');
+
+const salvarConfigBtn =
+    document.getElementById('salvarConfigBtn');
+
+// Abrir modal
+if (configBtn) {
+
+    configBtn.addEventListener('click', () => {
+
+        document.getElementById('empresaNome').value =
+            localStorage.getItem('empresaNome') || '';
+
+        document.getElementById('whatsappEmpresa').value =
+            localStorage.getItem('whatsappEmpresa') || '';
+
+        document.getElementById('instagramEmpresa').value =
+            localStorage.getItem('instagramEmpresa') || '';
+
+        document.getElementById('chavePix').value =
+            localStorage.getItem('chavePix') || '';
+
+        document.getElementById('pixCode').value =
+            localStorage.getItem('pixCode') || '';
+
+        configModal.classList.remove('hidden');
+
+    });
+}
+
+// Fechar
+if (fecharConfig) {
+
+    fecharConfig.addEventListener('click', () => {
+
+        configModal.classList.add('hidden');
+
+    });
+}
+
+// Fechar clicando fora
+if (configModal) {
+
+    configModal.addEventListener('click', e => {
+
+        if (e.target === configModal) {
+
+            configModal.classList.add('hidden');
+
+        }
+
+    });
+}
+
+// Salvar
+if (salvarConfigBtn) {
+
+    salvarConfigBtn.addEventListener('click', () => {
+
+        localStorage.setItem(
+            'empresaNome',
+            document.getElementById('empresaNome').value
+        );
+
+        localStorage.setItem(
+            'whatsappEmpresa',
+            document.getElementById('whatsappEmpresa').value
+        );
+
+        localStorage.setItem(
+            'instagramEmpresa',
+            document.getElementById('instagramEmpresa').value
+        );
+
+        localStorage.setItem(
+            'chavePix',
+            document.getElementById('chavePix').value
+        );
+
+        localStorage.setItem(
+            'pixCode',
+            document.getElementById('pixCode').value
+        );
+
+         const logoInput =
+          document.getElementById('logoEmpresa');
+
+         const file =
+          logoInput.files[0];
+
+         if (file) {
+
+         const reader = new FileReader();
+
+         reader.onload = function(e) {
+
+         localStorage.setItem(
+            'logoEmpresa',
+            e.target.result
+         );
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+        setTimeout(() => {
+        alert('Configurações salvas!');
+        }, 300);
+
+        configModal.classList.add('hidden');
+
+    });
+}
+
+    if (!localStorage.getItem('whatsappEmpresa')) {
+
+    localStorage.setItem(
+        'whatsappEmpresa',
+        '(71) 99999-9999'
+    );
+
+    localStorage.setItem(
+        'instagramEmpresa',
+        '@suaempresa'
+    );
+
+    localStorage.setItem(
+        'chavePix',
+        '71999999999'
+    );
+
+    localStorage.setItem(
+        'pixCode',
+        '00020126580014BR.GOV.BCB.PIX...'
+    );
+    }
+
 
     // --- Referências de elementos ---
     const el = id => document.getElementById(id);
@@ -906,7 +1529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ---- Botões de orçamento (limpar / salvar) ----
+    // ---- Botões de orçamento (limpar / salvar / pdf) ----
     if (limparBtn) {
         limparBtn.addEventListener('click', () => {
             if (confirm('Deseja limpar todos os campos do orçamento?')) limparOrcamento();
@@ -916,6 +1539,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (salvarBtn) {
         salvarBtn.addEventListener('click', salvarOrcamento);
     }
+
+    const gerarPdfBtn = document.getElementById('gerarPdfBtn');
+
+     if (gerarPdfBtn) {
+        gerarPdfBtn.addEventListener('click', gerarOrcamentoPDF);
+}
 
     updateOrcamentosSalvosTable();
 

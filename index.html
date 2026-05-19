@@ -25,5 +25,76 @@
         <p>Site Criado por <a href="https://www.instagram.com/rafaelbassalo/" target="_blank">Rafael Bassalo</a> para  <a href="https://www.instagram.com/borboleta.papelando/" target="_blank">Borboleta.Papelando</a></p>
     </footer>
 
+    <button id="configBtn" class="config-btn">
+    ⚙
+</button>
+
+<div id="configModal" class="config-modal hidden">
+
+    <div class="config-content">
+
+        <div class="config-header">
+
+            <h2>Configurações da Empresa</h2>
+
+            <button id="fecharConfig">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="config-body">
+
+            <label class="logo-upload-label">
+             Logo da Empresa
+             </label>
+
+             <input
+                 type="file"
+                 id="logoEmpresa"
+                 accept="image/*"
+             >
+             
+            <input
+                type="text"
+                id="empresaNome"
+                placeholder="Nome da empresa"
+            >
+
+            <input
+                type="text"
+                id="whatsappEmpresa"
+                placeholder="WhatsApp"
+            >
+
+            <input
+                type="text"
+                id="instagramEmpresa"
+                placeholder="@instagram"
+            >
+
+            <input
+                type="text"
+                id="chavePix"
+                placeholder="Chave PIX"
+            >
+
+            <textarea
+                id="pixCode"
+                placeholder="PIX Copia e Cola"
+            ></textarea>
+
+            <button id="salvarConfigBtn">
+                Salvar
+            </button>
+            
+
+    </div>
+
+    </div>
+
+</div>
+
+ <script src="script.js"></script>
 </body>
 </html>
