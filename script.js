@@ -58,6 +58,90 @@ function updateProdutosDatalist() {
         datalist.appendChild(option);
     });
 }
+const selecionarProdutoBtn = document.getElementById('selecionarProdutoBtn');
+const modalProdutos = document.getElementById('modalProdutos');
+const fecharModalProdutos = document.getElementById('fecharModalProdutos');
+const listaProdutosCadastrados = document.getElementById('listaProdutosCadastrados');
+
+if (selecionarProdutoBtn) {
+    selecionarProdutoBtn.addEventListener('click', () => {
+        const produtos = loadProdutosCadastrados();
+        listaProdutosCadastrados.innerHTML = '';
+
+        if (produtos.length === 0) {
+            listaProdutosCadastrados.innerHTML = '<li>Nenhum produto cadastrado.</li>';
+        } else {
+          produtos.forEach(p => {
+                const li = document.createElement('li');
+                li.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eee;';
+
+                const span = document.createElement('span');
+                span.textContent = `${p.nome} — ${formatBRL(p.valor)}`;
+                span.style.cssText = 'flex: 1; cursor: pointer; padding: 4px;';
+                span.addEventListener('mouseover', () => span.style.background = '#f0f0f0');
+                span.addEventListener('mouseout', () => span.style.background = '');
+                span.addEventListener('click', () => {
+                    document.getElementById('produto').value = p.nome;
+                    document.getElementById('valor').value = p.valor;
+                    modalProdutos.classList.add('hidden');
+                });
+                li.appendChild(span);
+
+                const editBtn = document.createElement('button');
+                editBtn.type = 'button';
+                editBtn.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
+                editBtn.style.cursor = 'pointer';
+                editBtn.addEventListener('click', () => {
+                    const novoNome = prompt('Novo nome do produto:', p.nome);
+                    if (novoNome === null) return;
+                    const novoValor = prompt('Novo valor:', p.valor);
+                    if (novoValor === null) return;
+                    const todos = loadProdutosCadastrados();
+                    const index = todos.findIndex(item => String(item.id) === String(p.id));
+                    if (index !== -1) {
+                        todos[index].nome = novoNome;
+                        todos[index].valor = novoValor;
+                        saveProdutosCadastrados(todos);
+                        updateProdutosDatalist();
+                        selecionarProdutoBtn.click();
+                    }
+                });
+                li.appendChild(editBtn);
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
+                delBtn.style.cursor = 'pointer';
+                delBtn.addEventListener('click', () => {
+                    if (!confirm(`Excluir "${p.nome}"?`)) return;
+                    const todos = loadProdutosCadastrados();
+                    const restantes = todos.filter(item => String(item.id) !== String(p.id));
+                    saveProdutosCadastrados(restantes);
+                    updateProdutosDatalist();
+                    selecionarProdutoBtn.click();
+                });
+                li.appendChild(delBtn);
+
+                listaProdutosCadastrados.appendChild(li);
+            });
+        }
+
+        modalProdutos.classList.remove('hidden');
+    });
+}
+
+if (fecharModalProdutos) {
+    fecharModalProdutos.addEventListener('click', () => {
+        modalProdutos.classList.add('hidden');
+    });
+}
+
+// Fechar clicando fora do modal
+if (modalProdutos) {
+    modalProdutos.addEventListener('click', (e) => {
+        if (e.target === modalProdutos) modalProdutos.classList.add('hidden');
+    });
+}
 
 
 // ============================================================
@@ -312,7 +396,7 @@ function updateOrcamentoTable() {
         qtdInput.value       = produto.quantidadeUtilizada || '';
         qtdInput.className   = 'small-input';
 
-        const valorGastoCell = row.insertCell(4);
+        const valorGastoCell = row.insertCell();
         valorGastoCell.textContent = formatBRL(calculateSpent(produto));
 
         qtdInput.addEventListener('input', () => {
@@ -775,13 +859,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (novoCustoBtn) {
         novoCustoBtn.addEventListener('click', () => {
             if (produtoFormContainer) produtoFormContainer.classList.remove('visible');
-            custoFormContainer.classList.toggle('visible');
+            if (custoFormContainer) custoFormContainer.classList.toggle('visible');
         });
     }
 
     if (cancelarCustoBtn) {
         cancelarCustoBtn.addEventListener('click', () => {
-            custoFormContainer.classList.remove('visible');
+            if (custoFormContainer) custoFormContainer.classList.remove('visible');
         });
     }
 

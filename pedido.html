@@ -6,6 +6,171 @@
     <title>Pedidos</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./imagens/borboleta.png">
+
+    <style>
+        /* ── Abas ─────────────────────────────────────────── */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #e2e8f0;
+            margin: 24px 0 0;
+        }
+        .tab-btn {
+            padding: 10px 22px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            cursor: pointer;
+            font-size: .92rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: -2px;
+            transition: color .2s, border-color .2s;
+            border-radius: 6px 6px 0 0;
+        }
+        .tab-btn:hover { color: #334155; background: #f8fafc; }
+        .tab-btn.active {
+            color: #1e293b;
+            border-bottom-color: #4f8ef7;
+            background: #fff;
+        }
+        .tab-content { display: none; padding: 24px 0; }
+        .tab-content.active { display: block; animation: fadeIn .25s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Faturamento ───────────────────────────────────── */
+        :root {
+            --fat-pago:        #3ecf8e;
+            --fat-pendente:    #f6a623;
+            --fat-linha:       #4f8ef7;
+            --fat-grid:        #e2e8f0;
+            --fat-card-bg:     #ffffff;
+            --fat-card-shadow: 0 2px 12px rgba(0,0,0,.08);
+            --fat-radius:      12px;
+        }
+        .fat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .fat-card {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .fat-card__label {
+            font-size: .72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #94a3b8;
+        }
+        .fat-card__value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .fat-card__sub { font-size: .8rem; color: #64748b; }
+        .fat-var-up   { color: var(--fat-pago);  font-weight: 600; font-size: .85rem; }
+        .fat-var-down { color: #ef4444;           font-weight: 600; font-size: .85rem; }
+
+        .fat-grafico-wrap {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 20px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .fat-grafico-wrap h3, .fat-tabela-wrap h3 {
+            font-size: .85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #64748b;
+            margin: 0 0 16px;
+        }
+        .fat-legenda {
+            display: flex;
+            gap: 20px;
+            font-size: .78rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+        .fat-legenda span::before { content: '●'; margin-right: 4px; }
+        .fat-legenda .l-pago::before     { color: var(--fat-pago);     }
+        .fat-legenda .l-pendente::before { color: var(--fat-pendente); }
+        .fat-legenda .l-total::before    { color: var(--fat-linha);    }
+        .fat-axis-label { font-size: 11px; fill: #94a3b8; font-family: inherit; }
+
+        .fat-tabela-wrap {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .fat-tabela-wrap table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+        .fat-tabela-wrap th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #94a3b8;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .fat-tabela-wrap td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        .fat-tabela-wrap tr:last-child td { border-bottom: none; }
+        .fat-tabela-wrap tr:hover td { background: #f8fafc; }
+        .fat-valor    { font-variant-numeric: tabular-nums; }
+        .fat-pago     { color: #059669; font-weight: 600; }
+        .fat-pendente { color: #d97706; font-weight: 600; }
+        .fat-badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .75rem; font-weight: 700; }
+        .fat-badge--up      { background: #dcfce7; color: #15803d; }
+        .fat-badge--down    { background: #fee2e2; color: #b91c1c; }
+        .fat-badge--neutral { background: #f1f5f9; color: #94a3b8; }
+        #faturamentoTotaisRow td { border-top: 2px solid #e2e8f0; background: #f8fafc; font-weight: 700; }
+
+        /* ── Modal produtos ────────────────────────────────── */
+        #modalProdutos {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: none;
+            align-items: center; justify-content: center;
+        }
+        #modalProdutos.visible { display: flex; }
+        #modalProdutos .modal-inner {
+            background: white; padding: 24px; border-radius: 12px;
+            min-width: 320px; max-height: 420px; overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+        }
+        #modalProdutos h3 { margin-top: 0; }
+        #listaProdutosCadastrados { list-style: none; padding: 0; margin: 0 0 16px; }
+        #listaProdutosCadastrados li {
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background .15s;
+        }
+        #listaProdutosCadastrados li:hover { background: #f0f9ff; }
+        #listaProdutosCadastrados li .prod-nome { font-weight: 600; color: #1e293b; }
+        #listaProdutosCadastrados li .prod-valor { font-size: .82rem; color: #64748b; }
+        #listaProdutosCadastrados .sem-produtos { color: #94a3b8; font-size: .88rem; padding: 16px 0; text-align: center; }
+    </style>
 </head>
 <body>
 
@@ -15,45 +180,57 @@
     <h1>Pedidos</h1>
     <p>Use o botão abaixo para cadastrar um novo pedido nesta página.</p>
 
-    <button style="text-align: left;" id="novoPedidoBtn" class="action-button"> 
-        <img src="./imagens/icons8-pedido-processado-100.png" alt="">,<br>Novo Pedido</button>
-    
-        <button style="text-align: center;" id="novoCadastroProduto" class="action-button"> 
-    <img src="./imagens/icons8-ordem-de-compra-64.png" alt="">,<br>Cadastrar Produto</button>
+    <!-- Botões de ação -->
+    <div>
+        <button style="text-align: left;" id="novoPedidoBtn" class="action-button">
+            <img src="./imagens/icons8-pedido-processado-100.png" alt=""><br>Novo Pedido
+        </button>
+        <button style="text-align: center;" id="novoCadastroProduto" class="action-button">
+            <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Produto
+        </button>
+    </div>
 
-<div id="cadastroProdutoContainer" class="hidden">
-    <form id="cadastroProdutoForm">
-        <div class="form-field">
-            <label for="nomeProdutoCadastro">Nome do Produto</label>
-            <input type="text" id="nomeProdutoCadastro" name="nomeProdutoCadastro" required>
-        </div>
-        <div class="form-field">
-            <label for="valorProdutoCadastro">Valor</label>
-            <input type="number" id="valorProdutoCadastro" name="valorProdutoCadastro" min="0" step="0.01" required>
-        </div>
-        <div class="form-actions1">
-            <button type="submit">
-                <img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar
-            </button>
-            <button type="button" id="cancelarCadastroProdutoBtn">
-                <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
-            </button>
-        </div>
-    </form>
-</div>
+    <!-- Form: Cadastro de produto -->
+    <div id="cadastroProdutoContainer" class="hidden">
+        <form id="cadastroProdutoForm">
+            <div class="form-field">
+                <label for="nomeProdutoCadastro">Nome do Produto</label>
+                <input type="text" id="nomeProdutoCadastro" name="nomeProdutoCadastro" required>
+            </div>
+            <div class="form-field">
+                <label for="valorProdutoCadastro">Valor</label>
+                <input type="number" id="valorProdutoCadastro" name="valorProdutoCadastro" min="0" step="0.01" required>
+            </div>
+            <div class="form-actions1">
+                <button type="submit">
+                    <img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar
+                </button>
+                <button type="button" id="cancelarCadastroProdutoBtn">
+                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
+                </button>
+            </div>
+        </form>
+    </div>
 
+    <!-- Form: Novo/Editar pedido -->
     <div id="pedidoFormContainer" class="hidden">
         <form id="pedidoForm">
             <input type="hidden" id="editId" name="editId" value="">
             <input type="hidden" id="editOriginalMes" name="editOriginalMes" value="">
+
             <div class="form-field">
                 <label for="cliente">Nome do Cliente</label>
                 <input type="text" id="cliente" name="cliente" required>
             </div>
+
             <div class="form-field">
                 <label for="produto">Produto</label>
-                <input type="text" id="produto" name="produto" required>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <input type="text" id="produto" name="produto" placeholder="Digite ou selecione um produto" required>
+                    <button type="button" id="selecionarProdutoBtn">📋 Selecionar</button>
+                </div>
             </div>
+
             <div class="form-field">
                 <label for="valor">Valor Total</label>
                 <input type="number" id="valor" name="valor" min="0" step="0.01" required>
@@ -69,7 +246,7 @@
                     <option value="2026-02">Fevereiro 2026</option>
                     <option value="2026-03">Março 2026</option>
                     <option value="2026-04">Abril 2026</option>
-                    <option value="2026-05" selected>Maio 2026</option> 
+                    <option value="2026-05" selected>Maio 2026</option>
                     <option value="2026-06">Junho 2026</option>
                     <option value="2026-07">Julho 2026</option>
                     <option value="2026-08">Agosto 2026</option>
@@ -105,51 +282,67 @@
         </form>
     </div>
 
-    <div style="margin-top: 20px;">
-        <label for="monthSelector">Selecionar Mês para visualizar tabela:</label>
-        <select id="monthSelector">
-            <option value="2026-01">Janeiro 2026</option>
-            <option value="2026-02">Fevereiro 2026</option>
-            <option value="2026-03">Março 2026</option>
-            <option value="2026-04">Abril 2026</option>
-            <option value="2026-05" selected>Maio 2026</option>
-            <option value="2026-06">Junho 2026</option>
-            <option value="2026-07">Julho 2026</option> 
-            <option value="2026-08">Agosto 2026</option>
-            <option value="2026-09">Setembro 2026</option>
-            <option value="2026-10">Outubro 2026</option>
-            <option value="2026-11">Novembro 2026</option>
-            <option value="2026-12">Dezembro 2026</option>
-
-
-        </select>
+    <!-- Modal: Selecionar produto cadastrado -->
+    <div id="modalProdutos">
+        <div class="modal-inner">
+            <h3>Selecionar Produto</h3>
+            <ul id="listaProdutosCadastrados"></ul>
+            <button type="button" id="fecharModalProdutos">Fechar</button>
+        </div>
     </div>
 
-    <table id="pedidosTable">
-        <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Produto</th>
-                <th>Valor</th>
-                <th>Data Entrega</th>
-                <th>Status</th>
-                <th>Pago</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody id="pedidosTableBody">
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2"><strong>Total do mês</strong></td>
-                <td id="pedidosTotalValor"><strong>R$ 0,00</strong></td>
-                <td colspan="4"></td>
-            </tr>
-        </tfoot>
-    </table>
+    <!-- ── Navegação por abas ── -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="ativarAba('abaPedidos', this)">🗒️ Pedidos</button>
+        <button class="tab-btn"        onclick="ativarAba('abaResumo',   this)">👤 Resumo por Cliente</button>
+        <button class="tab-btn"        onclick="ativarAba('abaFaturamento', this)">📊 Faturamento</button>
+    </nav>
 
-    <section style="margin-top: 32px;">
-        <h2>Resumo por cliente</h2>
+    <!-- ── Aba 1: Pedidos ── -->
+    <div id="abaPedidos" class="tab-content active">
+        <div style="margin-top: 8px; margin-bottom: 16px;">
+            <label for="monthSelector">Selecionar Mês:</label>
+            <select id="monthSelector">
+                <option value="2026-01">Janeiro 2026</option>
+                <option value="2026-02">Fevereiro 2026</option>
+                <option value="2026-03">Março 2026</option>
+                <option value="2026-04">Abril 2026</option>
+                <option value="2026-05" selected>Maio 2026</option>
+                <option value="2026-06">Junho 2026</option>
+                <option value="2026-07">Julho 2026</option>
+                <option value="2026-08">Agosto 2026</option>
+                <option value="2026-09">Setembro 2026</option>
+                <option value="2026-10">Outubro 2026</option>
+                <option value="2026-11">Novembro 2026</option>
+                <option value="2026-12">Dezembro 2026</option>
+            </select>
+        </div>
+
+        <table id="pedidosTable">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Produto</th>
+                    <th>Valor</th>
+                    <th>Data Entrega</th>
+                    <th>Status</th>
+                    <th>Pago</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="pedidosTableBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2"><strong>Total do mês</strong></td>
+                    <td id="pedidosTotalValor"><strong>R$ 0,00</strong></td>
+                    <td colspan="4"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- ── Aba 2: Resumo por cliente ── -->
+    <div id="abaResumo" class="tab-content">
         <table id="resumoClientesTable">
             <thead>
                 <tr>
@@ -169,9 +362,124 @@
                 </tr>
             </tfoot>
         </table>
-    </section>
+    </div>
 
-    <script src="script.js"></script>   
+    <!-- ── Aba 3: Faturamento ── -->
+    <div id="abaFaturamento" class="tab-content">
+
+        <!-- Cards de resumo -->
+        <div class="fat-cards">
+            <div class="fat-card">
+                <span class="fat-card__label">Último mês (<span id="fatCardUltimoLabel">—</span>)</span>
+                <span class="fat-card__value" id="fatCardUltimoMes">R$ 0,00</span>
+                <span id="fatCardVariacao" class="fat-var-up">—</span>
+            </div>
+            <div class="fat-card">
+                <span class="fat-card__label">Melhor mês</span>
+                <span class="fat-card__value" id="fatCardMelhorValor">R$ 0,00</span>
+                <span class="fat-card__sub" id="fatCardMelhorMes">—</span>
+            </div>
+            <div class="fat-card">
+                <span class="fat-card__label">Média mensal</span>
+                <span class="fat-card__value" id="fatCardMedia">R$ 0,00</span>
+            </div>
+            <div class="fat-card">
+                <span class="fat-card__label">Total acumulado</span>
+                <span class="fat-card__value" id="fatCardTotal">R$ 0,00</span>
+            </div>
+        </div>
+
+        <!-- Gráfico de evolução -->
+        <div class="fat-grafico-wrap">
+            <h3>Evolução do Faturamento</h3>
+            <div id="faturamentoGrafico"></div>
+            <div class="fat-legenda">
+                <span class="l-pago">Pago</span>
+                <span class="l-pendente">Pendente</span>
+                <span class="l-total">Total (linha)</span>
+            </div>
+        </div>
+
+        <!-- Tabela comparativa -->
+        <div class="fat-tabela-wrap">
+            <h3>Comparativo Mensal</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mês</th>
+                        <th>Pedidos</th>
+                        <th>Total</th>
+                        <th>Pago</th>
+                        <th>Pendente</th>
+                        <th>Variação</th>
+                    </tr>
+                </thead>
+                <tbody id="faturamentoTableBody"></tbody>
+                <tfoot>
+                    <tr id="faturamentoTotaisRow"></tr>
+                </tfoot>
+            </table>
+        </div>
+
+    </div><!-- /abaFaturamento -->
+
+    <script>
+        // ── Troca de abas ──────────────────────────────────────
+        function ativarAba(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (btn) btn.classList.add('active');
+            if (id === 'abaFaturamento' && typeof renderFaturamento === 'function') {
+                renderFaturamento();
+            }
+        }
+
+        // ── Modal: selecionar produto cadastrado ──────────────
+        function formatBRLModal(value) {
+            return (Number(value) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function abrirModalProdutos() {
+            const modal  = document.getElementById('modalProdutos');
+            const lista  = document.getElementById('listaProdutosCadastrados');
+            const produtos = JSON.parse(localStorage.getItem('produtosCadastrados')) || [];
+
+            lista.innerHTML = '';
+
+            if (produtos.length === 0) {
+                lista.innerHTML = '<li class="sem-produtos">Nenhum produto cadastrado ainda.</li>';
+            } else {
+                produtos.forEach(p => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="prod-nome">${p.nome}</span>
+                                    <span class="prod-valor">${formatBRLModal(p.valor)}</span>`;
+                    li.addEventListener('click', () => {
+                        document.getElementById('produto').value = p.nome;
+                        // Preenche o valor automaticamente se o campo estiver vazio
+                        const campoValor = document.getElementById('valor');
+                        if (!campoValor.value) campoValor.value = p.valor;
+                        fecharModalProdutos();
+                    });
+                    lista.appendChild(li);
+                });
+            }
+
+            modal.classList.add('visible');
+        }
+
+        function fecharModalProdutos() {
+            document.getElementById('modalProdutos').classList.remove('visible');
+        }
+
+        document.getElementById('selecionarProdutoBtn').addEventListener('click', abrirModalProdutos);
+        document.getElementById('fecharModalProdutos').addEventListener('click', fecharModalProdutos);
+        document.getElementById('modalProdutos').addEventListener('click', function (e) {
+            if (e.target === this) fecharModalProdutos(); // clica fora → fecha
+        });
+    </script>
+
+    <script src="script.js"></script>
+    <script src="faturamento.js"></script>
 </body>
-
 </html>

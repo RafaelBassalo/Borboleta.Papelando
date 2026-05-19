@@ -129,6 +129,10 @@ h1{
         display: block;
     }
 
+    #modalProdutos:not(.hidden) {
+    display: flex;
+}
+
     .form-field {
         display: flex;
         flex-direction: column;
