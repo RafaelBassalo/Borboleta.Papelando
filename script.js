@@ -47,6 +47,19 @@ function saveProdutosCadastrados(produtos) {
     localStorage.setItem('produtosCadastrados', JSON.stringify(produtos));
 }
 
+function updateClientesDatalist() {
+    const datalist = document.getElementById('clientesDatalist');
+    if (!datalist) return;
+    const clientes = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
+    datalist.innerHTML = '';
+    clientes.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.nome;
+        datalist.appendChild(option);
+    });
+}
+
+
 function updateProdutosDatalist() {
     const datalist = document.getElementById('produtosDatalist');
     if (!datalist) return;
@@ -158,7 +171,70 @@ function updateProdutosDatalist() {
             document.getElementById('modalProdutos').classList.remove('visible');
         }
 
-        
+function abrirModalClientes() {
+    const modal = document.getElementById('modalClientes');
+    const lista = document.getElementById('listaClientesCadastrados');
+
+    function renderLista() {
+        const clientes = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
+        lista.innerHTML = '';
+
+        if (clientes.length === 0) {
+            lista.innerHTML = '<li class="sem-produtos">Nenhum cliente cadastrado ainda.</li>';
+            return;
+        }
+
+        clientes.forEach((c, index) => {
+            const li = document.createElement('li');
+            li.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;';
+
+            const info = document.createElement('span');
+            info.style.cssText = 'flex:1;cursor:pointer;';
+            info.innerHTML = `<span class="prod-nome">${c.nome}</span>`;
+            info.addEventListener('click', () => {
+                document.getElementById('cliente').value = c.nome;
+                modal.classList.remove('visible');
+            });
+
+            const editBtn = document.createElement('button');
+            editBtn.type      = 'button';
+            editBtn.innerHTML = '✏️';
+            editBtn.style.cssText = 'background:none;border:none;cursor:pointer;';
+            editBtn.addEventListener('click', () => {
+                const novoNome = prompt('Novo nome:', c.nome);
+                if (novoNome !== null && novoNome.trim()) {
+                    const arr = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
+                    arr[index].nome = novoNome.trim();
+                    localStorage.setItem('clientesCadastrados', JSON.stringify(arr));
+                    updateClientesDatalist();
+                    renderLista();
+                }
+            });
+
+            const delBtn = document.createElement('button');
+            delBtn.type      = 'button';
+            delBtn.innerHTML = '🗑️';
+            delBtn.style.cssText = 'background:none;border:none;cursor:pointer;';
+            delBtn.addEventListener('click', () => {
+                if (confirm(`Excluir "${c.nome}"?`)) {
+                    const arr = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
+                    arr.splice(index, 1);
+                    localStorage.setItem('clientesCadastrados', JSON.stringify(arr));
+                    updateClientesDatalist();
+                    renderLista();
+                }
+            });
+
+            li.appendChild(info);
+            li.appendChild(editBtn);
+            li.appendChild(delBtn);
+            lista.appendChild(li);
+        });
+    }
+
+    renderLista();
+    modal.classList.add('visible');
+}
 
 
 
@@ -1537,6 +1613,11 @@ if (salvarConfigBtn) {
     const cancelarCadastroProdutoBtn = el('cancelarCadastroProdutoBtn');
     const cadastroProdutoForm        = el('cadastroProdutoForm');
 
+    const novoCadastroCliente        = el('novoCadastroCliente');
+    const cadastroClienteContainer   = el('cadastroClienteContainer');
+    const cancelarCadastroClienteBtn = el('cancelarCadastroClienteBtn');
+    const cadastroClienteForm        = el('cadastroClienteForm');
+
     const novoCustoBtn               = el('novoCustoBtn');
     const custoFormContainer         = el('custoFormContainer');
     const cancelarCustoBtn           = el('cancelarCustoBtn');
@@ -1554,6 +1635,7 @@ if (salvarConfigBtn) {
     let currentMonth = monthSelector ? monthSelector.value : '2026-05';
 
     // ---- Selecionar produto (modal) ----
+
 const selecionarProdutoBtn   = el('selecionarProdutoBtn');
 const fecharModalProdutosBtn = el('fecharModalProdutosBtn');
 
@@ -1567,11 +1649,66 @@ if (fecharModalProdutosBtn) {
     });
 }
 
+   // --- Selecionar cliente (modal) ---
+
+   const selecionarClienteBtn   = el('selecionarClienteBtn');
+const fecharModalClientesBtn = el('fecharModalClientesBtn');
+
+if (selecionarClienteBtn) {
+    selecionarClienteBtn.addEventListener('click', abrirModalClientes);
+}
+
+if (fecharModalClientesBtn) {
+    fecharModalClientesBtn.addEventListener('click', () => {
+        document.getElementById('modalClientes').classList.remove('visible');
+    });
+}
+
+updateClientesDatalist();
+
+
+// ---- Cadastro de cliente (datalist) ----
+
+
+if (novoCadastroCliente) {
+    novoCadastroCliente.addEventListener('click', () => {
+        pedidoFormContainer.classList.remove('visible');
+        cadastroProdutoContainer.classList.remove('visible');
+        cadastroClienteContainer.classList.toggle('visible');
+    });
+}
+
+if (cancelarCadastroClienteBtn) {
+    cancelarCadastroClienteBtn.addEventListener('click', () => {
+        cadastroClienteContainer.classList.remove('visible');
+        if (cadastroClienteForm) cadastroClienteForm.reset();
+    });
+}
+
+if (cadastroClienteForm) {
+    cadastroClienteForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData  = new FormData(cadastroClienteForm);
+        const clientes  = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
+        clientes.push({
+            id:   Date.now(),
+            nome: formData.get('nomeClienteCadastro')
+        });
+        localStorage.setItem('clientesCadastrados', JSON.stringify(clientes));
+        cadastroClienteForm.reset();
+        cadastroClienteContainer.classList.remove('visible');
+        alert('Cliente cadastrado com sucesso!');
+    });
+}
+
+
+
     // ---- Cadastro de produto (datalist) ----
  if (novoCadastroProduto) {
     novoCadastroProduto.addEventListener('click', () => {
         pedidoFormContainer.classList.remove('visible');
         cadastroProdutoContainer.classList.toggle('visible');
+        cadastroClienteContainer.classList.remove('visible');
     });
 }
     if (cancelarCadastroProdutoBtn) {
@@ -1731,6 +1868,7 @@ if (fecharModalProdutosBtn) {
   if (novoPedidoBtn) {
     novoPedidoBtn.addEventListener('click', () => {
         cadastroProdutoContainer.classList.remove('visible');
+        cadastroClienteContainer.classList.remove('visible');
         pedidoFormContainer.classList.toggle('visible');
     });
 }

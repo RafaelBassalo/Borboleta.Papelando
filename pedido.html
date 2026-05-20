@@ -17,14 +17,18 @@
     <p>Use o botão abaixo para cadastrar um novo pedido nesta página.</p>
 
     <!-- Botões de ação -->
-    <div>
-        <button style="text-align: left;" id="novoPedidoBtn" class="action-button">
-            <img src="./imagens/icons8-pedido-processado-100.png" alt=""><br>Novo Pedido
-        </button>
-        <button style="text-align: center;" id="novoCadastroProduto" class="action-button">
-            <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Produto
-        </button>
-    </div>
+   <!-- Botões de ação -->
+<div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+    <button style="text-align: center;" id="novoPedidoBtn" class="action-button">
+        <img src="./imagens/icons8-pedido-processado-100.png" alt=""><br>Novo Pedido
+    </button>
+    <button style="text-align: center;" id="novoCadastroProduto" class="action-button">
+        <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Produto
+    </button>
+    <button style="text-align: center;" id="novoCadastroCliente" class="action-button">
+        <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Cliente
+    </button>
+</div>
 
     <!-- Form: Cadastro de produto -->
     <div id="cadastroProdutoContainer" class="hidden">
@@ -47,6 +51,24 @@
             </div>
         </form>
     </div>
+ 
+
+<div id="cadastroClienteContainer" class="hidden">
+    <form id="cadastroClienteForm">
+        <div class="form-field">
+            <label for="nomeClienteCadastro">Nome do Cliente</label>
+            <input type="text" id="nomeClienteCadastro" name="nomeClienteCadastro" required>
+        </div>
+        <div class="form-actions1">
+            <button type="submit">
+                <img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar
+            </button>
+            <button type="button" id="cancelarCadastroClienteBtn">
+                <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
+            </button>
+        </div>
+    </form>
+</div>
 
     <!-- Form: Novo/Editar pedido -->
     <div id="pedidoFormContainer" class="hidden">
@@ -55,8 +77,14 @@
             <input type="hidden" id="editOriginalMes" name="editOriginalMes" value="">
 
             <div class="form-field">
-                <label for="cliente">Nome do Cliente</label>
-                <input type="text" id="cliente" name="cliente" required>
+                <div class="form-field">
+                  <label for="cliente">Nome do Cliente</label>
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                  <input type="text" id="cliente" name="cliente" placeholder="Digite ou selecione um cliente" required>
+                  <button type="button" id="selecionarClienteBtn">👤 Selecionar</button>
+    </div>
+</div>
+                
             </div>
 
             <div class="form-field">
@@ -125,6 +153,16 @@
             <ul id="listaProdutosCadastrados"></ul>
             <button type="button" id="fecharModalProdutosBtn">Fechar</button>
         </div>
+    </div>
+
+    <!-- Modal: Selecionar cliente cadastrado -->
+
+    <div id="modalClientes">
+       <div class="modal-inner">
+        <h3>Selecionar Cliente</h3>
+        <ul id="listaClientesCadastrados"></ul>
+        <button type="button" id="fecharModalClientesBtn">Fechar</button>
+       </div>
     </div>
 
     <!-- ── Navegação por abas ── -->
