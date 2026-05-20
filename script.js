@@ -74,15 +74,15 @@ function updateProdutosDatalist() {
 
 
  // ── Troca de abas ──────────────────────────────────────
-        function ativarAba(id, btn) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if (btn) btn.classList.add('active');
-            if (id === 'abaFaturamento' && typeof renderFaturamento === 'function') {
-                renderFaturamento();
-            }
-        }
+function ativarAba(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (id === 'abaFaturamento'      && typeof renderFaturamento      === 'function') renderFaturamento();
+    if (id === 'abaPendentes'        && typeof renderPendentes        === 'function') renderPendentes();
+    if (id === 'abaOrcamentosSalvos' && typeof updateOrcamentosSalvosTable === 'function') updateOrcamentosSalvosTable();
+}
 
         // ── Modal: selecionar produto cadastrado ──────────────
         function formatBRLModal(value) {
@@ -526,7 +526,7 @@ function updateOrcamentoTable() {
             document.getElementById('valorProduto').value       = produto.valorProduto;
             document.querySelector('#produtoForm button[type="submit"]').innerHTML =
                 '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Atualizar';
-            produtoFormContainer.classList.add('visible');
+            if (produtoFormContainer) produtoFormContainer.style.display = 'none';
         });
         actionsCell.appendChild(editButton);
 
@@ -1466,6 +1466,65 @@ function renderFaturamento() {
     }
 }
 
+function renderPendentes() {
+    const tbody     = document.getElementById('pendentesTableBody');
+    const totalCell = document.getElementById('pendentesTotalValor');
+    if (!tbody || !totalCell) return;
+
+    const meses = [
+        '2026-01','2026-02','2026-03','2026-04','2026-05','2026-06',
+        '2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'
+    ];
+
+    // Coleta todos os pedidos que não foram entregues
+    const pendentes = [];
+    meses.forEach(mes => {
+        loadPedidos(mes).forEach(pedido => {
+            if (pedido.status !== 'entregue') {
+                pendentes.push(pedido);
+            }
+        });
+    });
+
+    // Ordena por data de entrega
+    pendentes.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+    tbody.innerHTML = '';
+    let total = 0;
+
+    if (pendentes.length === 0) {
+        const row = tbody.insertRow();
+        const cell = row.insertCell(0);
+        cell.colSpan = 6;
+        cell.textContent = 'Nenhum pedido em produção.';
+        cell.style.textAlign = 'center';
+        cell.style.color = '#94a3b8';
+        totalCell.textContent = formatBRL(0);
+        return;
+    }
+
+    pendentes.forEach(pedido => {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = pedido.cliente;
+        row.insertCell(1).textContent = pedido.produto;
+        row.insertCell(2).textContent = formatBRL(pedido.valor);
+        row.insertCell(3).textContent = pedido.data;
+
+        const statusLabels = {
+            pendente:   'Produção',
+            confirmado: 'Confeccionado',
+            entregue:   'Entregue'
+        };
+        row.insertCell(4).textContent = statusLabels[pedido.status] || pedido.status;
+        row.insertCell(5).textContent = pedido.pagamento === 'pago' ? 'Pago' : 'Não pago';
+
+        total += Number(pedido.valor) || 0;
+    });
+
+    totalCell.textContent = formatBRL(total);
+}
+
+
 // ============================================================
 //  INICIALIZAÇÃO DOS EVENTOS (DOM pronto)
 // ============================================================
@@ -1474,6 +1533,8 @@ function renderFaturamento() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    
 
 
     document.addEventListener('keydown', function(e) {
@@ -1623,6 +1684,9 @@ if (salvarConfigBtn) {
     const cancelarCustoBtn           = el('cancelarCustoBtn');
     const custoForm                  = el('custoForm');
 
+    custoFormContainer.style.display   = 'none';
+    produtoFormContainer.style.display = 'none';
+
     const novoPedidoBtn              = el('novoPedidoBtn');
     const pedidoFormContainer        = el('pedidoFormContainer');
     const cancelarPedidoBtn          = el('cancelarPedidoBtn');
@@ -1736,77 +1800,80 @@ if (cadastroClienteForm) {
     }
 
     // ---- Produto do orçamento ----
-    if (novoProdutoBtn) {
-        novoProdutoBtn.addEventListener('click', () => {
-            if (custoFormContainer) custoFormContainer.classList.remove('visible');
-            if (produtoForm) produtoForm.reset();
-            el('produtoId').value = '';
-            document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-                '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
-            produtoFormContainer.classList.toggle('visible');
-        });
-    }
+if (novoProdutoBtn) {
+    novoProdutoBtn.addEventListener('click', () => {
+        if (custoFormContainer) custoFormContainer.style.display = 'none';
+        if (produtoForm) produtoForm.reset();
+        el('produtoId').value = '';
+        document.querySelector('#produtoForm button[type="submit"]').innerHTML =
+            '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
 
-    if (cancelarProdutoBtn) {
-        cancelarProdutoBtn.addEventListener('click', () => {
-            produtoFormContainer.classList.remove('visible');
-        });
-    }
+        const visivel = produtoFormContainer.style.display === 'block';
+        produtoFormContainer.style.display = visivel ? 'none' : 'block';
+    });
+}
+
+if (cancelarProdutoBtn) {
+    cancelarProdutoBtn.addEventListener('click', () => {
+        produtoFormContainer.style.display = 'none';
+    });
+}
 
     if (produtoForm) {
-        produtoForm.addEventListener('submit', event => {
-            event.preventDefault();
-            const formData  = new FormData(produtoForm);
-            const produtos  = loadOrcamentoProdutos();
-            const produtoId = formData.get('produtoId');
+    produtoForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const formData  = new FormData(produtoForm);
+        const produtos  = loadOrcamentoProdutos();
+        const produtoId = formData.get('produtoId');
 
-            if (produtoId) {
-                const index = produtos.findIndex(item => String(item.id) === String(produtoId));
-                if (index !== -1) {
-                    produtos[index] = {
-                        ...produtos[index],
-                        nomeProduto:      formData.get('nomeProduto'),
-                        quantidadePacote: formData.get('quantidadePacote'),
-                        valorProduto:     formData.get('valorProduto')
-                    };
-                }
-            } else {
-                produtos.push({
-                    id:                  Date.now(),
-                    nomeProduto:         formData.get('nomeProduto'),
-                    quantidadePacote:    formData.get('quantidadePacote'),
-                    valorProduto:        formData.get('valorProduto'),
-                    quantidadeUtilizada: 0,
-                    tempoProducao:       0
-                });
+        if (produtoId) {
+            const index = produtos.findIndex(item => String(item.id) === String(produtoId));
+            if (index !== -1) {
+                produtos[index] = {
+                    ...produtos[index],
+                    nomeProduto:      formData.get('nomeProduto'),
+                    quantidadePacote: formData.get('quantidadePacote'),
+                    valorProduto:     formData.get('valorProduto')
+                };
             }
+        } else {
+            produtos.push({
+                id:                  Date.now(),
+                nomeProduto:         formData.get('nomeProduto'),
+                quantidadePacote:    formData.get('quantidadePacote'),
+                valorProduto:        formData.get('valorProduto'),
+                quantidadeUtilizada: 0,
+                tempoProducao:       0
+            });
+        }
 
-            saveOrcamentoProdutos(produtos);
-            updateOrcamentoTable();
-            produtoForm.reset();
-            el('produtoId').value = '';
-            document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-                '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
-            produtoFormContainer.classList.remove('visible');
-        });
-
+        saveOrcamentoProdutos(produtos);
         updateOrcamentoTable();
-        initializeOrcamentoExtras();
-    }
+        produtoForm.reset();
+        el('produtoId').value = '';
+        document.querySelector('#produtoForm button[type="submit"]').innerHTML =
+            '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
+        produtoFormContainer.style.display = 'none'; // ← era classList.remove('visible')
+    });
+
+    updateOrcamentoTable();
+    initializeOrcamentoExtras();
+}
 
     // ---- Custos fixos ----
-    if (novoCustoBtn) {
-        novoCustoBtn.addEventListener('click', () => {
-            if (produtoFormContainer) produtoFormContainer.classList.remove('visible');
-            if (custoFormContainer) custoFormContainer.classList.toggle('visible');
-        });
-    }
+ if (novoCustoBtn) {
+    novoCustoBtn.addEventListener('click', () => {
+        produtoFormContainer.style.display = 'none';
+        custoFormContainer.style.display = 
+            custoFormContainer.style.display === 'none' ? 'block' : 'none';
+    });
+}
 
-    if (cancelarCustoBtn) {
-        cancelarCustoBtn.addEventListener('click', () => {
-            if (custoFormContainer) custoFormContainer.classList.remove('visible');
-        });
-    }
+if (cancelarCustoBtn) {
+    cancelarCustoBtn.addEventListener('click', () => {
+        custoFormContainer.style.display = 'none';
+    });
+}
 
     if (custoForm) {
         // Preenche o formulário com valores salvos
@@ -1841,7 +1908,7 @@ if (cadastroClienteForm) {
             updateConfeccaoTable();
             alert('Custos fixos salvos com sucesso!');
             custoForm.reset();
-            custoFormContainer.classList.remove('visible');
+            custoFormContainer.style.display = 'none';
         });
     }
 

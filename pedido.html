@@ -167,9 +167,11 @@
 
     <!-- ── Navegação por abas ── -->
     <nav class="tab-nav">
-        <button class="tab-btn active" onclick="ativarAba('abaPedidos', this)">🗒️ Pedidos</button>
-        <button class="tab-btn"        onclick="ativarAba('abaResumo',   this)">👤 Resumo por Cliente</button>
-        <button class="tab-btn"        onclick="ativarAba('abaFaturamento', this)">📊 Faturamento</button>
+        <button class="tab-btn active" onclick="ativarAba('abaPedidos',     this)">🗒️ Pedidos</button>
+        <button class="tab-btn"        onclick="ativarAba('abaPendentes',     this)">📦 Em Produção</button>
+        <button class="tab-btn"        onclick="ativarAba('abaResumo',       this)">👤 Resumo por Cliente</button>
+        <button class="tab-btn"        onclick="ativarAba    ('abaFaturamento', this)">📊 Faturamento</button>
+        
     </nav>
 
     <!-- ── Aba 1: Pedidos ── -->
@@ -215,7 +217,31 @@
         </table>
     </div>
 
-    <!-- ── Aba 2: Resumo por cliente ── -->
+    <!-- ── Aba 2: Pendentes ── -->
+<div id="abaPendentes" class="tab-content">
+    <table id="pendentesTable">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Produto</th>
+                <th>Valor</th>
+                <th>Data Entrega</th>
+                <th>Status</th>
+                <th>Pagamento</th>
+            </tr>
+        </thead>
+        <tbody id="pendentesTableBody"></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2"><strong>Total</strong></td>
+                <td id="pendentesTotalValor"><strong>R$ 0,00</strong></td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+    <!-- ── Aba 3: Resumo por cliente ── -->
     <div id="abaResumo" class="tab-content">
         <table id="resumoClientesTable">
             <thead>
@@ -238,7 +264,7 @@
         </table>
     </div>
 
-    <!-- ── Aba 3: Faturamento ── -->
+    <!-- ── Aba 4: Faturamento ── -->
     <div id="abaFaturamento" class="tab-content">
 
         <!-- Cards de resumo -->
