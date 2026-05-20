@@ -58,10 +58,7 @@ function updateProdutosDatalist() {
         datalist.appendChild(option);
     });
 }
-const selecionarProdutoBtn = document.getElementById('selecionarProdutoBtn');
-const modalProdutos = document.getElementById('modalProdutos');
-const fecharModalProdutosBtn = document.getElementById('fecharModalProdutos');
-const listaProdutosCadastrados = document.getElementById('listaProdutosCadastrados');
+
 
  // ── Troca de abas ──────────────────────────────────────
         function ativarAba(id, btn) {
@@ -79,44 +76,84 @@ const listaProdutosCadastrados = document.getElementById('listaProdutosCadastrad
             return (Number(value) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         }
 
-        function abrirModalProdutos() {
-            const modal  = document.getElementById('modalProdutos');
-            const lista  = document.getElementById('listaProdutosCadastrados');
-            const produtos = JSON.parse(localStorage.getItem('produtosCadastrados')) || [];
+ function abrirModalProdutos() {
+    const modal   = document.getElementById('modalProdutos');
+    const lista   = document.getElementById('listaProdutosCadastrados');
+    let produtos  = JSON.parse(localStorage.getItem('produtosCadastrados')) || [];
 
-            lista.innerHTML = '';
+    function renderLista() {
+        lista.innerHTML = '';
 
-            if (fecharModalProdutosBtn) {
-    fecharModalProdutosBtn.addEventListener('click', () => {
-        modalProdutos.classList.add('hidden');
-    });
-}
-
-if (fecharModalProdutosBtn) {
-    fecharModalProdutosBtn.addEventListener('click', fecharModalProdutosFunc);
-}
-
-            if (produtos.length === 0) {
-                lista.innerHTML = '<li class="sem-produtos">Nenhum produto cadastrado ainda.</li>';
-            } else {
-                produtos.forEach(p => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="prod-nome">${p.nome}</span>
-                                    <span class="prod-valor">${formatBRLModal(p.valor)}</span>`;
-                    li.addEventListener('click', () => {
-                        document.getElementById('produto').value = p.nome;
-                        // Preenche o valor automaticamente se o campo estiver vazio
-                        const campoValor = document.getElementById('valor');
-                        if (!campoValor.value) campoValor.value = p.valor;
-                        fecharModalProdutosBtn.click();
-                    });
-                    lista.appendChild(li);
-                });
-            }
-
-            modal.classList.add('visible');
+        if (produtos.length === 0) {
+            lista.innerHTML = '<li class="sem-produtos">Nenhum produto cadastrado ainda.</li>';
+            return;
         }
 
+        produtos.forEach((p, index) => {
+            const li = document.createElement('li');
+            li.style.display         = 'flex';
+            li.style.justifyContent  = 'space-between';
+            li.style.alignItems      = 'center';
+            li.style.gap             = '8px';
+
+            // Nome + valor (clica para selecionar)
+            const info = document.createElement('span');
+            info.style.flex   = '1';
+            info.style.cursor = 'pointer';
+            info.innerHTML = `<span class="prod-nome">${p.nome}</span> 
+                              <span class="prod-valor">${formatBRL(p.valor)}</span>`;
+            info.addEventListener('click', () => {
+                document.getElementById('produto').value = p.nome;
+                const campoValor = document.getElementById('valor');
+                if (campoValor && !campoValor.value) campoValor.value = p.valor;
+                modal.classList.remove('visible');
+            });
+
+            // Botão editar
+            const editBtn = document.createElement('button');
+            editBtn.type      = 'button';
+            editBtn.innerHTML = '✏️';
+            editBtn.style.background = 'none';
+            editBtn.style.border     = 'none';
+            editBtn.style.cursor     = 'pointer';
+            editBtn.addEventListener('click', () => {
+                const novoNome  = prompt('Novo nome:', p.nome);
+                const novoValor = prompt('Novo valor:', p.valor);
+                if (novoNome !== null && novoValor !== null) {
+                    produtos[index].nome  = novoNome.trim();
+                    produtos[index].valor = novoValor;
+                    saveProdutosCadastrados(produtos);
+                    updateProdutosDatalist();
+                    renderLista();
+                }
+            });
+
+            // Botão excluir
+            const delBtn = document.createElement('button');
+            delBtn.type      = 'button';
+            delBtn.innerHTML = '🗑️';
+            delBtn.style.background = 'none';
+            delBtn.style.border     = 'none';
+            delBtn.style.cursor     = 'pointer';
+            delBtn.addEventListener('click', () => {
+                if (confirm(`Excluir "${p.nome}"?`)) {
+                    produtos.splice(index, 1);
+                    saveProdutosCadastrados(produtos);
+                    updateProdutosDatalist();
+                    renderLista();
+                }
+            });
+
+            li.appendChild(info);
+            li.appendChild(editBtn);
+            li.appendChild(delBtn);
+            lista.appendChild(li);
+        });
+    }
+
+    renderLista();
+    modal.classList.add('visible');
+}
         function fecharModalProdutosFunc() {
             document.getElementById('modalProdutos').classList.remove('visible');
         }
@@ -353,6 +390,7 @@ function updateResultadoTable() {
     if (el('lucroValor'))        el('lucroValor').textContent        = formatBRL(valorLucro);
     if (el('markupValor'))       el('markupValor').textContent       = markup.toFixed(2);
 }
+
 
 
 // ============================================================
@@ -1133,22 +1171,54 @@ function updatePedidosTable(month) {
         row.insertCell(1).textContent = pedido.produto;
         row.insertCell(2).textContent = formatBRL(pedido.valor);
         row.insertCell(3).textContent = pedido.data;
-        row.insertCell(4).textContent = pedido.status;
-        row.insertCell(5).textContent = (pedido.pagamento || 'nao_pago') === 'pago' ? 'Pago' : 'Não pago';
+
+        // Status inline
+        const statusSelect = document.createElement('select');
+        statusSelect.innerHTML = `
+            <option value="pendente"   ${pedido.status === 'pendente'   ? 'selected' : ''}>Produção</option>
+            <option value="confirmado" ${pedido.status === 'confirmado' ? 'selected' : ''}>Confeccionado</option>
+            <option value="entregue"   ${pedido.status === 'entregue'   ? 'selected' : ''}>Entregue</option>
+        `;
+        statusSelect.addEventListener('change', () => {
+            const lista = loadPedidos(month);
+            const item  = lista.find(p => String(p.id) === String(pedido.id));
+            if (item) {
+                item.status = statusSelect.value;
+                savePedidos(lista, month);
+            }
+        });
+        row.insertCell(4).appendChild(statusSelect);
+
+        // Pagamento inline
+        const pagSelect = document.createElement('select');
+        pagSelect.innerHTML = `
+            <option value="nao_pago" ${(pedido.pagamento || 'nao_pago') === 'nao_pago' ? 'selected' : ''}>Não pago</option>
+            <option value="pago"     ${pedido.pagamento === 'pago'                      ? 'selected' : ''}>Pago</option>
+        `;
+        pagSelect.addEventListener('change', () => {
+            const lista = loadPedidos(month);
+            const item  = lista.find(p => String(p.id) === String(pedido.id));
+            if (item) {
+                item.pagamento = pagSelect.value;
+                savePedidos(lista, month);
+                updateResumoClientesTable(month);
+            }
+        });
+        row.insertCell(5).appendChild(pagSelect);
 
         const actionsCell = row.insertCell(6);
 
         const editButton = document.createElement('button');
-        editButton.type  = 'button';
+        editButton.type      = 'button';
         editButton.style.cursor = 'pointer';
-        editButton.innerHTML    = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
+        editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
         editButton.addEventListener('click', () => fillPedidoForm(pedido));
         actionsCell.appendChild(editButton);
 
         const deleteButton = document.createElement('button');
-        deleteButton.type  = 'button';
+        deleteButton.type      = 'button';
         deleteButton.style.cursor = 'pointer';
-        deleteButton.innerHTML    = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
+        deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
         deleteButton.addEventListener('click', () => {
             if (!confirm('Deseja realmente excluir este pedido?')) return;
             savePedidos(loadPedidos(month).filter(item => String(item.id) !== String(pedido.id)), month);
@@ -1162,7 +1232,6 @@ function updatePedidosTable(month) {
     totalCell.textContent = formatBRL(total);
     updateResumoClientesTable(month);
 }
-
 
 // ============================================================
 //  FORMULÁRIO DE PEDIDOS
@@ -1196,6 +1265,130 @@ function fillPedidoForm(pedido) {
     if (pedidoFormContainer) pedidoFormContainer.classList.add('visible');
 }
 
+function renderFaturamento() {
+    const meses = [
+        '2026-01','2026-02','2026-03','2026-04','2026-05','2026-06',
+        '2026-07','2026-08','2026-09','2026-10','2026-11','2026-12'
+    ];
+    const nomesMeses = [
+        'Jan','Fev','Mar','Abr','Mai','Jun',
+        'Jul','Ago','Set','Out','Nov','Dez'
+    ];
+
+    // Coleta dados por mês
+    const dados = meses.map((mes, i) => {
+        const pedidos = loadPedidos(mes);
+        const total   = pedidos.reduce((s, p) => s + (Number(p.valor) || 0), 0);
+        const pago    = pedidos.filter(p => p.pagamento === 'pago').reduce((s, p) => s + (Number(p.valor) || 0), 0);
+        const pendente = total - pago;
+        return { mes, nome: nomesMeses[i], total, pago, pendente, qtd: pedidos.length };
+    });
+
+    const comValor   = dados.filter(d => d.total > 0);
+    const totalGeral = dados.reduce((s, d) => s + d.total, 0);
+    const totalPago  = dados.reduce((s, d) => s + d.pago, 0);
+    const media      = comValor.length ? totalGeral / comValor.length : 0;
+    const melhor     = comValor.reduce((a, b) => b.total > a.total ? b : a, comValor[0] || { total: 0, nome: '—' });
+
+    // Último mês com valor
+    const ultimo     = comValor[comValor.length - 1];
+    const penultimo  = comValor[comValor.length - 2];
+
+    // Cards
+    const el = id => document.getElementById(id);
+    if (el('fatCardUltimoLabel'))  el('fatCardUltimoLabel').textContent  = ultimo ? ultimo.nome : '—';
+    if (el('fatCardUltimoMes'))    el('fatCardUltimoMes').textContent    = formatBRL(ultimo ? ultimo.total : 0);
+    if (el('fatCardMelhorValor'))  el('fatCardMelhorValor').textContent  = formatBRL(melhor.total);
+    if (el('fatCardMelhorMes'))    el('fatCardMelhorMes').textContent    = melhor.nome || '—';
+    if (el('fatCardMedia'))        el('fatCardMedia').textContent        = formatBRL(media);
+    if (el('fatCardTotal'))        el('fatCardTotal').textContent        = formatBRL(totalGeral);
+
+    // Variação
+    if (el('fatCardVariacao')) {
+        if (ultimo && penultimo && penultimo.total > 0) {
+            const variacao = ((ultimo.total - penultimo.total) / penultimo.total) * 100;
+            el('fatCardVariacao').textContent = (variacao >= 0 ? '+' : '') + variacao.toFixed(1) + '% vs mês anterior';
+            el('fatCardVariacao').className   = variacao >= 0 ? 'fat-var-up' : 'fat-var-down';
+        } else {
+            el('fatCardVariacao').textContent = '—';
+        }
+    }
+
+    // Tabela
+    const tbody = el('faturamentoTableBody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        dados.forEach((d, i) => {
+            if (d.total === 0 && d.qtd === 0) return;
+            const ant = dados[i - 1];
+            const variacao = ant && ant.total > 0
+                ? ((d.total - ant.total) / ant.total * 100).toFixed(1)
+                : null;
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${d.nome}</td>
+                <td>${d.qtd}</td>
+                <td class="fat-valor">${formatBRL(d.total)}</td>
+                <td class="fat-pago">${formatBRL(d.pago)}</td>
+                <td class="fat-pendente">${formatBRL(d.pendente)}</td>
+                <td>${variacao !== null
+                    ? `<span class="fat-badge ${Number(variacao) >= 0 ? 'fat-badge--up' : 'fat-badge--down'}">${Number(variacao) >= 0 ? '+' : ''}${variacao}%</span>`
+                    : '<span class="fat-badge fat-badge--neutral">—</span>'
+                }</td>
+            `;
+        });
+
+        // Totais
+        const tfoot = el('faturamentoTotaisRow');
+        if (tfoot) {
+            tfoot.innerHTML = `
+                <td><strong>Total</strong></td>
+                <td></td>
+                <td class="fat-valor"><strong>${formatBRL(totalGeral)}</strong></td>
+                <td class="fat-pago"><strong>${formatBRL(totalPago)}</strong></td>
+                <td class="fat-pendente"><strong>${formatBRL(totalGeral - totalPago)}</strong></td>
+                <td></td>
+            `;
+        }
+    }
+
+    // Gráfico SVG simples
+    const wrap = el('faturamentoGrafico');
+    if (wrap && comValor.length > 0) {
+        const W = wrap.clientWidth || 700;
+        const H = 180;
+        const maxVal = Math.max(...dados.map(d => d.total), 1);
+        const barW = Math.floor((W - 60) / meses.length) - 4;
+
+        let bars = '';
+        dados.forEach((d, i) => {
+            const x      = 40 + i * ((W - 60) / meses.length);
+            const hPago  = (d.pago    / maxVal) * (H - 30);
+            const hPend  = (d.pendente / maxVal) * (H - 30);
+            bars += `
+                <rect x="${x}" y="${H - 20 - hPago - hPend}" width="${barW}" height="${hPend}" fill="#f6a623" rx="3"/>
+                <rect x="${x}" y="${H - 20 - hPago}" width="${barW}" height="${hPago}" fill="#3ecf8e" rx="3"/>
+                <text x="${x + barW/2}" y="${H - 4}" text-anchor="middle" class="fat-axis-label">${d.nome}</text>
+            `;
+        });
+
+        // Linha de total
+        const pontos = dados.map((d, i) => {
+            const x = 40 + i * ((W - 60) / meses.length) + barW / 2;
+            const y = H - 20 - (d.total / maxVal) * (H - 30);
+            return `${x},${y}`;
+        }).join(' ');
+
+        wrap.innerHTML = `
+            <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+                ${bars}
+                <polyline points="${pontos}" fill="none" stroke="#4f8ef7" stroke-width="2"/>
+            </svg>
+        `;
+    } else if (wrap) {
+        wrap.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">Nenhum dado encontrado.</p>';
+    }
+}
 
 // ============================================================
 //  INICIALIZAÇÃO DOS EVENTOS (DOM pronto)
@@ -1203,9 +1396,35 @@ function fillPedidoForm(pedido) {
 
 
 
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    
+
+    document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Tab') return;
+
+    const inputs = [
+        ...Array.from(document.querySelectorAll('#orcamentoTableBody input.small-input')),
+        document.querySelector('#confeccaoTableBody input.small-input'),
+        document.querySelector('#resultadoTableBody input[placeholder="Nome do cliente"]'),
+        document.querySelector('#resultadoTableBody input[placeholder="Nome do produto"]')
+    ].filter(Boolean);
+
+    if (inputs.length === 0) return;
+
+    const index = inputs.indexOf(document.activeElement);
+    if (index === -1) return;
+
+    e.preventDefault();
+
+    if (e.shiftKey) {
+        const prev = inputs[index - 1];
+        if (prev) prev.focus();
+    } else {
+        const next = inputs[index + 1];
+        if (next) next.focus();
+    }
+});
 // =====================================
 // CONFIGURAÇÕES EMPRESA
 // =====================================
@@ -1224,112 +1443,60 @@ const salvarConfigBtn =
 
 // Abrir modal
 if (configBtn) {
-
     configBtn.addEventListener('click', () => {
+        const empresaNomeEl = document.getElementById('empresaNome');
+        const whatsappEl    = document.getElementById('whatsappEmpresa');
+        const instagramEl   = document.getElementById('instagramEmpresa');
+        const chavePixEl    = document.getElementById('chavePix');
+        const pixCodeEl     = document.getElementById('pixCode');
 
-        document.getElementById('empresaNome').value =
-            localStorage.getItem('empresaNome') || '';
+        if (empresaNomeEl) empresaNomeEl.value = localStorage.getItem('empresaNome') || '';
+        if (whatsappEl)    whatsappEl.value    = localStorage.getItem('whatsappEmpresa') || '';
+        if (instagramEl)   instagramEl.value   = localStorage.getItem('instagramEmpresa') || '';
+        if (chavePixEl)    chavePixEl.value    = localStorage.getItem('chavePix') || '';
+        if (pixCodeEl)     pixCodeEl.value     = localStorage.getItem('pixCode') || '';
 
-        document.getElementById('whatsappEmpresa').value =
-            localStorage.getItem('whatsappEmpresa') || '';
-
-        document.getElementById('instagramEmpresa').value =
-            localStorage.getItem('instagramEmpresa') || '';
-
-        document.getElementById('chavePix').value =
-            localStorage.getItem('chavePix') || '';
-
-        document.getElementById('pixCode').value =
-            localStorage.getItem('pixCode') || '';
-
-        configModal.classList.remove('hidden');
-
+        configModal.style.display = 'flex';
     });
 }
 
 // Fechar
 if (fecharConfig) {
-
     fecharConfig.addEventListener('click', () => {
-
-        configModal.classList.add('hidden');
-
+        configModal.style.display = 'none';
     });
 }
 
 // Fechar clicando fora
 if (configModal) {
-
     configModal.addEventListener('click', e => {
-
         if (e.target === configModal) {
-
-            configModal.classList.add('hidden');
-
+            configModal.style.display = 'none';
         }
-
     });
 }
 
 // Salvar
 if (salvarConfigBtn) {
-
     salvarConfigBtn.addEventListener('click', () => {
+        localStorage.setItem('empresaNome',      document.getElementById('empresaNome')?.value || '');
+        localStorage.setItem('whatsappEmpresa',  document.getElementById('whatsappEmpresa')?.value || '');
+        localStorage.setItem('instagramEmpresa', document.getElementById('instagramEmpresa')?.value || '');
+        localStorage.setItem('chavePix',         document.getElementById('chavePix')?.value || '');
+        localStorage.setItem('pixCode',          document.getElementById('pixCode')?.value || '');
 
-        localStorage.setItem(
-            'empresaNome',
-            document.getElementById('empresaNome').value
-        );
+        const logoInput = document.getElementById('logoEmpresa');
+        const file = logoInput?.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('logoEmpresa', e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
 
-        localStorage.setItem(
-            'whatsappEmpresa',
-            document.getElementById('whatsappEmpresa').value
-        );
-
-        localStorage.setItem(
-            'instagramEmpresa',
-            document.getElementById('instagramEmpresa').value
-        );
-
-        localStorage.setItem(
-            'chavePix',
-            document.getElementById('chavePix').value
-        );
-
-        localStorage.setItem(
-            'pixCode',
-            document.getElementById('pixCode').value
-        );
-
-         const logoInput =
-          document.getElementById('logoEmpresa');
-
-         const file =
-          logoInput.files[0];
-
-         if (file) {
-
-         const reader = new FileReader();
-
-         reader.onload = function(e) {
-
-         localStorage.setItem(
-            'logoEmpresa',
-            e.target.result
-         );
-
-    };
-
-    reader.readAsDataURL(file);
-
-}
-
-        setTimeout(() => {
-        alert('Configurações salvas!');
-        }, 300);
-
-        configModal.classList.add('hidden');
-
+        setTimeout(() => { alert('Configurações salvas!'); }, 300);
+        configModal.style.display = 'none';
     });
 }
 
@@ -1386,21 +1553,33 @@ if (salvarConfigBtn) {
 
     let currentMonth = monthSelector ? monthSelector.value : '2026-05';
 
+    // ---- Selecionar produto (modal) ----
+const selecionarProdutoBtn   = el('selecionarProdutoBtn');
+const fecharModalProdutosBtn = el('fecharModalProdutosBtn');
+
+if (selecionarProdutoBtn) {
+    selecionarProdutoBtn.addEventListener('click', abrirModalProdutos);
+}
+
+if (fecharModalProdutosBtn) {
+    fecharModalProdutosBtn.addEventListener('click', () => {
+        document.getElementById('modalProdutos').classList.remove('visible');
+    });
+}
+
     // ---- Cadastro de produto (datalist) ----
-    if (novoCadastroProduto) {
-        novoCadastroProduto.addEventListener('click', () => {
-            if (pedidoFormContainer) pedidoFormContainer.classList.remove('visible');
-            cadastroProdutoContainer.classList.toggle('visible');
-        });
-    }
-
+ if (novoCadastroProduto) {
+    novoCadastroProduto.addEventListener('click', () => {
+        pedidoFormContainer.classList.remove('visible');
+        cadastroProdutoContainer.classList.toggle('visible');
+    });
+}
     if (cancelarCadastroProdutoBtn) {
-        cancelarCadastroProdutoBtn.addEventListener('click', () => {
-            cadastroProdutoContainer.classList.remove('visible');
-            if (cadastroProdutoForm) cadastroProdutoForm.reset();
-        });
-    }
-
+    cancelarCadastroProdutoBtn.addEventListener('click', () => {
+        cadastroProdutoContainer.classList.remove('visible');
+        if (cadastroProdutoForm) cadastroProdutoForm.reset();
+    });
+}
     if (cadastroProdutoForm) {
         cadastroProdutoForm.addEventListener('submit', event => {
             event.preventDefault();
@@ -1549,12 +1728,12 @@ if (salvarConfigBtn) {
     updateOrcamentosSalvosTable();
 
     // ---- Pedidos ----
-    if (novoPedidoBtn) {
-        novoPedidoBtn.addEventListener('click', () => {
-            if (cadastroProdutoContainer) cadastroProdutoContainer.classList.remove('visible');
-            pedidoFormContainer.classList.toggle('visible');
-        });
-    }
+  if (novoPedidoBtn) {
+    novoPedidoBtn.addEventListener('click', () => {
+        cadastroProdutoContainer.classList.remove('visible');
+        pedidoFormContainer.classList.toggle('visible');
+    });
+}
 
     if (cancelarPedidoBtn) {
         cancelarPedidoBtn.addEventListener('click', resetPedidoForm);

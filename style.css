@@ -111,7 +111,8 @@ h1{
 
     #pedidoFormContainer,
     #produtoFormContainer,
-    #custoFormContainer {
+    #custoFormContainer
+    #cadastroProdutoContainer {
         width: 100%;
         max-width: 420px;
         margin-top: 20px;
@@ -125,7 +126,8 @@ h1{
 
     #pedidoFormContainer.visible,
     #produtoFormContainer.visible,
-    #custoFormContainer.visible {
+    #custoFormContainer.visible 
+    #cadastroProdutoContainer.visible {
         display: block;
     }
 
@@ -275,7 +277,7 @@ footer a:hover{
 
     background: rgba(0,0,0,0.4);
 
-    display: flex;
+    display: none;
 
     align-items: center;
 
@@ -375,10 +377,7 @@ footer a:hover{
     cursor: pointer;
 }
 
-.hidden {
 
-    display: none;
-}
 
 .logo-upload-label {
 
@@ -450,3 +449,166 @@ footer a:hover{
     transform: scale(1.08);
 
 }
+
+        /* ── Abas ─────────────────────────────────────────── */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #e2e8f0;
+            margin: 24px 0 0;
+        }
+        .tab-btn {
+            padding: 10px 22px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            cursor: pointer;
+            font-size: .92rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: -2px;
+            transition: color .2s, border-color .2s;
+            border-radius: 6px 6px 0 0;
+        }
+        .tab-btn:hover { color: #334155; background: #f8fafc; }
+        .tab-btn.active {
+            color: #1e293b;
+            border-bottom-color: #4f8ef7;
+            background: #fff;
+        }
+        .tab-content { display: none; padding: 24px 0; }
+        .tab-content.active { display: block; animation: fadeIn .25s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Faturamento ───────────────────────────────────── */
+        :root {
+            --fat-pago:        #3ecf8e;
+            --fat-pendente:    #f6a623;
+            --fat-linha:       #4f8ef7;
+            --fat-grid:        #e2e8f0;
+            --fat-card-bg:     #ffffff;
+            --fat-card-shadow: 0 2px 12px rgba(0,0,0,.08);
+            --fat-radius:      12px;
+        }
+        .fat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .fat-card {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .fat-card__label {
+            font-size: .72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #94a3b8;
+        }
+        .fat-card__value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .fat-card__sub { font-size: .8rem; color: #64748b; }
+        .fat-var-up   { color: var(--fat-pago);  font-weight: 600; font-size: .85rem; }
+        .fat-var-down { color: #ef4444;           font-weight: 600; font-size: .85rem; }
+
+        .fat-grafico-wrap {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 20px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .fat-grafico-wrap h3, .fat-tabela-wrap h3 {
+            font-size: .85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: #64748b;
+            margin: 0 0 16px;
+        }
+        .fat-legenda {
+            display: flex;
+            gap: 20px;
+            font-size: .78rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+        .fat-legenda span::before { content: '●'; margin-right: 4px; }
+        .fat-legenda .l-pago::before     { color: var(--fat-pago);     }
+        .fat-legenda .l-pendente::before { color: var(--fat-pendente); }
+        .fat-legenda .l-total::before    { color: var(--fat-linha);    }
+        .fat-axis-label { font-size: 11px; fill: #94a3b8; font-family: inherit; }
+
+        .fat-tabela-wrap {
+            background: var(--fat-card-bg);
+            border-radius: var(--fat-radius);
+            box-shadow: var(--fat-card-shadow);
+            padding: 20px;
+            overflow-x: auto;
+        }
+        .fat-tabela-wrap table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+        .fat-tabela-wrap th {
+            text-align: left;
+            padding: 8px 12px;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #94a3b8;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .fat-tabela-wrap td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+        .fat-tabela-wrap tr:last-child td { border-bottom: none; }
+        .fat-tabela-wrap tr:hover td { background: #f8fafc; }
+        .fat-valor    { font-variant-numeric: tabular-nums; }
+        .fat-pago     { color: #059669; font-weight: 600; }
+        .fat-pendente { color: #d97706; font-weight: 600; }
+        .fat-badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .75rem; font-weight: 700; }
+        .fat-badge--up      { background: #dcfce7; color: #15803d; }
+        .fat-badge--down    { background: #fee2e2; color: #b91c1c; }
+        .fat-badge--neutral { background: #f1f5f9; color: #94a3b8; }
+        #faturamentoTotaisRow td { border-top: 2px solid #e2e8f0; background: #f8fafc; font-weight: 700; }
+
+        /* ── Modal produtos ────────────────────────────────── */
+        #modalProdutos {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            display: none;
+            align-items: center; justify-content: center;
+        }
+        #modalProdutos.visible { display: flex; }
+        #modalProdutos .modal-inner {
+            background: white; padding: 24px; border-radius: 12px;
+            min-width: 320px; max-height: 420px; overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,.18);
+        }
+        #modalProdutos h3 { margin-top: 0; }
+        #listaProdutosCadastrados { list-style: none; padding: 0; margin: 0 0 16px; }
+        #listaProdutosCadastrados li {
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background .15s;
+        }
+        #listaProdutosCadastrados li:hover { background: #f0f9ff; }
+        #listaProdutosCadastrados li .prod-nome { font-weight: 600; color: #1e293b; }
+        #listaProdutosCadastrados li .prod-valor { font-size: .82rem; color: #64748b; }
+        #listaProdutosCadastrados .sem-produtos { color: #94a3b8; font-size: .88rem; padding: 16px 0; text-align: center; }
