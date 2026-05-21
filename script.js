@@ -82,6 +82,11 @@ function ativarAba(id, btn) {
     if (id === 'abaFaturamento'      && typeof renderFaturamento      === 'function') renderFaturamento();
     if (id === 'abaPendentes'        && typeof renderPendentes        === 'function') renderPendentes();
     if (id === 'abaOrcamentosSalvos' && typeof updateOrcamentosSalvosTable === 'function') updateOrcamentosSalvosTable();
+    if (id === 'abaResumo') {
+        const sel = document.getElementById('monthSelectorResumo');
+        const mes = sel ? sel.value : '2026-05';
+        if (typeof updateResumoClientesTable === 'function') updateResumoClientesTable(mes);
+    }
 }
 
         // ── Modal: selecionar produto cadastrado ──────────────
@@ -1313,11 +1318,18 @@ function updatePedidosTable(month) {
 //  FORMULÁRIO DE PEDIDOS
 // ============================================================
 
+function getMesAtual() {
+    const hoje = new Date();
+    const ano  = hoje.getFullYear();
+    const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
+    return `${ano}-${mes}`;
+}
+
 function resetPedidoForm() {
     const pedidoForm = document.getElementById('pedidoForm');
     if (!pedidoForm) return;
     pedidoForm.reset();
-    document.getElementById('mes').value             = '2026-05';
+    document.getElementById('mes').value             = getMesAtual(); // ← era '2026-05'
     document.getElementById('pagamento').value       = 'nao_pago';
     document.getElementById('editId').value          = '';
     document.getElementById('editOriginalMes').value = '';
@@ -1696,7 +1708,8 @@ if (salvarConfigBtn) {
     const limparBtn                  = el('limparOrcamentoBtn');
     const salvarBtn                  = el('salvarOrcamentoBtn');
 
-    let currentMonth = monthSelector ? monthSelector.value : '2026-05';
+    let currentMonth = getMesAtual();
+    if (monthSelector) monthSelector.value = currentMonth;
 
     // ---- Selecionar produto (modal) ----
 
@@ -1951,13 +1964,20 @@ if (novoPedidoBtn) {
         cadastroClienteContainer.classList.add('hidden');
         cadastroClienteContainer.classList.remove('visible');
 
+   
+
         if (pedidoFormContainer.classList.contains('visible')) {
             pedidoFormContainer.classList.remove('visible');
             pedidoFormContainer.classList.add('hidden');
         } else {
             pedidoFormContainer.classList.remove('hidden');
             pedidoFormContainer.classList.add('visible');
+            
+        const mesEl = el('mes');
+        if (mesEl && !el('editId').value) {
+            mesEl.value = getMesAtual();
         }
+    }
     });
 }
 
@@ -1970,12 +1990,30 @@ if (novoPedidoBtn) {
     if (pedidoForm) {
         updatePedidosTable(currentMonth);
 
-        if (monthSelector) {
-            monthSelector.addEventListener('change', () => {
-                currentMonth = monthSelector.value;
-                updatePedidosTable(currentMonth);
-            });
+      if (monthSelector) {
+    monthSelector.addEventListener('change', () => {
+        currentMonth = monthSelector.value;
+        updatePedidosTable(currentMonth);
+
+        // ✅ ADICIONAR: sincroniza o seletor do resumo
+        if (monthSelectorResumo) {
+            monthSelectorResumo.value = currentMonth;
+            updateResumoClientesTable(currentMonth);
         }
+    });
+}
+
+        // ---- Seletor de mês do resumo por cliente ----
+const monthSelectorResumo = el('monthSelectorResumo');
+
+if (monthSelectorResumo) {
+    // Sincroniza com o mês atual ao iniciar
+    monthSelectorResumo.value = currentMonth;
+
+    monthSelectorResumo.addEventListener('change', () => {
+        updateResumoClientesTable(monthSelectorResumo.value);
+    });
+}
 
         pedidoForm.addEventListener('submit', event => {
             event.preventDefault();

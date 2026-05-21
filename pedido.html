@@ -110,7 +110,7 @@
                     <option value="2026-02">Fevereiro 2026</option>
                     <option value="2026-03">Março 2026</option>
                     <option value="2026-04">Abril 2026</option>
-                    <option value="2026-05" selected>Maio 2026</option>
+                    <option value="2026-05">Maio 2026</option>
                     <option value="2026-06">Junho 2026</option>
                     <option value="2026-07">Julho 2026</option>
                     <option value="2026-08">Agosto 2026</option>
@@ -176,23 +176,14 @@
 
     <!-- ── Aba 1: Pedidos ── -->
     <div id="abaPedidos" class="tab-content active">
-        <div style="margin-top: 8px; margin-bottom: 16px;">
-            <label for="monthSelector">Selecionar Mês:</label>
-            <select id="monthSelector">
-                <option value="2026-01">Janeiro 2026</option>
-                <option value="2026-02">Fevereiro 2026</option>
-                <option value="2026-03">Março 2026</option>
-                <option value="2026-04">Abril 2026</option>
-                <option value="2026-05" selected>Maio 2026</option>
-                <option value="2026-06">Junho 2026</option>
-                <option value="2026-07">Julho 2026</option>
-                <option value="2026-08">Agosto 2026</option>
-                <option value="2026-09">Setembro 2026</option>
-                <option value="2026-10">Outubro 2026</option>
-                <option value="2026-11">Novembro 2026</option>
-                <option value="2026-12">Dezembro 2026</option>
-            </select>
-        </div>
+        <div class="filter-bar">
+               <label for="monthSelector">Mês:</label>
+                 <input 
+                   type="month" 
+                   id="monthSelector" 
+                   value="2026-05"
+                  >
+                 </div>
 
         <table id="pedidosTable">
             <thead>
@@ -244,6 +235,14 @@
     <!-- ── Aba 3: Resumo por cliente ── -->
     <div id="abaResumo" class="tab-content">
         <table id="resumoClientesTable">
+            <div class="filter-bar">
+               <label for="monthSelectorResumo">Mês:</label>
+                 <input 
+                   type="month" 
+                   id="monthSelectorResumo" 
+                   value="2026-05"
+                  >
+                 </div>
             <thead>
                 <tr>
                     <th>Cliente</th>
