@@ -1683,9 +1683,9 @@ if (salvarConfigBtn) {
     const custoFormContainer         = el('custoFormContainer');
     const cancelarCustoBtn           = el('cancelarCustoBtn');
     const custoForm                  = el('custoForm');
-
-    custoFormContainer.style.display   = 'none';
-    produtoFormContainer.style.display = 'none';
+ 
+    if (custoFormContainer)   custoFormContainer.style.display   = 'none';
+    if (produtoFormContainer) produtoFormContainer.style.display = 'none';
 
     const novoPedidoBtn              = el('novoPedidoBtn');
     const pedidoFormContainer        = el('pedidoFormContainer');
@@ -1733,18 +1733,26 @@ updateClientesDatalist();
 
 // ---- Cadastro de cliente (datalist) ----
 
-
 if (novoCadastroCliente) {
     novoCadastroCliente.addEventListener('click', () => {
+        pedidoFormContainer.classList.add('hidden');
         pedidoFormContainer.classList.remove('visible');
+        cadastroProdutoContainer.classList.add('hidden');
         cadastroProdutoContainer.classList.remove('visible');
-        cadastroClienteContainer.classList.toggle('visible');
+
+        if (cadastroClienteContainer.classList.contains('visible')) {
+            cadastroClienteContainer.classList.remove('visible');
+            cadastroClienteContainer.classList.add('hidden');
+        } else {
+            cadastroClienteContainer.classList.remove('hidden');
+            cadastroClienteContainer.classList.add('visible');
+        }
     });
 }
-
 if (cancelarCadastroClienteBtn) {
     cancelarCadastroClienteBtn.addEventListener('click', () => {
         cadastroClienteContainer.classList.remove('visible');
+        cadastroClienteContainer.classList.add('hidden');
         if (cadastroClienteForm) cadastroClienteForm.reset();
     });
 }
@@ -1775,12 +1783,14 @@ if (cadastroClienteForm) {
         cadastroClienteContainer.classList.remove('visible');
     });
 }
-    if (cancelarCadastroProdutoBtn) {
+ if (cancelarCadastroProdutoBtn) {
     cancelarCadastroProdutoBtn.addEventListener('click', () => {
         cadastroProdutoContainer.classList.remove('visible');
+        cadastroProdutoContainer.classList.add('hidden');
         if (cadastroProdutoForm) cadastroProdutoForm.reset();
     });
 }
+
     if (cadastroProdutoForm) {
         cadastroProdutoForm.addEventListener('submit', event => {
             event.preventDefault();
@@ -1808,7 +1818,9 @@ if (novoProdutoBtn) {
         document.querySelector('#produtoForm button[type="submit"]').innerHTML =
             '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
 
-        const visivel = produtoFormContainer.style.display === 'block';
+        // ✅ Usa getComputedStyle para pegar o display real (inline + CSS)
+        const displayReal = window.getComputedStyle(produtoFormContainer).display;
+        const visivel = displayReal === 'block';
         produtoFormContainer.style.display = visivel ? 'none' : 'block';
     });
 }
@@ -1932,18 +1944,29 @@ if (cancelarCustoBtn) {
     updateOrcamentosSalvosTable();
 
     // ---- Pedidos ----
-  if (novoPedidoBtn) {
+if (novoPedidoBtn) {
     novoPedidoBtn.addEventListener('click', () => {
+        cadastroProdutoContainer.classList.add('hidden');
         cadastroProdutoContainer.classList.remove('visible');
+        cadastroClienteContainer.classList.add('hidden');
         cadastroClienteContainer.classList.remove('visible');
-        pedidoFormContainer.classList.toggle('visible');
+
+        if (pedidoFormContainer.classList.contains('visible')) {
+            pedidoFormContainer.classList.remove('visible');
+            pedidoFormContainer.classList.add('hidden');
+        } else {
+            pedidoFormContainer.classList.remove('hidden');
+            pedidoFormContainer.classList.add('visible');
+        }
     });
 }
 
-    if (cancelarPedidoBtn) {
-        cancelarPedidoBtn.addEventListener('click', resetPedidoForm);
-    }
-
+   if (cancelarPedidoBtn) {
+    cancelarPedidoBtn.addEventListener('click', () => {
+        pedidoFormContainer.classList.remove('visible');
+        pedidoFormContainer.classList.add('hidden');
+    });
+}
     if (pedidoForm) {
         updatePedidosTable(currentMonth);
 
