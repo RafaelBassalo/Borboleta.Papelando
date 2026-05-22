@@ -125,30 +125,55 @@ p {
         cursor: pointer;
     }
 
-#pedidoFormContainer,
-#produtoFormContainer,
-#custoFormContainer,
-#cadastroProdutoContainer,
-#cadastroClienteContainer {
-    width: 100%;
-    max-width: 420px;
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.45);
-    border-radius: 16px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    background: rgba(255,255,255,0.22);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;      /* ← centraliza verticalmente */
+    justify-content: center;  /* ← centraliza horizontalmente */
+    padding: 0;               /* ← sem padding que empurre */
+    padding-top: 8vh;          /* ← só um pouco de espaço no topo para conforto visual */
+}
+
+.modal-overlay.hidden {
     display: none;
 }
 
-#pedidoFormContainer.visible,
-#produtoFormContainer.visible,
-#custoFormContainer.visible,
-#cadastroProdutoContainer.visible,
-#cadastroClienteContainer.visible {
-    display: block;
+.modal-overlay.visible {
+    display: flex;
+}
+
+.modal-overlay .modal-inner {
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 440px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    align-self: center;   /* ← força centralização mesmo com body interferindo */
+    margin: auto;         /* ← reforça centralização */
+    text-align: left;     /* ← evita herdar text-align: center do body */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #be185d;
+    font-size: 16px;
 }
 
     #modalProdutos:not(.hidden) {

@@ -1551,8 +1551,35 @@ function renderPendentes() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    
+ // Fecha modal ao clicar no overlay
+[
+    'produtoFormContainer',
+    'custoFormContainer', 
+    'pedidoFormContainer',
+    'cadastroProdutoContainer',
+    'cadastroClienteContainer'
+].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener('click', e => {
+            if (e.target === el) {
+                el.classList.remove('visible');
+                el.classList.add('hidden');
+            }
+        });
+    }
+});   
 
+// Adicione no DOMContentLoaded
+document.getElementById('cancelarProdutoBtn2')?.addEventListener('click', () => {
+    produtoFormContainer.classList.remove('visible');
+    produtoFormContainer.classList.add('hidden');
+});
+
+document.getElementById('cancelarCustoBtn2')?.addEventListener('click', () => {
+    custoFormContainer.classList.remove('visible');
+    custoFormContainer.classList.add('hidden');
+});
 
     document.addEventListener('keydown', function(e) {
     if (e.key !== 'Tab') return;
@@ -1701,8 +1728,6 @@ if (salvarConfigBtn) {
     const cancelarCustoBtn           = el('cancelarCustoBtn');
     const custoForm                  = el('custoForm');
  
-    if (custoFormContainer)   custoFormContainer.style.display   = 'none';
-    if (produtoFormContainer) produtoFormContainer.style.display = 'none';
 
     const novoPedidoBtn              = el('novoPedidoBtn');
     const pedidoFormContainer        = el('pedidoFormContainer');
@@ -1830,31 +1855,36 @@ if (cadastroClienteForm) {
     // ---- Produto do orçamento ----
 if (novoProdutoBtn) {
     novoProdutoBtn.addEventListener('click', () => {
-        if (custoFormContainer) custoFormContainer.style.display = 'none';
+        custoFormContainer.classList.add('hidden');
+        custoFormContainer.classList.remove('visible');
         if (produtoForm) produtoForm.reset();
         el('produtoId').value = '';
         document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-            '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
-
-        // ✅ Usa getComputedStyle para pegar o display real (inline + CSS)
-        const displayReal = window.getComputedStyle(produtoFormContainer).display;
-        const visivel = displayReal === 'block';
-        produtoFormContainer.style.display = visivel ? 'none' : 'block';
+            '<i class="ti ti-device-floppy"></i> Salvar';
+        produtoFormContainer.classList.toggle('visible');
+        produtoFormContainer.classList.toggle('hidden');
     });
 }
 
-if (cancelarProdutoBtn) {
-    cancelarProdutoBtn.addEventListener('click', () => {
-        produtoFormContainer.style.display = 'none';
+['cancelarProdutoBtn', 'cancelarProdutoBtn2'].forEach(id => {
+    const btn = el(id);
+    if (btn) btn.addEventListener('click', () => {
+        produtoFormContainer.classList.add('hidden');
+        produtoFormContainer.classList.remove('visible');
+        if (produtoForm) produtoForm.reset();
     });
-}
-
-    if (produtoForm) {
-    produtoForm.addEventListener('submit', event => {
-        event.preventDefault();
-        const formData  = new FormData(produtoForm);
-        const produtos  = loadOrcamentoProdutos();
-        const produtoId = formData.get('produtoId');
+});
+    ['produtoFormContainer', 'custoFormContainer'].forEach(id => {
+    const container = el(id);
+    if (container) {
+        container.addEventListener('click', e => {
+            if (e.target === container) {
+                container.classList.add('hidden');
+                container.classList.remove('visible');
+            }
+        });
+    }
+});
 
         if (produtoId) {
             const index = produtos.findIndex(item => String(item.id) === String(produtoId));

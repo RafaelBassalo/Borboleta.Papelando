@@ -38,98 +38,115 @@
     </button>
 </div>
   
-    <div id="produtoFormContainer"  >
-        <form id="produtoForm">
-            <input type="hidden" id="produtoId" name="produtoId" value="">
-            <div class="form-field">
-                <label for="nomeProduto">Nome do Produto</label>
-                <input type="text" id="nomeProduto" name="nomeProduto" required>
+  <!-- Modal: Novo Produto -->
+    <div id="produtoFormContainer" class="modal-overlay hidden">
+        <div class="modal-inner">
+            <div class="modal-header">
+                <h3>Novo Produto</h3>
+                <button type="button" id="cancelarProdutoBtn" class="btn btn-amber">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="form-field">
-                <label for="quantidadePacote">Quantidade por pacote</label>
-                <input type="number" id="quantidadePacote" name="quantidadePacote" min="1" value="1" required>
-            </div>
-            <div class="form-field">
-                <label for="valorProduto">Valor</label>
-                <input type="number" id="valorProduto" name="valorProduto" min="0" step="0.01" required>
-            </div>
-            <div class="form-actions1">
-    <button type="submit" class="btn btn-verde">
-        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar
-    </button>
-    <button type="button" id="cancelarProdutoBtn" class="btn btn-amber">
-        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
-    </button>
-            </div>
-        </form>
+            <form id="produtoForm">
+                <input type="hidden" id="produtoId" name="produtoId" value="">
+                <div class="form-field">
+                    <label for="nomeProduto">Nome do Produto</label>
+                    <input type="text" id="nomeProduto" name="nomeProduto" required>
+                </div>
+                <div class="form-field">
+                    <label for="quantidadePacote">Quantidade por pacote</label>
+                    <input type="number" id="quantidadePacote" name="quantidadePacote" min="1" value="1" required>
+                </div>
+                <div class="form-field">
+                    <label for="valorProduto">Valor</label>
+                    <input type="number" id="valorProduto" name="valorProduto" min="0" step="0.01" required>
+                </div>
+                <div class="form-actions1">
+                    <button type="submit" class="btn btn-verde">
+                        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar
+                    </button>
+                    <button type="button" id="cancelarProdutoBtn2" class="btn btn-amber">
+                        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     
-    <div id="custoFormContainer">
-        <form id="custoForm">
-            <div class="form-field">
-                <label for="salario">Salário</label>
-                <input type="number" id="salario" name="salario" min="0" step="0.01" required>
+  <!-- Modal: Custos Fixos -->
+    <div id="custoFormContainer" class="modal-overlay hidden">
+        <div class="modal-inner" style="max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3>Custos Fixos</h3>
+                <button type="button" id="cancelarCustoBtn" class="btn btn-amber">
+                    <i class="ti ti-x" aria-hidden="true"></i>
+                </button>
             </div>
-            <div class="form-field">
-                <label for="agua">Água</label>
-                <input type="number" id="agua" name="agua" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="luz">Energia</label>
-                <input type="number" id="luz" name="luz" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="telefone">Telefone</label>
-                <input type="number" id="telefone" name="telefone" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="internet">Internet</label>
-                <input type="number" id="internet" name="internet" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="mei">MEI</label>
-                <input type="number" id="mei" name="mei" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="plano">Plano de Saúde</label>
-                <input type="number" id="plano" name="plano" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="outros">Outros</label>
-                <input type="number" id="outros" name="outros" min="0" step="0.01" required>
-            </div>
-            <div class="form-field">
-                <label for="horasDia">Horas trabalhadas por dia</label>
-                <input type="number" id="horasDia" name="horasDia" min="1" step="0.1" value="8" required>
-            </div>
-            <div class="form-field">
-                <label for="diasMes">Dias trabalhados no mês</label>
-                <input type="number" id="diasMes" name="diasMes" min="1" step="1" value="20" required>
-            </div>
-            <div class="form-field">
-                <label for="markup">Markup</label>
-                <input type="number" id="markup" name="markup" min="1" step="0.01" value="1.33" readonly>
-            </div>
-            <div class="form-field">
-                <label for="investimentoPercent">Investimento empresa (%)</label>
-                <input type="number" id="investimentoPercent" name="investimentoPercent" min="0" step="0.1" value="0" required>
-            </div>
-            <div class="form-field">
-                <label for="lucroPercent">Lucro empresa (%)</label>
-                <input type="number" id="lucroPercent" name="lucroPercent" min="0" step="0.1" value="0" required>
-            </div>
-            <div class="form-actions1">
-    <button type="submit" class="btn btn-verde">
-        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Custos
-    </button>
-    <button type="button" id="cancelarCustoBtn" class="btn btn-amber">
-        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
-    </button>
-            </div>
-        </form>
+            <form id="custoForm">
+                <div class="form-field">
+                    <label for="salario">Salário</label>
+                    <input type="number" id="salario" name="salario" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="agua">Água</label>
+                    <input type="number" id="agua" name="agua" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="luz">Energia</label>
+                    <input type="number" id="luz" name="luz" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="telefone">Telefone</label>
+                    <input type="number" id="telefone" name="telefone" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="internet">Internet</label>
+                    <input type="number" id="internet" name="internet" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="mei">MEI</label>
+                    <input type="number" id="mei" name="mei" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="plano">Plano de Saúde</label>
+                    <input type="number" id="plano" name="plano" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="outros">Outros</label>
+                    <input type="number" id="outros" name="outros" min="0" step="0.01" required>
+                </div>
+                <div class="form-field">
+                    <label for="horasDia">Horas trabalhadas por dia</label>
+                    <input type="number" id="horasDia" name="horasDia" min="1" step="0.1" value="8" required>
+                </div>
+                <div class="form-field">
+                    <label for="diasMes">Dias trabalhados no mês</label>
+                    <input type="number" id="diasMes" name="diasMes" min="1" step="1" value="20" required>
+                </div>
+                <div class="form-field">
+                    <label for="markup">Markup</label>
+                    <input type="number" id="markup" name="markup" min="1" step="0.01" value="1.33" readonly>
+                </div>
+                <div class="form-field">
+                    <label for="investimentoPercent">Investimento empresa (%)</label>
+                    <input type="number" id="investimentoPercent" name="investimentoPercent" min="0" step="0.1" value="0" required>
+                </div>
+                <div class="form-field">
+                    <label for="lucroPercent">Lucro empresa (%)</label>
+                    <input type="number" id="lucroPercent" name="lucroPercent" min="0" step="0.1" value="0" required>
+                </div>
+                <div class="form-actions1">
+                    <button type="submit" class="btn btn-verde">
+                        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Custos
+                    </button>
+                    <button type="button" id="cancelarCustoBtn2" class="btn btn-amber">
+                        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
 <!-- ── Navegação por abas ── -->
 <nav class="tab-nav" style="margin-top: 32px;">
     <button class="tab-btn active" onclick="ativarAba('abaOrcamento', this)">
