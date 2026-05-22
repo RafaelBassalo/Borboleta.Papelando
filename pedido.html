@@ -6,27 +6,40 @@
     <title>Pedidos</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./imagens/borboleta.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
 </head>
 <body>
 
-    <button id="Voltar" class="action-button1" onclick="window.location.href='index.html'">
-        <img src="./imagens/icons8-voltar-100.png" alt="Voltar">
-    </button>
+<button id="Voltar" class="btn btn-azul" onclick="window.location.href='index.html'"
+    style="position: absolute; top: 10px; left: 10px;">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i>Voltar
+</button>
     <h1>Pedidos</h1>
-    <p>Use o botão abaixo para cadastrar um novo pedido nesta página.</p>
+        <div style="margin-top: 32px;">
+    <img 
+        src="./imagens/logo-borboleta- SF.png" 
+        alt="Borboleta Papelando"
+        style="
+            width: 200px;
+            max-width: 85vw;
+            filter: drop-shadow(0 4px 18px rgba(236,72,153,0.18));
+            animation: floatLogo 3.5s ease-in-out infinite;
+        "
+    >
+</div>
 
     <!-- Botões de ação -->
    <!-- Botões de ação -->
 <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
-    <button style="text-align: center;" id="novoPedidoBtn" class="action-button">
-        <img src="./imagens/icons8-pedido-processado-100.png" alt=""><br>Novo Pedido
+    <button id="novoPedidoBtn" class="btn btn-rosa">
+    <i class="ti ti-shopping-bag" aria-hidden="true"></i>Novo Pedido
+</button>
+    <button id="novoCadastroProduto" class="btn btn-azul">
+        <i class="ti ti-package" aria-hidden="true"></i> Cadastrar Produto
     </button>
-    <button style="text-align: center;" id="novoCadastroProduto" class="action-button">
-        <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Produto
-    </button>
-    <button style="text-align: center;" id="novoCadastroCliente" class="action-button">
-        <img src="./imagens/icons8-ordem-de-compra-64.png" alt=""><br>Cadastrar Cliente
+    <button id="novoCadastroCliente" class="btn btn-roxo">
+        <i class="ti ti-user-plus" aria-hidden="true"></i> Cadastrar Cliente
     </button>
 </div>
 
@@ -41,14 +54,14 @@
                 <label for="valorProdutoCadastro">Valor</label>
                 <input type="number" id="valorProdutoCadastro" name="valorProdutoCadastro" min="0" step="0.01" required>
             </div>
-            <div class="form-actions1">
-                <button type="submit">
-                    <img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar
+           <div class="form-actions1">
+                <button type="submit" class="btn btn-verde">
+                    <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar
                 </button>
-                <button type="button" id="cancelarCadastroProdutoBtn">
-                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
+                <button type="button" id="cancelarCadastroProdutoBtn" class="btn btn-amber">
+                    <i class="ti ti-x" aria-hidden="true"></i>Cancelar
                 </button>
-            </div>
+            </div>            
         </form>
     </div>
  
@@ -59,14 +72,14 @@
             <label for="nomeClienteCadastro">Nome do Cliente</label>
             <input type="text" id="nomeClienteCadastro" name="nomeClienteCadastro" required>
         </div>
-        <div class="form-actions1">
-            <button type="submit">
-                <img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar
-            </button>
-            <button type="button" id="cancelarCadastroClienteBtn">
-                <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
-            </button>
-        </div>
+          <div class="form-actions1">
+              <button type="submit" class="btn btn-verde">
+                  <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar
+              </button>
+              <button type="button" id="cancelarCadastroClienteBtn" class="btn btn-amber">
+                  <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+              </button>
+          </div>
     </form>
 </div>
 
@@ -76,24 +89,25 @@
             <input type="hidden" id="editId" name="editId" value="">
             <input type="hidden" id="editOriginalMes" name="editOriginalMes" value="">
 
-            <div class="form-field">
-                <div class="form-field">
-                  <label for="cliente">Nome do Cliente</label>
-                  <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="text" id="cliente" name="cliente" placeholder="Digite ou selecione um cliente" required>
-                  <button type="button" id="selecionarClienteBtn">👤 Selecionar</button>
+<div class="form-field">
+    <label for="cliente">Nome do Cliente</label>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="cliente" name="cliente" placeholder="Digite ou selecione um cliente" required>
+        <button type="button" id="selecionarClienteBtn" class="btn btn-roxo">
+            <i class="ti ti-user-search" aria-hidden="true"></i>Selecionar
+        </button>
     </div>
 </div>
-                
-            </div>
 
-            <div class="form-field">
-                <label for="produto">Produto</label>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <input type="text" id="produto" name="produto" placeholder="Digite ou selecione um produto" required>
-                    <button type="button" id="selecionarProdutoBtn">📋 Selecionar</button>
-                </div>
-            </div>
+<div class="form-field">
+    <label for="produto">Produto</label>
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="produto" name="produto" placeholder="Digite ou selecione um produto" required>
+        <button type="button" id="selecionarProdutoBtn" class="btn btn-azul">
+            <i class="ti ti-list-search" aria-hidden="true"></i>Selecionar
+        </button>
+    </div>
+</div>
 
             <div class="form-field">
                 <label for="valor">Valor Total</label>
@@ -135,14 +149,14 @@
                     <option value="pago">Pago</option>
                 </select>
             </div>
-            <div class="form-actions1">
-                <button type="submit">
-                    <img src="./imagens/icons8-salvar-48.png" alt="Salvar">
-                </button>
-                <button type="button" id="cancelarPedidoBtn">
-                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
-                </button>
-            </div>
+<div class="form-actions1">
+    <button type="submit" class="btn btn-verde">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Pedido
+    </button>
+    <button type="button" id="cancelarPedidoBtn" class="btn btn-amber">
+        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+    </button>
+</div>
         </form>
     </div>
 
@@ -151,27 +165,38 @@
         <div class="modal-inner">
             <h3>Selecionar Produto</h3>
             <ul id="listaProdutosCadastrados"></ul>
-            <button type="button" id="fecharModalProdutosBtn">Fechar</button>
+            <button type="button" id="fecharModalProdutosBtn" class="btn btn-amber">
+    <i class="ti ti-x" aria-hidden="true"></i>Fechar
+</button>
         </div>
     </div>
 
     <!-- Modal: Selecionar cliente cadastrado -->
 
-    <div id="modalClientes">
-       <div class="modal-inner">
+           <div id="modalClientes">
+               <div class="modal-inner">
         <h3>Selecionar Cliente</h3>
         <ul id="listaClientesCadastrados"></ul>
-        <button type="button" id="fecharModalClientesBtn">Fechar</button>
-       </div>
-    </div>
+        <button type="button" id="fecharModalClientesBtn" class="btn btn-amber">
+            <i class="ti ti-x" aria-hidden="true"></i>Fechar
+        </button>
+               </div>
+           </div>
 
     <!-- ── Navegação por abas ── -->
     <nav class="tab-nav">
-        <button class="tab-btn active" onclick="ativarAba('abaPedidos',     this)">🗒️ Pedidos</button>
-        <button class="tab-btn"        onclick="ativarAba('abaPendentes',     this)">📦 Em Produção</button>
-        <button class="tab-btn"        onclick="ativarAba('abaResumo',       this)">👤 Resumo por Cliente</button>
-        <button class="tab-btn"        onclick="ativarAba    ('abaFaturamento', this)">📊 Faturamento</button>
-        
+    <button class="tab-btn active" onclick="ativarAba('abaPedidos', this)">
+        <i class="ti ti-clipboard-list" aria-hidden="true"></i> Pedidos
+    </button>
+    <button class="tab-btn" onclick="ativarAba('abaPendentes', this)">
+        <i class="ti ti-package" aria-hidden="true"></i> Em Produção
+    </button>
+    <button class="tab-btn" onclick="ativarAba('abaResumo', this)">
+        <i class="ti ti-users" aria-hidden="true"></i> Resumo por Cliente
+    </button>
+    <button class="tab-btn" onclick="ativarAba('abaFaturamento', this)">
+        <i class="ti ti-chart-bar" aria-hidden="true"></i> Faturamento
+    </button>
     </nav>
 
     <!-- ── Aba 1: Pedidos ── -->
@@ -233,35 +258,32 @@
 </div>
 
     <!-- ── Aba 3: Resumo por cliente ── -->
-    <div id="abaResumo" class="tab-content">
-        <table id="resumoClientesTable">
-            <div class="filter-bar">
-               <label for="monthSelectorResumo">Mês:</label>
-                 <input 
-                   type="month" 
-                   id="monthSelectorResumo" 
-                   value="2026-05"
-                  >
-                 </div>
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Total Pedidos</th>
-                    <th>Total Pago</th>
-                    <th>Total Devido</th>
-                </tr>
-            </thead>
-            <tbody id="resumoClientesTableBody"></tbody>
-            <tfoot>
-                <tr>
-                    <td><strong>Total geral</strong></td>
-                    <td id="resumoTotalPedidos">R$ 0,00</td>
-                    <td id="resumoTotalPago">R$ 0,00</td>
-                    <td id="resumoTotalDevido">R$ 0,00</td>
-                </tr>
-            </tfoot>
-        </table>
+<div id="abaResumo" class="tab-content">
+    <div class="filter-bar">
+        <label for="monthSelectorResumo">Mês:</label>
+        <input type="month" id="monthSelectorResumo" value="2026-05">
     </div>
+
+    <table id="resumoClientesTable">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Total Pedidos</th>
+                <th>Total Pago</th>
+                <th>Total Devido</th>
+            </tr>
+        </thead>
+        <tbody id="resumoClientesTableBody"></tbody>
+        <tfoot>
+            <tr>
+                <td><strong>Total geral</strong></td>
+                <td id="resumoTotalPedidos">R$ 0,00</td>
+                <td id="resumoTotalPago">R$ 0,00</td>
+                <td id="resumoTotalDevido">R$ 0,00</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
 
     <!-- ── Aba 4: Faturamento ── -->
     <div id="abaFaturamento" class="tab-content">

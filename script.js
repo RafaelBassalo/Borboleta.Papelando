@@ -130,10 +130,9 @@ function ativarAba(id, btn) {
             // Botão editar
             const editBtn = document.createElement('button');
             editBtn.type      = 'button';
-            editBtn.innerHTML = '✏️';
-            editBtn.style.background = 'none';
-            editBtn.style.border     = 'none';
-            editBtn.style.cursor     = 'pointer';
+            editBtn.className = 'btn-icon edit';
+            editBtn.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i>';
+            editBtn.setAttribute('aria-label', 'Editar');
             editBtn.addEventListener('click', () => {
                 const novoNome  = prompt('Novo nome:', p.nome);
                 const novoValor = prompt('Novo valor:', p.valor);
@@ -149,10 +148,9 @@ function ativarAba(id, btn) {
             // Botão excluir
             const delBtn = document.createElement('button');
             delBtn.type      = 'button';
-            delBtn.innerHTML = '🗑️';
-            delBtn.style.background = 'none';
-            delBtn.style.border     = 'none';
-            delBtn.style.cursor     = 'pointer';
+            delBtn.className = 'btn-icon del';
+            delBtn.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+            delBtn.setAttribute('aria-label', 'Excluir');
             delBtn.addEventListener('click', () => {
                 if (confirm(`Excluir "${p.nome}"?`)) {
                     produtos.splice(index, 1);
@@ -203,8 +201,9 @@ function abrirModalClientes() {
 
             const editBtn = document.createElement('button');
             editBtn.type      = 'button';
-            editBtn.innerHTML = '✏️';
-            editBtn.style.cssText = 'background:none;border:none;cursor:pointer;';
+            editBtn.className = 'btn-icon edit';
+            editBtn.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i>';
+            editBtn.setAttribute('aria-label', 'Editar');
             editBtn.addEventListener('click', () => {
                 const novoNome = prompt('Novo nome:', c.nome);
                 if (novoNome !== null && novoNome.trim()) {
@@ -218,8 +217,9 @@ function abrirModalClientes() {
 
             const delBtn = document.createElement('button');
             delBtn.type      = 'button';
-            delBtn.innerHTML = '🗑️';
-            delBtn.style.cssText = 'background:none;border:none;cursor:pointer;';
+            delBtn.className = 'btn-icon del';
+            delBtn.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+            delBtn.setAttribute('aria-label', 'Excluir');
             delBtn.addEventListener('click', () => {
                 if (confirm(`Excluir "${c.nome}"?`)) {
                     const arr = JSON.parse(localStorage.getItem('clientesCadastrados')) || [];
@@ -516,29 +516,32 @@ function updateOrcamentoTable() {
         row.insertCell(3).appendChild(qtdInput);
 
         // Botões: editar e excluir
-        const actionsCell      = row.insertCell(5);
-        actionsCell.style.display = 'flex';
-        actionsCell.style.gap    = '8px';
+         const actionsCell = row.insertCell(5);
+         actionsCell.style.display = 'flex';
+         actionsCell.style.gap = '6px';
+         actionsCell.style.alignItems = 'center';
 
         const editButton = document.createElement('button');
-        editButton.type  = 'button';
-        editButton.className = 'icon-btn';
-        editButton.innerHTML    = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
+        editButton.type = 'button';
+        editButton.className = 'btn-icon edit';
+        editButton.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i>';
+        editButton.setAttribute('aria-label', 'Editar');
         editButton.addEventListener('click', () => {
             document.getElementById('produtoId').value          = produto.id;
             document.getElementById('nomeProduto').value        = produto.nomeProduto;
             document.getElementById('quantidadePacote').value   = produto.quantidadePacote;
             document.getElementById('valorProduto').value       = produto.valorProduto;
             document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-                '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Atualizar';
+                '<i class="ti ti-save" aria-hidden="true"></i>Atualizar';
             if (produtoFormContainer) produtoFormContainer.style.display = 'none';
         });
         actionsCell.appendChild(editButton);
 
         const deleteButton = document.createElement('button');
         deleteButton.type  = 'button';
-        deleteButton.className = 'icon-btn';
-        deleteButton.innerHTML    = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
+        deleteButton.className = 'btn-icon del';
+        deleteButton.innerHTML    = '<i class="ti ti-trash" aria-hidden="true"></i>';
+        deleteButton.setAttribute('aria-label', 'Excluir');
         deleteButton.addEventListener('click', () => {
             saveOrcamentoProdutos(produtos.filter(item => String(item.id) !== String(produto.id)));
             updateOrcamentoTable();
@@ -577,23 +580,23 @@ function updateOrcamentosSalvosTable() {
         row.insertCell(7).textContent = formatBRL(orcamento.total);
         row.insertCell(8).textContent = orcamento.data;
 
-        const actionsCell      = row.insertCell(9);
+        const actionsCell = row.insertCell(9);
         actionsCell.style.display = 'flex';
-        actionsCell.style.gap    = '8px';
+        actionsCell.style.gap = '6px';
+        actionsCell.style.alignItems = 'center';
+        actionsCell.style.flexWrap = 'nowrap';
 
         const transformarButton = document.createElement('button');
         transformarButton.type  = 'button';
-        transformarButton.className = 'icon-btn';
-        transformarButton.innerHTML    =
-            '<img src="./imagens/icons8-ordem-de-compra-64.png" alt="Transformar"> Transformar em Pedido';
+        transformarButton.className = 'btn btn-amber';
+        transformarButton.innerHTML = '<i class="ti ti-transfer" aria-hidden="true"></i> Pedido';
         transformarButton.addEventListener('click', () => transformarEmPedido(orcamento));
         actionsCell.appendChild(transformarButton);
 
         const pdfButton = document.createElement('button');
          pdfButton.type = 'button';
-         pdfButton.className = 'icon-btn';
-         pdfButton.innerHTML =
-         '<img src="./imagens/pdf.png" alt="PDF"> PDF';
+         pdfButton.className = 'btn btn-vermelho';
+         pdfButton.innerHTML = '<i class="ti ti-file-type-pdf" aria-hidden="true"></i> PDF';
          pdfButton.addEventListener('click', () => {
          gerarPDFOrcamentoSalvo(orcamento);
         
@@ -603,9 +606,8 @@ function updateOrcamentosSalvosTable() {
          document.createElement('button');
          whatsappButton.type = 'button';
          whatsappButton.className = 'icon-btn';
-         whatsappButton.style.cursor = 'pointer';
-         whatsappButton.innerHTML =
-         '<img src="./imagens/whatsapp.png" alt="WhatsApp"> WhatsApp';
+         whatsappButton.className = 'btn btn-whats';
+         whatsappButton.innerHTML = '<i class="ti ti-brand-whatsapp" aria-hidden="true"></i> WhatsApp';
          whatsappButton.addEventListener('click', () => {
          compartilharOrcamentoWhatsApp(orcamento);
          });
@@ -616,8 +618,9 @@ actionsCell.appendChild(pdfButton);
 
         const deleteButton = document.createElement('button');
         deleteButton.type  = 'button';
-        deleteButton.className = 'icon-btn';
-        deleteButton.innerHTML    = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
+        deleteButton.className = 'btn-icon del';
+        deleteButton.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+        deleteButton.setAttribute('aria-label', 'Excluir');
         deleteButton.addEventListener('click', () => {
             if (confirm('Tem certeza que deseja excluir este orçamento?')) {
                 deleteOrcamentoSalvo(orcamento.id);
@@ -1291,15 +1294,17 @@ function updatePedidosTable(month) {
 
         const editButton = document.createElement('button');
         editButton.type      = 'button';
-        editButton.style.cursor = 'pointer';
-        editButton.innerHTML = '<img src="./imagens/icons8-editar.gif" alt="Editar">';
+        editButton.className = 'btn-icon edit';
+        editButton.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i>';
+        editButton.setAttribute('aria-label', 'Editar');
         editButton.addEventListener('click', () => fillPedidoForm(pedido));
         actionsCell.appendChild(editButton);
 
         const deleteButton = document.createElement('button');
         deleteButton.type      = 'button';
-        deleteButton.style.cursor = 'pointer';
-        deleteButton.innerHTML = '<img src="./imagens/icons8-botão-excluir.gif" alt="Excluir">';
+        deleteButton.className = 'btn-icon del';
+        deleteButton.innerHTML = '<i class="ti ti-trash" aria-hidden="true"></i>';
+        deleteButton.setAttribute('aria-label', 'Excluir');
         deleteButton.addEventListener('click', () => {
             if (!confirm('Deseja realmente excluir este pedido?')) return;
             savePedidos(loadPedidos(month).filter(item => String(item.id) !== String(pedido.id)), month);

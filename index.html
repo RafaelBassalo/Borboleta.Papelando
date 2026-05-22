@@ -6,21 +6,36 @@
     <title>Borboleta.Papelando - Papelaria Personalizada</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./imagens/borboleta.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     
 </head>
 <body>
     
     <h1>Bem-vindo à Borboleta.Papelando!</h1>
     <p>A sua papelaria personalizada para todas as ocasiões.</p>
+    <div style="margin-top: 32px;">
+    <img 
+        src="./imagens/logo-borboleta- SF.png" 
+        alt="Borboleta Papelando"
+        style="
+            width: 280px;
+            max-width: 85vw;
+            filter: drop-shadow(0 4px 18px rgba(236,72,153,0.18));
+            animation: floatLogo 3.5s ease-in-out infinite;
+        "
+    >
+</div>
     
-    <div class="button-container">
-        <button class="action-button" onclick="window.location.href='orcamento.html'">
-            <img src="./imagens/icons8-orçamento-100.png" alt="Orçamento"> <br>Orçamento
-        </button>
-        <button class="action-button" onclick="window.location.href='pedido.html'">
-            <img src="./imagens/icons8-pedido-processado-100.png" alt="Pedidos"> <br>Pedidos
-        </button>
-    </div>
+    
+<div class="button-container">
+    <button id="Orçamento" class="btn btn-rosa" onclick="window.location.href='orcamento.html'">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i>Orçamento
+    </button>
+    <button id="Pedidos" class="btn btn-azul" onclick="window.location.href='pedido.html'">
+        <i class="ti ti-clipboard-list" aria-hidden="true"></i>Pedidos
+    </button>
+</div>
+    
     <footer>
         <p>Site Criado por <a href="https://www.instagram.com/rafaelbassalo/" target="_blank">Rafael Bassalo</a> para  <a href="https://www.instagram.com/borboleta.papelando/" target="_blank">Borboleta.Papelando</a></p>
     </footer>
@@ -43,54 +58,41 @@
 
         </div>
 
-        <div class="config-body">
+<div class="config-body">
 
-            <label class="logo-upload-label">
-             Logo da Empresa
-             </label>
-
-             <input
-                 type="file"
-                 id="logoEmpresa"
-                 accept="image/*"
-             >
-             
-            <input
-                type="text"
-                id="empresaNome"
-                placeholder="Nome da empresa"
-            >
-
-            <input
-                type="text"
-                id="whatsappEmpresa"
-                placeholder="WhatsApp"
-            >
-
-            <input
-                type="text"
-                id="instagramEmpresa"
-                placeholder="@instagram"
-            >
-
-            <input
-                type="text"
-                id="chavePix"
-                placeholder="Chave PIX"
-            >
-
-            <textarea
-                id="pixCode"
-                placeholder="PIX Copia e Cola"
-            ></textarea>
-
-            <button id="salvarConfigBtn">
-                Salvar
-            </button>
-            
-
+    <div class="form-field">
+        <label for="logoEmpresa">Logo da Empresa</label>
+        <input type="file" id="logoEmpresa" accept="image/*">
     </div>
 
+    <div class="form-field">
+        <label for="empresaNome">Nome da Empresa</label>
+        <input type="text" id="empresaNome" placeholder="Nome da empresa">
+    </div>
+
+    <div class="form-field">
+        <label for="whatsappEmpresa">WhatsApp</label>
+        <input type="text" id="whatsappEmpresa" placeholder="WhatsApp">
+    </div>
+
+    <div class="form-field">
+        <label for="instagramEmpresa">Instagram</label>
+        <input type="text" id="instagramEmpresa" placeholder="@instagram">
+    </div>
+
+    <div class="form-field">
+        <label for="chavePix">Chave PIX</label>
+        <input type="text" id="chavePix" placeholder="Chave PIX">
+    </div>
+
+    <div class="form-field">
+        <label for="pixCode">PIX Copia e Cola</label>
+        <textarea id="pixCode" placeholder="PIX Copia e Cola"></textarea>
+    </div>
+
+    <button id="salvarConfigBtn">Salvar</button>
+
+</div>
     </div>
 
 </div>

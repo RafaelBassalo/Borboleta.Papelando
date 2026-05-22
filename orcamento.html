@@ -6,21 +6,37 @@
     <title>Orçamento</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./imagens/borboleta.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
 
 </head>
 <body>
-    <button id="Voltar" class="action-button1" onclick="window.location.href='index.html'">
-        <img src="./imagens/icons8-voltar-100.png" alt="Voltar">
-    </button>
+    <button id="Voltar" class="btn btn-azul" onclick="window.location.href='index.html'"
+    style="position: absolute; top: 10px; left: 10px;">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i>Voltar
+</button>
     <h1>Orçamento</h1>
-    <p>Cadastre aqui os produtos que você deseja incluir no orçamento.</p>
+    <div style="margin-top: 32px;">
+    <img 
+        src="./imagens/logo-borboleta- SF.png" 
+        alt="Borboleta Papelando"
+        style="
+            width: 200px;
+            max-width: 85vw;
+            filter: drop-shadow(0 4px 18px rgba(236,72,153,0.18));
+            animation: floatLogo 3.5s ease-in-out infinite;
+        "
+    >
+</div>
 
-    <div style="display: flex; gap: 10px; margin-top: 16px;">
-        
-        <button id="novoProdutoBtn" class="action-button"><img src="imagens/icons8-produtos.gif" alt="Produtos"> ,<br>Novo Produto </button>
-        <button id="novoCustoBtn" class="action-button"><img src="imagens/icons8-custos-64.png" alt="Custos"> ,<br>Custos Fixos</button>
-    </div>
+<div style="display: flex; gap: 10px; margin-top: 16px;">
+    <button id="novoProdutoBtn" class="btn btn-rosa">
+        <i class="ti ti-package" aria-hidden="true"></i>Novo Produto
+    </button>
+    <button id="novoCustoBtn" class="btn btn-azul">
+        <i class="ti ti-coin" aria-hidden="true"></i>Custos Fixos
+    </button>
+</div>
   
     <div id="produtoFormContainer"  >
         <form id="produtoForm">
@@ -38,12 +54,12 @@
                 <input type="number" id="valorProduto" name="valorProduto" min="0" step="0.01" required>
             </div>
             <div class="form-actions1">
-                <button type="submit">
-                    <img src="./imagens/icons8-salvar-48.png" alt="Salvar">                  
-                </button>
-                <button type="button" id="cancelarProdutoBtn">
-                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
-                </button>
+    <button type="submit" class="btn btn-verde">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar
+    </button>
+    <button type="button" id="cancelarProdutoBtn" class="btn btn-amber">
+        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+    </button>
             </div>
         </form>
     </div>
@@ -104,20 +120,24 @@
                 <input type="number" id="lucroPercent" name="lucroPercent" min="0" step="0.1" value="0" required>
             </div>
             <div class="form-actions1">
-                <button type="submit">
-                    <img src="./imagens/icons8-salvar-48.png" alt="Salvar">
-                </button>
-                <button type="button" id="cancelarCustoBtn">
-                    <img src="./imagens/icons8-cancelar-50.png" alt="Cancelar">
-                </button>
+    <button type="submit" class="btn btn-verde">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Custos
+    </button>
+    <button type="button" id="cancelarCustoBtn" class="btn btn-amber">
+        <i class="ti ti-x" aria-hidden="true"></i>Cancelar
+    </button>
             </div>
         </form>
     </div>
 
 <!-- ── Navegação por abas ── -->
 <nav class="tab-nav" style="margin-top: 32px;">
-    <button class="tab-btn active" onclick="ativarAba('abaOrcamento', this)">📋 Orçamento</button>
-    <button class="tab-btn"        onclick="ativarAba('abaOrcamentosSalvos', this)">💾 Orçamentos Salvos</button>
+    <button class="tab-btn active" onclick="ativarAba('abaOrcamento', this)">
+        <i class="ti ti-clipboard-list" aria-hidden="true"></i> Orçamento
+    </button>
+    <button class="tab-btn" onclick="ativarAba('abaOrcamentosSalvos', this)">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i> Orçamentos Salvos
+    </button>
 </nav>
 
 <!-- ── Aba 1: Orçamento ── -->
@@ -225,14 +245,14 @@
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 10px; margin-top: 16px;">
-                    <button id="limparOrcamentoBtn" class="modern-btn">
-                        <img src="./imagens/icons8-vassoura-50.png" alt="Limpar Tudo"><br>Limpar Tudo
-                    </button>
-                    <button id="salvarOrcamentoBtn" class="modern-btn">
-                        <img src="./imagens/icons8-salvar-48.png" alt="Salvar Orçamento"><br>Salvar Orçamento
-                    </button>
-                </div>
+                   <div style="display: flex; gap: 10px; margin-top: 16px;">
+    <button id="limparOrcamentoBtn" class="btn btn-amber">
+        <i class="ti ti-eraser" aria-hidden="true"></i>Limpar Tudo
+    </button>
+    <button id="salvarOrcamentoBtn" class="btn btn-verde">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Orçamento
+    </button>
+                   </div>
             </div>
         </div>
     </section>
