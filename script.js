@@ -121,11 +121,12 @@ function ativarAba(id, btn) {
             info.innerHTML = `<span class="prod-nome">${p.nome}</span> 
                               <span class="prod-valor">${formatBRL(p.valor)}</span>`;
             info.addEventListener('click', () => {
-                document.getElementById('produto').value = p.nome;
-                const campoValor = document.getElementById('valor');
-                if (campoValor && !campoValor.value) campoValor.value = p.valor;
-                modal.classList.remove('visible');
-            });
+                 document.getElementById('produto').value = p.nome;
+                 const campoValor = document.getElementById('valor');
+                 if (campoValor && !campoValor.value) campoValor.value = p.valor;
+                 modal.classList.remove('visible');
+                 modal.classList.add('hidden');  // ✅
+             });
 
             // Botão editar
             const editBtn = document.createElement('button');
@@ -195,8 +196,9 @@ function abrirModalClientes() {
             info.style.cssText = 'flex:1;cursor:pointer;';
             info.innerHTML = `<span class="prod-nome">${c.nome}</span>`;
             info.addEventListener('click', () => {
-                document.getElementById('cliente').value = c.nome;
-                modal.classList.remove('visible');
+                 document.getElementById('cliente').value = c.nome;
+                 modal.classList.remove('visible');
+                 modal.classList.add('hidden');  // ✅
             });
 
             const editBtn = document.createElement('button');
@@ -527,14 +529,18 @@ function updateOrcamentoTable() {
         editButton.innerHTML = '<i class="ti ti-edit" aria-hidden="true"></i>';
         editButton.setAttribute('aria-label', 'Editar');
         editButton.addEventListener('click', () => {
-            document.getElementById('produtoId').value          = produto.id;
-            document.getElementById('nomeProduto').value        = produto.nomeProduto;
-            document.getElementById('quantidadePacote').value   = produto.quantidadePacote;
-            document.getElementById('valorProduto').value       = produto.valorProduto;
-            document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-                '<i class="ti ti-save" aria-hidden="true"></i>Atualizar';
-            if (produtoFormContainer) produtoFormContainer.style.display = 'none';
-        });
+    document.getElementById('produtoId').value        = produto.id;
+    document.getElementById('nomeProduto').value      = produto.nomeProduto;
+    document.getElementById('quantidadePacote').value = produto.quantidadePacote;
+    document.getElementById('valorProduto').value     = produto.valorProduto;
+    document.querySelector('#produtoForm button[type="submit"]').innerHTML =
+        '<i class="ti ti-device-floppy"></i> Atualizar';
+
+    // ✅ usar classList em vez de style.display
+    const container = document.getElementById('produtoFormContainer');
+    container.classList.remove('hidden');
+    container.classList.add('visible');
+});
         actionsCell.appendChild(editButton);
 
         const deleteButton = document.createElement('button');
@@ -1752,10 +1758,11 @@ if (selecionarProdutoBtn) {
 
 if (fecharModalProdutosBtn) {
     fecharModalProdutosBtn.addEventListener('click', () => {
-        document.getElementById('modalProdutos').classList.remove('visible');
+        const modal = document.getElementById('modalProdutos');
+        modal.classList.remove('visible');
+        modal.classList.add('hidden');  // ✅
     });
 }
-
    // --- Selecionar cliente (modal) ---
 
    const selecionarClienteBtn   = el('selecionarClienteBtn');
@@ -1767,7 +1774,9 @@ if (selecionarClienteBtn) {
 
 if (fecharModalClientesBtn) {
     fecharModalClientesBtn.addEventListener('click', () => {
-        document.getElementById('modalClientes').classList.remove('visible');
+        const modal = document.getElementById('modalClientes');
+        modal.classList.remove('visible');
+        modal.classList.add('hidden');  // ✅
     });
 }
 
@@ -1796,7 +1805,6 @@ if (cancelarCadastroClienteBtn) {
     cancelarCadastroClienteBtn.addEventListener('click', () => {
         cadastroClienteContainer.classList.remove('visible');
         cadastroClienteContainer.classList.add('hidden');
-        if (cadastroClienteForm) cadastroClienteForm.reset();
     });
 }
 
@@ -1826,11 +1834,10 @@ if (cadastroClienteForm) {
         cadastroClienteContainer.classList.remove('visible');
     });
 }
- if (cancelarCadastroProdutoBtn) {
+if (cancelarCadastroProdutoBtn) {
     cancelarCadastroProdutoBtn.addEventListener('click', () => {
         cadastroProdutoContainer.classList.remove('visible');
         cadastroProdutoContainer.classList.add('hidden');
-        if (cadastroProdutoForm) cadastroProdutoForm.reset();
     });
 }
 
@@ -1852,154 +1859,165 @@ if (cadastroClienteForm) {
         });
     }
 
-    // ---- Produto do orçamento ----
-if (novoProdutoBtn) {
-    novoProdutoBtn.addEventListener('click', () => {
-        custoFormContainer.classList.add('hidden');
-        custoFormContainer.classList.remove('visible');
-        if (produtoForm) produtoForm.reset();
-        el('produtoId').value = '';
-        document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-            '<i class="ti ti-device-floppy"></i> Salvar';
-        produtoFormContainer.classList.toggle('visible');
-        produtoFormContainer.classList.toggle('hidden');
-    });
-}
-
-['cancelarProdutoBtn', 'cancelarProdutoBtn2'].forEach(id => {
-    const btn = el(id);
-    if (btn) btn.addEventListener('click', () => {
-        produtoFormContainer.classList.add('hidden');
-        produtoFormContainer.classList.remove('visible');
-        if (produtoForm) produtoForm.reset();
-    });
-});
-    ['produtoFormContainer', 'custoFormContainer'].forEach(id => {
-    const container = el(id);
-    if (container) {
-        container.addEventListener('click', e => {
-            if (e.target === container) {
-                container.classList.add('hidden');
-                container.classList.remove('visible');
+// ---- Produto do orçamento ----
+    if (novoProdutoBtn) {
+        novoProdutoBtn.addEventListener('click', () => {
+            custoFormContainer.classList.add('hidden');
+            custoFormContainer.classList.remove('visible');
+            if (produtoForm) produtoForm.reset();
+            el('produtoId').value = '';
+            document.querySelector('#produtoForm button[type="submit"]').innerHTML =
+                '<i class="ti ti-device-floppy"></i> Salvar';
+            if (produtoFormContainer.classList.contains('visible')) {
+                produtoFormContainer.classList.remove('visible');
+                produtoFormContainer.classList.add('hidden');
+            } else {
+                produtoFormContainer.classList.remove('hidden');
+                produtoFormContainer.classList.add('visible');
             }
         });
     }
-});
 
-        if (produtoId) {
-            const index = produtos.findIndex(item => String(item.id) === String(produtoId));
-            if (index !== -1) {
-                produtos[index] = {
-                    ...produtos[index],
-                    nomeProduto:      formData.get('nomeProduto'),
-                    quantidadePacote: formData.get('quantidadePacote'),
-                    valorProduto:     formData.get('valorProduto')
-                };
-            }
-        } else {
-            produtos.push({
-                id:                  Date.now(),
-                nomeProduto:         formData.get('nomeProduto'),
-                quantidadePacote:    formData.get('quantidadePacote'),
-                valorProduto:        formData.get('valorProduto'),
-                quantidadeUtilizada: 0,
-                tempoProducao:       0
+    ['cancelarProdutoBtn', 'cancelarProdutoBtn2'].forEach(id => {
+        const btn = el(id);
+        if (btn) btn.addEventListener('click', () => {
+            produtoFormContainer.classList.add('hidden');
+            produtoFormContainer.classList.remove('visible');
+            if (produtoForm) produtoForm.reset();
+        });
+    });
+
+    // Fechar clicando no overlay
+    ['produtoFormContainer', 'custoFormContainer', 'pedidoFormContainer',
+     'cadastroProdutoContainer', 'cadastroClienteContainer'].forEach(id => {
+        const container = el(id);
+        if (container) {
+            container.addEventListener('click', e => {
+                if (e.target === container) {
+                    container.classList.add('hidden');
+                    container.classList.remove('visible');
+                }
             });
         }
-
-        saveOrcamentoProdutos(produtos);
-        updateOrcamentoTable();
-        produtoForm.reset();
-        el('produtoId').value = '';
-        document.querySelector('#produtoForm button[type="submit"]').innerHTML =
-            '<img src="./imagens/icons8-salvar-48.png" alt="Salvar"><br>Salvar';
-        produtoFormContainer.style.display = 'none'; // ← era classList.remove('visible')
     });
 
-    updateOrcamentoTable();
-    initializeOrcamentoExtras();
-}
+    if (produtoForm) {
+        produtoForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const formData  = new FormData(produtoForm);
+            const produtos  = loadOrcamentoProdutos();
+            const produtoId = formData.get('produtoId');
+
+            if (produtoId) {
+                const index = produtos.findIndex(item => String(item.id) === String(produtoId));
+                if (index !== -1) {
+                    produtos[index] = {
+                        ...produtos[index],
+                        nomeProduto:      formData.get('nomeProduto'),
+                        quantidadePacote: formData.get('quantidadePacote'),
+                        valorProduto:     formData.get('valorProduto')
+                    };
+                }
+            } else {
+                produtos.push({
+                    id:                  Date.now(),
+                    nomeProduto:         formData.get('nomeProduto'),
+                    quantidadePacote:    formData.get('quantidadePacote'),
+                    valorProduto:        formData.get('valorProduto'),
+                    quantidadeUtilizada: 0,
+                    tempoProducao:       0
+                });
+            }
+
+            saveOrcamentoProdutos(produtos);
+            updateOrcamentoTable();
+            produtoForm.reset();
+            el('produtoId').value = '';
+            document.querySelector('#produtoForm button[type="submit"]').innerHTML =
+                '<i class="ti ti-device-floppy"></i> Salvar';
+            produtoFormContainer.classList.add('hidden');
+            produtoFormContainer.classList.remove('visible');
+        });
+
+        updateOrcamentoTable();
+        initializeOrcamentoExtras();
+    }
 
     // ---- Custos fixos ----
- if (novoCustoBtn) {
-    novoCustoBtn.addEventListener('click', () => {
-        produtoFormContainer.style.display = 'none';
-        custoFormContainer.style.display = 
-            custoFormContainer.style.display === 'none' ? 'block' : 'none';
-    });
-}
+    if (novoCustoBtn) {
+        novoCustoBtn.addEventListener('click', () => {
+            produtoFormContainer.classList.add('hidden');
+            produtoFormContainer.classList.remove('visible');
+            if (custoFormContainer.classList.contains('visible')) {
+                custoFormContainer.classList.remove('visible');
+                custoFormContainer.classList.add('hidden');
+            } else {
+                custoFormContainer.classList.remove('hidden');
+                custoFormContainer.classList.add('visible');
+            }
+        });
+    }
 
-if (cancelarCustoBtn) {
-    cancelarCustoBtn.addEventListener('click', () => {
-        custoFormContainer.style.display = 'none';
+    ['cancelarCustoBtn', 'cancelarCustoBtn2'].forEach(id => {
+        const btn = el(id);
+        if (btn) btn.addEventListener('click', () => {
+            custoFormContainer.classList.add('hidden');
+            custoFormContainer.classList.remove('visible');
+        });
     });
-}
 
     if (custoForm) {
-        // Preenche o formulário com valores salvos
         const custosFixos = loadCustosFixos();
-        [
-            'salario', 'agua', 'luz', 'telefone', 'internet',
-            'mei', 'plano', 'outros', 'horasDia', 'diasMes',
-            'markup', 'investimentoPercent', 'lucroPercent'
-        ].forEach(campo => {
-            const input = el(campo);
-            if (input) input.value = custosFixos[campo] || '';
-        });
+        ['salario','agua','luz','telefone','internet','mei','plano','outros',
+         'horasDia','diasMes','markup','investimentoPercent','lucroPercent']
+            .forEach(campo => {
+                const input = el(campo);
+                if (input) input.value = custosFixos[campo] || '';
+            });
 
         custoForm.addEventListener('submit', event => {
             event.preventDefault();
             const formData = new FormData(custoForm);
             saveCustosFixos({
-                salario:           formData.get('salario'),
-                agua:              formData.get('agua'),
-                luz:               formData.get('luz'),
-                telefone:          formData.get('telefone'),
-                internet:          formData.get('internet'),
-                mei:               formData.get('mei'),
-                plano:             formData.get('plano'),
-                outros:            formData.get('outros'),
-                horasDia:          formData.get('horasDia'),
-                diasMes:           formData.get('diasMes'),
-                markup:            formData.get('markup'),
+                salario:             formData.get('salario'),
+                agua:                formData.get('agua'),
+                luz:                 formData.get('luz'),
+                telefone:            formData.get('telefone'),
+                internet:            formData.get('internet'),
+                mei:                 formData.get('mei'),
+                plano:               formData.get('plano'),
+                outros:              formData.get('outros'),
+                horasDia:            formData.get('horasDia'),
+                diasMes:             formData.get('diasMes'),
+                markup:              formData.get('markup'),
                 investimentoPercent: formData.get('investimentoPercent'),
-                lucroPercent:      formData.get('lucroPercent')
+                lucroPercent:        formData.get('lucroPercent')
             });
             updateConfeccaoTable();
             alert('Custos fixos salvos com sucesso!');
             custoForm.reset();
-            custoFormContainer.style.display = 'none';
+            custoFormContainer.classList.add('hidden');
+            custoFormContainer.classList.remove('visible');
         });
     }
 
-    // ---- Botões de orçamento (limpar / salvar / pdf) ----
+    // ---- Botões orçamento ----
     if (limparBtn) {
         limparBtn.addEventListener('click', () => {
             if (confirm('Deseja limpar todos os campos do orçamento?')) limparOrcamento();
         });
     }
-
-    if (salvarBtn) {
-        salvarBtn.addEventListener('click', salvarOrcamento);
-    }
-
-    const gerarPdfBtn = document.getElementById('gerarPdfBtn');
-
-     if (gerarPdfBtn) {
-        gerarPdfBtn.addEventListener('click', gerarOrcamentoPDF);
-}
+    if (salvarBtn) salvarBtn.addEventListener('click', salvarOrcamento);
 
     updateOrcamentosSalvosTable();
 
     // ---- Pedidos ----
-if (novoPedidoBtn) {
+ if (novoPedidoBtn) {
     novoPedidoBtn.addEventListener('click', () => {
-        cadastroProdutoContainer.classList.add('hidden');
         cadastroProdutoContainer.classList.remove('visible');
-        cadastroClienteContainer.classList.add('hidden');
+        cadastroProdutoContainer.classList.add('hidden');
         cadastroClienteContainer.classList.remove('visible');
-
-   
+        cadastroClienteContainer.classList.add('hidden');
 
         if (pedidoFormContainer.classList.contains('visible')) {
             pedidoFormContainer.classList.remove('visible');
@@ -2007,16 +2025,16 @@ if (novoPedidoBtn) {
         } else {
             pedidoFormContainer.classList.remove('hidden');
             pedidoFormContainer.classList.add('visible');
-            
-        const mesEl = el('mes');
-        if (mesEl && !el('editId').value) {
-            mesEl.value = getMesAtual();
+
+            const mesEl = el('mes');
+            if (mesEl && !el('editId').value) {
+                mesEl.value = getMesAtual();
+            }
         }
-    }
     });
 }
 
-   if (cancelarPedidoBtn) {
+ if (cancelarPedidoBtn) {
     cancelarPedidoBtn.addEventListener('click', () => {
         pedidoFormContainer.classList.remove('visible');
         pedidoFormContainer.classList.add('hidden');
@@ -2025,36 +2043,30 @@ if (novoPedidoBtn) {
     if (pedidoForm) {
         updatePedidosTable(currentMonth);
 
-      if (monthSelector) {
-    monthSelector.addEventListener('change', () => {
-        currentMonth = monthSelector.value;
-        updatePedidosTable(currentMonth);
-
-        // ✅ ADICIONAR: sincroniza o seletor do resumo
+        const monthSelectorResumo = el('monthSelectorResumo');
         if (monthSelectorResumo) {
             monthSelectorResumo.value = currentMonth;
-            updateResumoClientesTable(currentMonth);
+            monthSelectorResumo.addEventListener('change', () => {
+                updateResumoClientesTable(monthSelectorResumo.value);
+            });
         }
-    });
-}
 
-        // ---- Seletor de mês do resumo por cliente ----
-const monthSelectorResumo = el('monthSelectorResumo');
-
-if (monthSelectorResumo) {
-    // Sincroniza com o mês atual ao iniciar
-    monthSelectorResumo.value = currentMonth;
-
-    monthSelectorResumo.addEventListener('change', () => {
-        updateResumoClientesTable(monthSelectorResumo.value);
-    });
-}
+        if (monthSelector) {
+            monthSelector.addEventListener('change', () => {
+                currentMonth = monthSelector.value;
+                updatePedidosTable(currentMonth);
+                if (monthSelectorResumo) {
+                    monthSelectorResumo.value = currentMonth;
+                    updateResumoClientesTable(currentMonth);
+                }
+            });
+        }
 
         pedidoForm.addEventListener('submit', event => {
             event.preventDefault();
-            const formData     = new FormData(pedidoForm);
-            const editId       = formData.get('editId');
-            const month        = formData.get('mes');
+            const formData      = new FormData(pedidoForm);
+            const editId        = formData.get('editId');
+            const month         = formData.get('mes');
             const originalMonth = formData.get('editOriginalMes') || month;
 
             const pedidoAtual = {
@@ -2085,6 +2097,8 @@ if (monthSelectorResumo) {
 
             alert('Pedido salvo com sucesso!');
             resetPedidoForm();
+            pedidoFormContainer.classList.remove('visible');
+            pedidoFormContainer.classList.add('hidden');
         });
     }
 

@@ -44,8 +44,9 @@
 </div>
 
     <!-- Form: Cadastro de produto -->
-    <div id="cadastroProdutoContainer" class="hidden">
+    <div id="cadastroProdutoContainer" class="modal-overlay hidden">
         <form id="cadastroProdutoForm">
+            
             <div class="form-field">
                 <label for="nomeProdutoCadastro">Nome do Produto</label>
                 <input type="text" id="nomeProdutoCadastro" name="nomeProdutoCadastro" required>
@@ -61,12 +62,13 @@
                 <button type="button" id="cancelarCadastroProdutoBtn" class="btn btn-amber">
                     <i class="ti ti-x" aria-hidden="true"></i>Cancelar
                 </button>
-            </div>            
+            </div>   
+                   
         </form>
     </div>
  
 
-<div id="cadastroClienteContainer" class="hidden">
+<div id="cadastroClienteContainer" class="modal-overlay hidden">
     <form id="cadastroClienteForm">
         <div class="form-field">
             <label for="nomeClienteCadastro">Nome do Cliente</label>
@@ -84,7 +86,7 @@
 </div>
 
     <!-- Form: Novo/Editar pedido -->
-    <div id="pedidoFormContainer" class="hidden">
+    <div id="pedidoFormContainer" class="modal-overlay hidden">
         <form id="pedidoForm">
             <input type="hidden" id="editId" name="editId" value="">
             <input type="hidden" id="editOriginalMes" name="editOriginalMes" value="">
@@ -161,7 +163,7 @@
     </div>
 
     <!-- Modal: Selecionar produto cadastrado -->
-    <div id="modalProdutos" class="hidden">
+    <div id="modalProdutos" class="modal-overlay hidden">
         <div class="modal-inner">
             <h3>Selecionar Produto</h3>
             <ul id="listaProdutosCadastrados"></ul>
@@ -173,7 +175,7 @@
 
     <!-- Modal: Selecionar cliente cadastrado -->
 
-           <div id="modalClientes">
+           <div id="modalClientes" class="modal-overlay hidden">
                <div class="modal-inner">
         <h3>Selecionar Cliente</h3>
         <ul id="listaClientesCadastrados"></ul>
