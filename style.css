@@ -341,7 +341,7 @@ footer a{
 
 footer a:hover{
     text-decoration: underline;
-    color: black;
+    color: #be185d;
 }
 
 .config-btn {
@@ -784,4 +784,58 @@ footer a:hover{
 .filter-bar input[type="month"]:focus {
     border-color: #38bdf8;
     box-shadow: 0 0 0 3px rgba(56,189,248,0.18);
+}
+
+/* =====================================================
+   BADGES DE TIPO
+===================================================== */
+
+.badge-tipo{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    font-size:11px;
+    font-weight:700;
+
+    letter-spacing:.3px;
+}
+
+.badge-direto{
+    background:rgba(56,189,248,.16);
+    color:#0369a1;
+    border:1px solid rgba(56,189,248,.28);
+}
+
+.badge-calculado{
+    background:rgba(244,114,182,.16);
+    color:#be185d;
+    border:1px solid rgba(244,114,182,.28);
+}
+
+.modo-orcamento { display: none; }
+
+
+.sub-modo-btn { opacity: 0.6; }
+.sub-modo-btn.active { opacity: 1; }
+
+.modal-inner .form-field input,
+.modal-inner .form-field input[type="text"],
+.modal-inner .form-field input[type="number"],
+.modal-inner .form-field input[type="date"],
+.modal-inner .form-field select {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+.modal-inner input[type="text"]:focus,
+.modal-inner input[type="number"]:focus,
+.modal-inner select:focus {
+    outline: none;
+    border-color: #a78bfa;
 }

@@ -40,14 +40,15 @@
   
   <!-- Modal: Novo Produto -->
     <div id="produtoFormContainer" class="modal-overlay hidden">
-        <div class="modal-inner">
+        
             <div class="modal-header">
-                <h3>Novo Produto</h3>
+                
                 <button type="button" id="cancelarProdutoBtn" class="btn btn-amber">
                     <i class="ti ti-x" aria-hidden="true"></i>
                 </button>
-            </div>
+            </div>  
             <form id="produtoForm">
+                <h3 style="color: #be185d;">Novo Produto</h3>
                 <input type="hidden" id="produtoId" name="produtoId" value="">
                 <div class="form-field">
                     <label for="nomeProduto">Nome do Produto</label>
@@ -70,20 +71,21 @@
                     </button>
                 </div>
             </form>
-        </div>
+        
     </div>
 
     
   <!-- Modal: Custos Fixos -->
     <div id="custoFormContainer" class="modal-overlay hidden">
-        <div class="modal-inner" style="max-height: 85vh; overflow-y: auto;">
+        
             <div class="modal-header">
-                <h3>Custos Fixos</h3>
+                
                 <button type="button" id="cancelarCustoBtn" class="btn btn-amber">
                     <i class="ti ti-x" aria-hidden="true"></i>
                 </button>
             </div>
             <form id="custoForm">
+                <h3 style="color: #be185d;">Custos Fixos</h3>
                 <div class="form-field">
                     <label for="salario">Salário</label>
                     <input type="number" id="salario" name="salario" min="0" step="0.01" required>
@@ -145,7 +147,7 @@
                     </button>
                 </div>
             </form>
-        </div>
+        
     </div>
 <!-- ── Navegação por abas ── -->
 <nav class="tab-nav" style="margin-top: 32px;">
@@ -157,151 +159,313 @@
     </button>
 </nav>
 
+
 <!-- ── Aba 1: Orçamento ── -->
 <div id="abaOrcamento" class="tab-content active">
-    <section style="margin-top: 32px;">
-        <h2>Orçamento de Produtos e Custos de Arte</h2>
-        <div style="display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;">
-            <div style="flex: 1 1 420px; min-width: 220px; max-width: 50%;">
-                <h3>Itens do Orçamento</h3>
-                <table id="orcamentoTable">
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Qtd por pacote</th>
-                            <th>Valor do pacote</th>
-                            <th>Qtd utilizada</th>
-                            <th>Valor gasto</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orcamentoTableBody"></tbody>
-                    <tfoot>
-                        <tr>
+    <section style="margin-top: 24px;">
+
+        <!-- Sub-abas de modo -->
+        <div style="display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap;">
+            <button class="btn btn-rosa sub-modo-btn active" onclick="ativarModoOrcamento('modoTradicional', this)">
+                <i class="ti ti-calculator"></i> Tradicional
+            </button>
+            <button class="btn btn-azul sub-modo-btn" onclick="ativarModoOrcamento('modoDePedidos', this)">
+                <i class="ti ti-shopping-bag"></i> Produtos Cadastrados
+            </button>
+        </div>
+
+        <!-- MODO TRADICIONAL -->
+        <div id="modoTradicional" class="modo-orcamento">
+            <div style="display:flex; gap:32px; flex-wrap:wrap; align-items:flex-start;">
+                <div style="flex:1 1 420px; min-width:220px; max-width:50%;">
+                    <h3>Materiais Utilizados</h3>
+                    <table id="orcamentoTable">
+                        <thead><tr>
+                            <th>Produto</th><th>Qtd/pacote</th><th>Valor pacote</th>
+                            <th>Qtd utilizada</th><th>Valor gasto</th><th>Ações</th>
+                        </tr></thead>
+                        <tbody id="orcamentoTableBody"></tbody>
+                        <tfoot><tr>
                             <td colspan="4"><strong>Total gasto</strong></td>
                             <td id="orcamentoTotalGasto"><strong>R$ 0,00</strong></td>
                             <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <div style="flex: 0 0 420px; min-width: 360px; display: flex; flex-direction: column; gap: 32px;">
-                <div>
-                    <h3>Custo de Produção</h3>
-                    <table id="confeccaoTable">
-                        <thead>
-                            <tr>
-                                <th>Tempo produção (min)</th>
-                                <th>Custo/h</th>
-                                <th>Valor de produção</th>
-                            </tr>
-                        </thead>
-                        <tbody id="confeccaoTableBody"></tbody>
+                        </tr></tfoot>
                     </table>
                 </div>
-                <div>
-                    <h3>Valor Final do Produto</h3>
-                    <table id="resultadoTable">
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Produto</th>
-                                <th>Valor Material</th>
-                                <th>Valor Produção</th>
-                                <th>Valor Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultadoTableBody"></tbody>
-                    </table>
-                    <div id="resultadoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; justify-content:flex-start; margin-top: 16px;">
-                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
-                            <strong>Markup</strong>
-                            <div id="markupValor">1,33</div>
+                <div style="flex:0 0 420px; min-width:360px; display:flex; flex-direction:column; gap:24px;">
+                    <div>
+                        <h3>Custo de Produção</h3>
+                        <table id="confeccaoTable">
+                            <thead><tr>
+                                <th>Tempo produção (min)</th><th>Custo/h</th><th>Valor produção</th>
+                            </tr></thead>
+                            <tbody id="confeccaoTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h3>Valor Final</h3>
+                        <table id="resultadoTable">
+                            <thead><tr>
+                                <th>Cliente</th><th>Produto</th><th>Mat.</th><th>Prod.</th><th>Total</th>
+                            </tr></thead>
+                            <tbody id="resultadoTableBody"></tbody>
+                        </table>
+                        <div id="resultadoExtras" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;">
+                            <div class="form-field"><strong>Markup</strong><div id="markupValor">1,33</div></div>
+                            <div class="form-field"><strong>Investimento</strong><div id="investimentoValor">R$ 0,00</div></div>
+                            <div class="form-field"><strong>Lucro</strong><div id="lucroValor">R$ 0,00</div></div>
                         </div>
-                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
-                            <strong>Investimento</strong>
-                            <div id="investimentoValor">R$ 0,00</div>
-                        </div>
-                        <div class="form-field" style="min-width: 80px; max-width: 20px;">
-                            <strong>Lucro</strong>
-                            <div id="lucroValor">R$ 0,00</div>
+                        <div id="pedidoExtras" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;">
+                            <div class="form-field" style="min-width:100px;">
+                                <label for="mesPedidoOrcamento">Mês</label>
+                                <select id="mesPedidoOrcamento">
+                                    <option value="2026-01">Jan 2026</option><option value="2026-02">Fev 2026</option>
+                                    <option value="2026-03">Mar 2026</option><option value="2026-04">Abr 2026</option>
+                                    <option value="2026-05" selected>Mai 2026</option><option value="2026-06">Jun 2026</option>
+                                    <option value="2026-07">Jul 2026</option><option value="2026-08">Ago 2026</option>
+                                    <option value="2026-09">Set 2026</option><option value="2026-10">Out 2026</option>
+                                    <option value="2026-11">Nov 2026</option><option value="2026-12">Dez 2026</option>
+                                </select>
+                            </div>
+                            <div class="form-field" style="min-width:100px;">
+                                <label for="statusPedidoOrcamento">Status</label>
+                                <select id="statusPedidoOrcamento">
+                                    <option value="pendente">Produção</option>
+                                    <option value="confirmado">Confeccionado</option>
+                                    <option value="entregue">Entregue</option>
+                                </select>
+                            </div>
+                            <div class="form-field" style="min-width:100px;">
+                                <label for="pagamentoPedidoOrcamento">Pagamento</label>
+                                <select id="pagamentoPedidoOrcamento">
+                                    <option value="nao_pago">Não pago</option>
+                                    <option value="pago">Pago</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div id="pedidoExtras" style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; justify-content:flex-start; margin-top: 16px;">
-                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
-                            <label for="mesPedidoOrcamento">Mês</label>
-                            <select id="mesPedidoOrcamento" name="mesPedidoOrcamento">
-                                <option value="2026-01">Janeiro 2026</option>
-                                <option value="2026-02">Fevereiro 2026</option>
-                                <option value="2026-03">Março 2026</option>
-                                <option value="2026-04">Abril 2026</option>
-                                <option value="2026-05" selected>Maio 2026</option>
-                                <option value="2026-06">Junho 2026</option>
-                                <option value="2026-07">Julho 2026</option>
-                                <option value="2026-08">Agosto 2026</option>
-                                <option value="2026-09">Setembro 2026</option>
-                                <option value="2026-10">Outubro 2026</option>
-                                <option value="2026-11">Novembro 2026</option>
-                                <option value="2026-12">Dezembro 2026</option>
-                            </select>
-                        </div>
-                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
-                            <label for="statusPedidoOrcamento">Status</label>
-                            <select id="statusPedidoOrcamento" name="statusPedidoOrcamento">
-                                <option value="pendente">Produção</option>
-                                <option value="confirmado">Confeccionado</option>
-                                <option value="entregue">Entregue</option>
-                            </select>
-                        </div>
-                        <div class="form-field" style="min-width: 100px; max-width: 100px;">
-                            <label for="pagamentoPedidoOrcamento">Pagamento</label>
-                            <select id="pagamentoPedidoOrcamento" name="pagamentoPedidoOrcamento">
-                                <option value="nao_pago">Não pago</option>
-                                <option value="pago">Pago</option>
-                            </select>
-                        </div>
+                    <div style="display:flex;gap:10px;margin-top:8px;">
+                        <button id="limparOrcamentoBtn" class="btn btn-amber">
+                            <i class="ti ti-eraser"></i> Limpar
+                        </button>
+                        <button id="salvarOrcamentoBtn" class="btn btn-verde">
+                            <i class="ti ti-device-floppy"></i> Salvar Orçamento
+                        </button>
                     </div>
                 </div>
-                   <div style="display: flex; gap: 10px; margin-top: 16px;">
-    <button id="limparOrcamentoBtn" class="btn btn-amber">
-        <i class="ti ti-eraser" aria-hidden="true"></i>Limpar Tudo
-    </button>
-    <button id="salvarOrcamentoBtn" class="btn btn-verde">
-        <i class="ti ti-device-floppy" aria-hidden="true"></i>Salvar Orçamento
-    </button>
-                   </div>
             </div>
         </div>
-    </section>
+
+        
+
+        <!-- MODO DE PEDIDOS -->
+        <div id="modoDePedidos" class="modo-orcamento" style="display:none;">
+    <p style="color:#64748b;font-size:.9rem;">Selecione um produto, defina a quantidade e adicione ao orçamento.</p>
+    
+    <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;">
+        <div class="form-field" style="min-width:200px;">
+            <label>Produto</label>
+            <select id="selectProdutoPedido">
+                <option value="">Selecione um produto...</option>
+            </select>
+        </div>
+        <div class="form-field" style="min-width:80px;">
+            <label>Quantidade</label>
+            <input type="number" id="qtdProdutoPedido" min="1" value="1" style="width:80px;">
+        </div>
+        <button class="btn btn-roxo" onclick="adicionarItemPedidoOrcamento()">
+            <i class="ti ti-plus"></i> Adicionar
+        </button>
+    </div>
+
+    <table>
+        <thead><tr>
+            <th>Produto</th><th>Qtd</th><th>Valor Unit.</th><th>Total</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="itensPedidosOrcamentoBody"></tbody>
+    </table>
+
+    <div style="padding:16px;background:#f8fafc;border-radius:10px;margin:12px 0;">
+        <strong>Total: <span id="totalPedidosOrcamento">R$ 0,00</span></strong>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="form-field" style="min-width:140px;">
+            <label>Nome do Cliente</label>
+            <input type="text" id="clientePedidosOrc" placeholder="Nome do cliente">
+        </div>
+        <div class="form-field" style="min-width:140px;">
+            <label>Produto/Descrição</label>
+            <input type="text" id="produtoPedidosOrc" placeholder="Descrição geral">
+        </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-amber" onclick="limparItensPedidosOrcamento()">
+            <i class="ti ti-eraser"></i> Limpar
+        </button>
+        <button class="btn btn-verde" onclick="salvarOrcamentoDePedidos()">
+            <i class="ti ti-device-floppy"></i> Salvar Orçamento
+        </button>
+    </div>
 </div>
 
+    </section>
+</div>
 <!-- ── Aba 2: Orçamentos Salvos ── -->
 <div id="abaOrcamentosSalvos" class="tab-content">
     <section style="margin-top: 32px;">
         <h2>Orçamentos Salvos</h2>
-        <table id="orcamentosSalvosTable">
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Produto</th>
-                    <th>Mês</th>
-                    <th>Status</th>
-                    <th>Pagamento</th>
-                    <th>Valor Material</th>
-                    <th>Valor Produção</th>
-                    <th>Valor Total</th>
-                    <th>Data</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody id="orcamentosSalvosBody"></tbody>
-        </table>
-    </section>
+        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+    <button id="btnUnificarOrcamentos" class="btn btn-roxo" style="display:none;" onclick="unificarOrcamentosSelecionados('pdf')">
+        <i class="ti ti-files"></i> Unificar em PDF
+    </button>
+    <button id="btnUnificarOrcamentosWhats" class="btn btn-whats" style="display:none;" onclick="unificarOrcamentosSelecionados('whatsapp')">
+        <i class="ti ti-brand-whatsapp"></i> Unificar e Enviar WhatsApp
+    </button>
+</div>
+<table id="orcamentosSalvosTable">
+    <thead><tr>
+        <th><input type="checkbox" id="checkTodos" onclick="toggleTodosChecks(this)"></th>
+        <th>Cliente</th><th>Produto</th><th>Mês</th><th>Status</th>
+        <th>Pagamento</th><th>Material</th><th>Produção</th><th>Total</th><th>Data</th><th>Ações</th>
+    </tr></thead>
+    <tbody id="orcamentosSalvosBody"></tbody>
+</table>
+</div>
+<!-- ===================================================== -->
+<!-- MODAL BUSCAR PEDIDOS -->
+<!-- ===================================================== -->
+
+<div id="modalPedidos" class="modal-overlay hidden">
+
+    <div class="modal-inner" style="max-width:700px;">
+
+        <div class="modal-header">
+
+            <h3>Buscar Itens dos Pedidos</h3>
+
+            <button
+                class="btn btn-amber"
+                onclick="fecharModalPedidos()">
+
+                <i class="ti ti-x"></i>
+
+            </button>
+
+        </div>
+
+        <div id="listaPedidos"
+            style="
+                display:flex;
+                flex-direction:column;
+                gap:12px;
+            ">
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ===================================================== -->
+<!-- MODAL ITEM MULTI -->
+<!-- ===================================================== -->
+
+<div id="itemOrcamentoModal" class="modal-overlay hidden">
+
+    <div class="modal-inner" style="max-width:650px;">
+
+        <div class="modal-header">
+
+            <h3>Novo Item</h3>
+
+            <button
+                class="btn btn-amber"
+                onclick="fecharFormItemOrcamento()">
+
+                <i class="ti ti-x"></i>
+
+            </button>
+
+        </div>
+
+        <div class="form-field">
+
+            <label>Tipo</label>
+
+            <select id="tipoItem">
+
+                <option value="direto">Direto</option>
+
+                <option value="calculado">Calculado</option>
+
+            </select>
+
+        </div>
+
+        <div class="form-field">
+
+            <label>Descrição</label>
+
+            <input type="text" id="nomeItem">
+
+        </div>
+
+        <div class="form-field">
+
+            <label>Quantidade</label>
+
+            <input
+                type="number"
+                id="quantidadeItem"
+                value="1"
+                min="1">
+
+        </div>
+
+        <div class="form-field">
+
+            <label>Valor Unitário</label>
+
+            <input
+                type="number"
+                id="valorUnitarioItem"
+                step="0.01">
+
+        </div>
+
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            gap:10px;
+            margin-top:20px;
+        ">
+
+            <button
+                class="btn btn-amber"
+                onclick="fecharFormItemOrcamento()">
+
+                Cancelar
+
+            </button>
+
+            <button
+                class="btn btn-verde"
+                onclick="salvarItemOrcamento()">
+
+                Salvar
+
+            </button>
+
+        </div>
+
+    </div>
+
 </div>
 
 
 
     <script src="script.js"></script>
+    <script src="orcamento-multi-item.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </body>

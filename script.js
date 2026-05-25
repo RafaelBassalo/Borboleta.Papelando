@@ -1547,6 +1547,15 @@ function renderPendentes() {
     totalCell.textContent = formatBRL(total);
 }
 
+function initOrcamentoMulti(){
+
+    renderItensOrcamento();
+
+    renderResumoOrcamento();
+
+}
+
+
 
 // ============================================================
 //  INICIALIZAÇÃO DOS EVENTOS (DOM pronto)
@@ -2101,5 +2110,10 @@ if (cancelarCadastroProdutoBtn) {
             pedidoFormContainer.classList.add('hidden');
         });
     }
+
+    initOrcamentoMulti();
+
+    const modoInicial = document.getElementById('modoTradicional');
+if (modoInicial) modoInicial.style.display = 'block';
 
 }); // fim DOMContentLoaded
