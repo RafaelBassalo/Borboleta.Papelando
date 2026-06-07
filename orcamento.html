@@ -316,23 +316,25 @@
     <section style="margin-top: 32px;">
         <h2>Orçamentos Salvos</h2>
         <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-    <button id="btnUnificarOrcamentos" class="btn btn-roxo" style="display:none;" onclick="unificarOrcamentosSelecionados('pdf')">
-        <i class="ti ti-files"></i> Unificar em PDF
-    </button>
-    <button id="btnUnificarOrcamentosWhats" class="btn btn-whats" style="display:none;" onclick="unificarOrcamentosSelecionados('whatsapp')">
-        <i class="ti ti-brand-whatsapp"></i> Unificar e Enviar WhatsApp
-    </button>
-</div>
-<table id="orcamentosSalvosTable">
-    <thead><tr>
-        <th><input type="checkbox" id="checkTodos" onclick="toggleTodosChecks(this)"></th>
-        <th>Cliente</th><th>Produto</th><th>Mês</th><th>Status</th>
-        <th>Pagamento</th><th>Material</th><th>Produção</th><th>Total</th><th>Data</th><th>Ações</th>
-    </tr></thead>
-    <tbody id="orcamentosSalvosBody"></tbody>
-</table>
-</div>
-<!-- ===================================================== -->
+            <button id="btnUnificarOrcamentos" class="btn btn-roxo" style="display:none;" onclick="unificarOrcamentosSelecionados('pdf')">
+                <i class="ti ti-files"></i> Unificar em PDF
+            </button>
+            <button id="btnUnificarOrcamentosWhats" class="btn btn-whats" style="display:none;" onclick="unificarOrcamentosSelecionados('whatsapp')">
+                <i class="ti ti-brand-whatsapp"></i> Unificar e Enviar WhatsApp
+            </button>
+        </div>
+        <table id="orcamentosSalvosTable">
+            <thead><tr>
+                <th><input type="checkbox" id="checkTodos" onclick="toggleTodosChecks(this)"></th>
+                <th>Cliente</th><th>Produto</th><th>Mês</th><th>Status</th>
+                <th>Pagamento</th><th>Material</th><th>Produção</th><th>Total</th><th>Data</th><th>Ações</th>
+            </tr></thead>
+            <tbody id="orcamentosSalvosBody"></tbody>
+        </table>
+    </section>
+</div> 
+
+
 <!-- MODAL BUSCAR PEDIDOS -->
 <!-- ===================================================== -->
 

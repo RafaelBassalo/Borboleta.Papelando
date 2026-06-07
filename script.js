@@ -810,393 +810,149 @@ function initializeOrcamentoExtras() {
 async function gerarPDFOrcamentoSalvo(orcamento) {
 
     const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-   const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4'
-   });
+    const cliente    = orcamento.cliente || 'Cliente';
+    const produto    = orcamento.produto || 'Produto';
+    const total      = Number(orcamento.total) || 0;
+    const data       = orcamento.data || '';
+    const validade   = '5 dias';
+    const pixCode    = localStorage.getItem('pixCode') || '';
+    const chavePix   = localStorage.getItem('chavePix') || '';
+    const whatsapp   = localStorage.getItem('whatsappEmpresa') || '';
+    const instagram  = localStorage.getItem('instagramEmpresa') || '';
+    const empresaNome = localStorage.getItem('empresaNome') || 'Minha Empresa';
+    const logoEmpresa = localStorage.getItem('logoEmpresa');
 
-    // =========================================
-    // DADOS
-    // =========================================
-
-    const cliente =
-        orcamento.cliente || 'Cliente';
-
-    const produto =
-        orcamento.produto || 'Produto';
-
-    const total =
-        Number(orcamento.total) || 0;
-
-    const data =
-        orcamento.data || '';
-
-    const validade = '5 dias';
-
-    // PIX
-    const pixCode =
-        localStorage.getItem('pixCode') || '';
-
-    const chavePix =
-        localStorage.getItem('chavePix') || '';
-
-    const whatsapp =
-        localStorage.getItem('whatsappEmpresa') || '';
-
-    const instagram =
-        localStorage.getItem('instagramEmpresa') || '';
-
-    // =========================================
-    // FUNDO
-    // =========================================
-
-    doc.setFillColor(248, 248, 248);
-
+    // ── Fundo ──
+    doc.setFillColor(178, 240, 224);
     doc.rect(0, 0, 210, 297, 'F');
 
-    // =========================================
-    // TOPO
-    // =========================================
-
+    // Overlay branco semi-transparente para clarear e suavizar
     doc.setFillColor(255, 255, 255);
+    doc.setGState(new doc.GState({ opacity: 0.45 }));
+    doc.rect(0, 0, 210, 297, 'F');
+    doc.setGState(new doc.GState({ opacity: 1 }));
 
+    // ── Cabeçalho ──
+    doc.setFillColor(255, 255, 255);
     doc.setDrawColor(235);
     doc.setLineWidth(0.3);
+    doc.roundedRect(10, 10, 190, 34, 6, 6, 'F');
 
-    doc.roundedRect(
-        10,
-        10,
-        190,
-        38,
-        6,
-        6,
-        'F'
-    );
-
-    // LOGO
-    doc.setDrawColor(220);
-
-    const empresaNome =
-    localStorage.getItem('empresaNome') || 'Minha Empresa';
-
-doc.setFontSize(18);
-
-doc.setTextColor(40);
-
-doc.text(
-    empresaNome,
-    68,
-    26
-);
-
-   const logoEmpresa =
-    localStorage.getItem('logoEmpresa');
-
-if (logoEmpresa) {
-
-    doc.addImage(
-        logoEmpresa,
-        logoEmpresa.includes('image/png') ? 'PNG' : 'JPEG',
-        18,
-        14,
-        42,
-        28
-    );
-
-} else {
-
-    doc.setDrawColor(220);
-
-    doc.roundedRect(
-        18,
-        17,
-        42,
-        24,
-        4,
-        4
-    );
-
-    doc.setFontSize(10);
-
-    doc.setTextColor(120);
-
-    doc.text(
-        'LOGO DA EMPRESA',
-        21,
-        30
-    );
-
-}
-
-  
-
-    // TÍTULO
-    doc.setFontSize(24);
-
-    doc.setTextColor(40);
-
-    doc.text(
-        'ORÇAMENTO',
-        128,
-        30
-    );
-
-    // =========================================
-    // CLIENTE
-    // =========================================
-
-    doc.setFillColor(255, 255, 255);
-
-    doc.roundedRect(
-        10,
-        58,
-        190,
-        42,
-        5,
-        5,
-        'F'
-    );
-
-    doc.setFontSize(12);
-
-    doc.setTextColor(60);
-
-    doc.text(
-        `Cliente: ${cliente}`,
-        18,
-        74
-    );
-
-    doc.text(
-        `Data: ${data}`,
-        18,
-        84
-    );
-
-    doc.text(
-        `Validade: ${validade}`,
-        120,
-        84
-    );
-
-    // =========================================
-    // PRODUTO
-    // =========================================
-
-    doc.setFillColor(255, 255, 255);
-
-    doc.roundedRect(
-        10,
-        110,
-        190,
-        55,
-        5,
-        5,
-        'F'
-    );
-
-    doc.setFontSize(15);
-
-    doc.setTextColor(30);
-
-    doc.text(
-        'Descrição do Produto',
-        18,
-        128
-    );
-
-    doc.setDrawColor(235);
-
-    doc.line(18, 133, 188, 133);
-
-    doc.setFontSize(12);
-
-    doc.setTextColor(70);
-
-    doc.text(
-        produto,
-        18,
-        148
-    );
-
-    // =========================================
-    // VALOR
-    // =========================================
-
-    doc.setFillColor(255, 255, 255);
-
-    doc.roundedRect(
-        10,
-        178,
-        92,
-        60,
-        5,
-        5,
-        'F'
-    );
-
-    doc.setFontSize(12);
-
-    doc.setTextColor(120);
-
-    doc.text(
-        'VALOR TOTAL',
-        18,
-        198
-    );
-
-    doc.setFontSize(24);
-
-    doc.setTextColor(20);
-
-    doc.text(
-        formatBRL(total),
-        18,
-        220
-    );
-
-    // =========================================
-    // QR CODE PIX
-    // =========================================
-
-    doc.setFillColor(255, 255, 255);
-
-    doc.roundedRect(
-        112,
-        178,
-        88,
-        60,
-        5,
-        5,
-        'F'
-    );
-
-    if (pixCode) {
-
-        const qrContainer =
-            document.createElement('div');
-
-        new QRCode(qrContainer, {
-            text: pixCode,
-            width: 120,
-            height: 120
-        });
-
-        const qrImage =
-            qrContainer.querySelector('img');
-
-        if (qrImage) {
-
-            await new Promise(resolve => {
-                qrImage.onload = resolve;
-            });
-
-            doc.addImage(
-                qrImage.src,
-                'PNG',
-                138,
-                186,
-                35,
-                35
-            );
-        }
-
-        doc.setFontSize(10);
-
-        doc.setTextColor(100);
-
-        doc.text(
-            'Pagamento via PIX',
-            132,
-            230
-        );
+    if (logoEmpresa) {
+        doc.addImage(logoEmpresa,
+            logoEmpresa.includes('image/png') ? 'PNG' : 'JPEG',
+            14, 13, 36, 24);
+    } else {
+        doc.setFontSize(9);
+        doc.setTextColor(120);
+        doc.text('LOGO', 18, 28);
     }
 
-    // =========================================
-    // CHAVE PIX
-    // =========================================
+    doc.setFontSize(16);
+    doc.setTextColor(40);
+    doc.text(empresaNome, 58, 24);
 
+    doc.setFontSize(20);
+    doc.text('ORÇAMENTO', 130, 30);
+
+    // ── Cliente ──
     doc.setFillColor(255, 255, 255);
-
-    doc.roundedRect(
-        10,
-        248,
-        190,
-        20,
-        5,
-        5,
-        'F'
-    );
-
+    doc.roundedRect(10, 50, 190, 22, 5, 5, 'F');
     doc.setFontSize(11);
+    doc.setTextColor(60);
+    doc.text(`Cliente: ${cliente}`, 16, 60);
+    doc.text(`Data: ${data}`, 16, 68);
+    doc.text(`Validade: ${validade}`, 120, 68);
 
-    doc.setTextColor(90);
-
-    doc.text(
-        `Chave PIX: ${chavePix}`,
-        18,
-        261
-    );
-
-    // =========================================
-    // REDES SOCIAIS
-    // =========================================
-
+    // ── Produto ──
     doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 77, 190, 30, 5, 5, 'F');
+    doc.setFontSize(13);
+    doc.setTextColor(30);
+    doc.text('Descrição do Produto', 16, 88);
+    doc.setDrawColor(235);
+    doc.line(16, 91, 194, 91);
+    doc.setFontSize(11);
+    doc.setTextColor(70);
+    doc.text(produto, 16, 100);
 
-    doc.roundedRect(
-        10,
-        275,
-        190,
-        12,
-        4,
-        4,
-        'F'
-    );
+    // ── Informações Importantes ──
+    const infos = [
+        'Orçamento não é garantia de pedido. Sem pagamento, não há pedido fechado.',
+        'Produtos artesanais requerem prazo de produção. Não trabalhamos com pronta entrega.',
+        'Pagamento apenas integral via PIX ou dinheiro. Não aceitamos metade.',
+        'Sem entregas. Retirada pelo cliente: Seg a Sex, horário a combinar.'
+    ];
 
-    doc.setFontSize(10);
-
-    doc.setTextColor(120);
-
-    doc.text(
-        `WhatsApp: ${whatsapp}`,
-        18,
-        283
-    );
-
-    doc.text(
-        `Instagram: ${instagram}`,
-        120,
-        283
-    );
-
-    // =========================================
-    // RODAPÉ
-    // =========================================
-
+    doc.setFillColor(245, 240, 255);
+    doc.roundedRect(10, 112, 190, 52, 5, 5, 'F');
     doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(108, 53, 196);
+    doc.text(' INFORMAÇÕES IMPORTANTES', 105, 121, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 30, 100);
 
+    infos.forEach((texto, i) => {
+        doc.setFillColor(220, 200, 255);
+        doc.roundedRect(13, 124 + i * 10, 184, 8, 2, 2, 'F');
+        doc.setFontSize(8);
+        doc.text(`• ${texto}`, 16, 129 + i * 10);
+    });
+
+    // ── Valor Total ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 170, 90, 36, 5, 5, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text('VALOR TOTAL', 16, 182);
+    doc.setFontSize(18);
+    doc.setTextColor(20);
+    doc.text(formatBRL(total), 16, 196);
+
+    // ── QR Code PIX ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(110, 170, 90, 36, 5, 5, 'F');
+
+    if (pixCode) {
+        const qrContainer = document.createElement('div');
+        new QRCode(qrContainer, { text: pixCode, width: 80, height: 80 });
+        const qrImage = qrContainer.querySelector('img');
+        if (qrImage) {
+            await new Promise(resolve => { qrImage.onload = resolve; });
+            doc.addImage(qrImage.src, 'PNG', 136, 172, 26, 26);
+        }
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text('Pagamento via PIX', 155, 202, { textAlign: 'center' });
+    }
+
+    // ── Chave PIX ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 211, 190, 14, 5, 5, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(90);
+    doc.text(`Chave PIX: ${chavePix}`, 16, 220);
+
+    // ── Redes Sociais ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, 230, 190, 12, 4, 4, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`WhatsApp: ${whatsapp}`, 16, 238);
+    doc.text(`Instagram: ${instagram}`, 120, 238);
+
+    // ── Rodapé ──
+    doc.setFontSize(8);
     doc.setTextColor(150);
+    doc.text('Obrigado pela preferência! ', 105, 248, { align: 'center' });
 
-    doc.text(
-        'Obrigado pela preferência!',
-        105,
-        293,
-        { align: 'center' }
-    );
-
-    // =========================================
-    // SALVAR
-    // =========================================
-
-   const nomeArquivo =
-    `orcamento-${cliente}.pdf`;
-
-doc.save(nomeArquivo);
-
-return nomeArquivo;
+    // ── Salvar ──
+    const nomeArquivo = `orcamento-${cliente}.pdf`;
+    doc.save(nomeArquivo);
+    return nomeArquivo;
 }
 
 // ============================================================
