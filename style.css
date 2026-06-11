@@ -385,6 +385,8 @@ footer a:hover{
 .config-content {
     width: 400px;
     max-width: 95%;
+    max-height: 90vh;        /* ← adicionar */
+    overflow-y: auto;        /* ← adicionar */
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     background: rgba(255,255,255,0.28);

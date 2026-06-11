@@ -1776,6 +1776,99 @@ if (cancelarCadastroProdutoBtn) {
 
     updateOrcamentosSalvosTable();
 
+    // ============================================================
+//  BACKUP AUTOMÁTICO — salva JSON ao fechar o navegador
+// ============================================================
+
+function exportarBackup() {
+    const chaves = [
+        'custosFixos',
+        'produtosCadastrados',
+        'clientesCadastrados',
+        'orcamentoProdutos',
+        'orcamentosSalvos',
+        'tempoProducaoTotal',
+        'nomeCliente',
+        'produtoFinal',
+        'mesPedidoOrcamento',
+        'statusPedidoOrcamento',
+        'pagamentoPedidoOrcamento',
+        'empresaNome',
+        'whatsappEmpresa',
+        'instagramEmpresa',
+        'chavePix',
+        'pixCode',
+        'logoEmpresa'
+    ];
+
+    // Inclui também todos os meses de pedidos salvos
+    Object.keys(localStorage)
+        .filter(k => k.startsWith('pedidos-'))
+        .forEach(k => chaves.push(k));
+
+    const backup = {};
+    chaves.forEach(k => {
+        const val = localStorage.getItem(k);
+        if (val !== null) backup[k] = val;
+    });
+
+    return backup;
+}
+
+function baixarBackup() {
+    const backup  = exportarBackup();
+    const json    = JSON.stringify(backup, null, 2);
+    const blob    = new Blob([json], { type: 'application/json' });
+    const url     = URL.createObjectURL(blob);
+    const a       = document.createElement('a');
+    const data    = new Date().toISOString().slice(0, 10); // 2026-06-11
+
+    a.href     = url;
+    a.download = `backup-borboleta-${data}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importarBackup(arquivo) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const backup = JSON.parse(e.target.result);
+            const total  = Object.keys(backup).length;
+
+            if (!confirm(`Restaurar backup com ${total} registros?\n\nIsso VAI SOBRESCREVER os dados atuais.`)) return;
+
+            Object.entries(backup).forEach(([k, v]) => {
+                localStorage.setItem(k, v);
+            });
+
+            alert('Backup restaurado com sucesso! A página será recarregada.');
+            location.reload();
+
+        } catch {
+            alert('Arquivo inválido. Certifique-se de usar um backup gerado pelo app.');
+        }
+    };
+    reader.readAsText(arquivo);
+}
+
+
+// ── Botão manual de backup (opcional, mas recomendado) ──
+const btnBackup = document.getElementById('btnExportarBackup');
+if (btnBackup) {
+    btnBackup.addEventListener('click', baixarBackup);
+}
+
+// ── Botão importar ──
+const btnImportar = document.getElementById('btnImportarBackup');
+const inputImportar = document.getElementById('inputImportarBackup');
+
+if (btnImportar && inputImportar) {
+    btnImportar.addEventListener('click', () => inputImportar.click());
+    inputImportar.addEventListener('change', e => {
+        if (e.target.files[0]) importarBackup(e.target.files[0]);
+    });
+}
     // ---- Pedidos ----
  if (novoPedidoBtn) {
     novoPedidoBtn.addEventListener('click', () => {
@@ -1871,5 +1964,6 @@ if (cancelarCadastroProdutoBtn) {
 
     const modoInicial = document.getElementById('modoTradicional');
 if (modoInicial) modoInicial.style.display = 'block';
+
 
 }); // fim DOMContentLoaded
