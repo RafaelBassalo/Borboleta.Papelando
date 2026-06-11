@@ -375,121 +375,177 @@ async function gerarPDFUnificado(orcamentoUnificado) {
     const whatsapp     = localStorage.getItem('whatsappEmpresa')  || '';
     const instagram    = localStorage.getItem('instagramEmpresa') || '';
     const chavePix     = localStorage.getItem('chavePix')         || '';
+    const pixCode      = localStorage.getItem('pixCode')          || '';
     const logoEmpresa  = localStorage.getItem('logoEmpresa');
 
-    // ── Fundo ──
-    doc.setFillColor(248, 248, 248);
+    // ── Fundo verde menta ──
+    doc.setFillColor(178, 240, 224);
     doc.rect(0, 0, 210, 297, 'F');
+
+    // Overlay branco semi-transparente
+    doc.setFillColor(255, 255, 255);
+    doc.setGState(new doc.GState({ opacity: 0.45 }));
+    doc.rect(0, 0, 210, 297, 'F');
+    doc.setGState(new doc.GState({ opacity: 1 }));
 
     // ── Cabeçalho ──
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(235);
     doc.setLineWidth(0.3);
-    doc.roundedRect(10, 10, 190, 38, 6, 6, 'F');
+    doc.roundedRect(10, 10, 190, 34, 6, 6, 'F');
 
     if (logoEmpresa) {
         doc.addImage(logoEmpresa,
             logoEmpresa.includes('image/png') ? 'PNG' : 'JPEG',
-            18, 14, 42, 28);
+            14, 13, 36, 24);
     } else {
-        doc.setFontSize(10);
+        doc.setFontSize(9);
         doc.setTextColor(120);
-        doc.text('LOGO DA EMPRESA', 21, 30);
+        doc.text('LOGO', 18, 28);
     }
 
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setTextColor(40);
-    doc.text(empresaNome, 68, 26);
+    doc.text(empresaNome, 58, 24);
 
-    doc.setFontSize(22);
-    doc.text('ORÇAMENTO', 128, 30);
+    doc.setFontSize(20);
+    doc.text('ORÇAMENTO', 130, 30);
 
     // ── Cliente ──
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(10, 56, 190, 24, 5, 5, 'F');
-    doc.setFontSize(12);
+    doc.roundedRect(10, 50, 190, 22, 5, 5, 'F');
+    doc.setFontSize(11);
     doc.setTextColor(60);
-    doc.text(`Cliente: ${orcamentoUnificado.cliente}`, 18, 68);
-    doc.text(`Data: ${orcamentoUnificado.data}`, 18, 76);
-    doc.text('Validade: 5 dias', 120, 76);
+    doc.text(`Cliente: ${orcamentoUnificado.cliente}`, 16, 60);
+    doc.text(`Data: ${orcamentoUnificado.data}`, 16, 68);
+    doc.text('Validade: 5 dias', 120, 68);
 
     // ── Tabela de itens ──
-    let y = 92;
+    let y = 84;
 
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(10, y - 8, 190, 12, 3, 3, 'F');
-    doc.setFontSize(10);
+    doc.roundedRect(10, y - 6, 190, 10, 3, 3, 'F');
+    doc.setFontSize(9);
     doc.setTextColor(120);
-    doc.text('ITEM', 18, y);
-    doc.text('VALOR', 180, y, { align: 'right' });
+    doc.text('ITEM', 16, y);
+    doc.text('VALOR', 192, y, { align: 'right' });
     doc.setDrawColor(230);
-    doc.line(18, y + 3, 192, y + 3);
+    doc.line(16, y + 2, 194, y + 2);
+    y += 8;
 
-    y += 10;
+    orcamentoUnificado.itensUnificados.forEach((grupo) => {
+        if (y > 155) { doc.addPage(); y = 20; }
 
-    orcamentoUnificado.itensUnificados.forEach((grupo, gi) => {
-        // Cabeçalho do grupo (orçamento)
-        doc.setFillColor(245, 245, 245);
-        doc.rect(10, y - 5, 190, 10, 'F');
+        doc.setFillColor(255, 255, 255);
+        doc.roundedRect(10, y - 4, 190, 9, 2, 2, 'F');
         doc.setFontSize(10);
         doc.setTextColor(50);
-        doc.text(grupo.nome || `Orçamento ${gi + 1}`, 18, y + 1);
+        doc.text(grupo.nome || '', 16, y + 1);
         doc.text(formatBRL(grupo.total), 192, y + 1, { align: 'right' });
         y += 10;
 
-        // Sub-itens (se existirem)
         if (grupo.itens && grupo.itens.length > 0) {
             grupo.itens.forEach(item => {
-                if (y > 260) {
-                    doc.addPage();
-                    y = 20;
-                }
+                if (y > 155) { doc.addPage(); y = 20; }
                 const valorItem = calcularValorItem(item);
-                doc.setFontSize(9);
+                doc.setFontSize(8);
                 doc.setTextColor(100);
-                doc.text(`  • ${item.nome} (x${item.quantidade})`, 20, y);
+                doc.text(`  • ${item.nome} (x${item.quantidade})`, 18, y);
                 doc.text(formatBRL(valorItem), 192, y, { align: 'right' });
-                y += 7;
+                y += 6;
             });
         }
 
         doc.setDrawColor(235);
-        doc.line(18, y, 192, y);
-        y += 6;
-
-        if (y > 260) {
-            doc.addPage();
-            y = 20;
-        }
+        doc.line(16, y, 194, y);
+        y += 4;
     });
 
     // ── Total ──
-    y += 4;
+    y += 2;
     doc.setFillColor(255, 255, 255);
-    doc.roundedRect(10, y - 4, 190, 18, 4, 4, 'F');
-    doc.setFontSize(13);
-    doc.setTextColor(30);
-    doc.text('TOTAL GERAL', 18, y + 8);
-    doc.setFontSize(16);
-    doc.text(formatBRL(orcamentoUnificado.total), 192, y + 8, { align: 'right' });
+    doc.roundedRect(10, y, 190, 14, 4, 4, 'F');
+    doc.setFontSize(11);
+    doc.setTextColor(120);
+    doc.text('TOTAL GERAL', 16, y + 7);
+    doc.setFontSize(14);
+    doc.setTextColor(20);
+    doc.text(formatBRL(orcamentoUnificado.total), 192, y + 10, { align: 'right' });
+    y += 20;
 
-    y += 30;
+    // ── Informações Importantes ──
+    const infos = [
+        'Orçamento não é garantia de pedido. Sem pagamento, não há pedido fechado.',
+        'Produtos artesanais requerem prazo de produção. Não trabalhamos com pronta entrega.',
+        'Pagamento apenas integral via PIX ou dinheiro. Não aceitamos metade.',
+        'Sem entregas. Retirada pelo cliente: Seg a Sex, horário a combinar.'
+    ];
+
+    doc.setFillColor(245, 240, 255);
+    doc.roundedRect(10, y, 190, 52, 5, 5, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(108, 53, 196);
+    doc.text(' INFORMAÇÕES IMPORTANTES', 105, y + 9, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 30, 100);
+
+    infos.forEach((texto, i) => {
+        doc.setFillColor(220, 200, 255);
+        doc.roundedRect(13, y + 12 + i * 10, 184, 8, 2, 2, 'F');
+        doc.setFontSize(8);
+        doc.text(`• ${texto}`, 16, y + 17 + i * 10);
+    });
+    y += 58;
+
+    // ── Valor Total + QR Code ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, y, 90, 36, 5, 5, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(120);
+    doc.text('VALOR TOTAL', 16, y + 12);
+    doc.setFontSize(18);
+    doc.setTextColor(20);
+    doc.text(formatBRL(orcamentoUnificado.total), 16, y + 26);
+
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(110, y, 90, 36, 5, 5, 'F');
+
+    if (pixCode) {
+        const qrContainer = document.createElement('div');
+        new QRCode(qrContainer, { text: pixCode, width: 80, height: 80 });
+        const qrImage = qrContainer.querySelector('img');
+        if (qrImage) {
+            await new Promise(resolve => { qrImage.onload = resolve; });
+            doc.addImage(qrImage.src, 'PNG', 136, y + 2, 26, 26);
+        }
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text('Pagamento via PIX', 155, y + 32, { textAlign: 'center' });
+    }
+    y += 42;
 
     // ── Chave PIX ──
-    if (chavePix) {
-        doc.setFillColor(255, 255, 255);
-        doc.roundedRect(10, y, 190, 14, 4, 4, 'F');
-        doc.setFontSize(10);
-        doc.setTextColor(90);
-        doc.text(`Chave PIX: ${chavePix}`, 18, y + 9);
-        y += 20;
-    }
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, y, 190, 14, 5, 5, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(90);
+    doc.text(`Chave PIX: ${chavePix}`, 16, y + 9);
+    y += 20;
+
+    // ── Redes Sociais ──
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(10, y, 190, 12, 4, 4, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`WhatsApp: ${whatsapp}`, 16, y + 8);
+    doc.text(`Instagram: ${instagram}`, 120, y + 8);
+    y += 18;
 
     // ── Rodapé ──
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setTextColor(150);
-    doc.text(`WhatsApp: ${whatsapp}   |   Instagram: ${instagram}`, 105, 287, { align: 'center' });
-    doc.text('Obrigado pela preferência!', 105, 293, { align: 'center' });
+    doc.text('Obrigado pela preferência!', 105, y + 4, { align: 'center' });
 
     doc.save(`orcamento-unificado-${orcamentoUnificado.cliente}.pdf`);
 }
