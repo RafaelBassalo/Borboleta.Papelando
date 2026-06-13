@@ -695,8 +695,9 @@ function atualizarBotaoUnificar() {
 // ============================================================
 
 function initOrcamentoMulti() {
-    renderItensOrcamento();
-    renderResumoOrcamento();
+    if (typeof renderItensOrcamento === 'function') renderItensOrcamento();
+    if (typeof renderResumoOrcamento === 'function') renderResumoOrcamento();
+    
 
     // Botão salvar orçamento multi
     const salvarMultiBtn = document.getElementById('salvarOrcamentoMultiBtn');

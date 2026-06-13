@@ -1,35 +1,22 @@
-// ============================================================
-//  ROTAS DE SINCRONIZAÇÃO — adicione isso ao seu server.js
-// ============================================================
-//
-// Pré-requisitos:
-//   npm install @supabase/supabase-js
-//
-// No Supabase, crie a tabela "app_data" com este SQL (em SQL Editor):
-//
-//   create table app_data (
-//     chave text primary key,
-//     valor jsonb,
-//     atualizado_em timestamptz default now()
-//   );
-//
-// Pegue a URL e a Service Role Key do seu projeto Supabase
-// (Project Settings > API) e configure como variáveis de ambiente.
-
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY // use a "service_role key" (não a anon)
-);
+const ws = require('ws');
 
-// Exporta uma função que recebe o "app" do Express e registra as rotas
+function getSupabase() {
+    return createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_KEY,
+        {
+            realtime: { transport: ws }
+        }
+    );
+}
+
 function registrarRotasSync(app) {
 
-    // GET /sync — retorna todos os dados salvos no formato { chave: valor, ... }
     app.get('/sync', async (req, res) => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await getSupabase()
                 .from('app_data')
                 .select('chave, valor');
 
@@ -47,7 +34,6 @@ function registrarRotasSync(app) {
         }
     });
 
-    // POST /sync — recebe { chave: valor, ... } e salva/atualiza tudo (upsert)
     app.post('/sync', async (req, res) => {
         try {
             const dados = req.body;
@@ -62,7 +48,7 @@ function registrarRotasSync(app) {
                 atualizado_em: new Date().toISOString()
             }));
 
-            const { error } = await supabase
+            const { error } = await getSupabase()
                 .from('app_data')
                 .upsert(linhas, { onConflict: 'chave' });
 
