@@ -726,9 +726,11 @@ function initOrcamentoMulti() {
 
     // Tipo de item no modal
     const tipoSelect = document.getElementById('tipoItem');
-    if (tipoSelect) {
-        tipoSelect.addEventListener('change', toggleCamposTipoItem);
-    }
+if (tipoSelect) {
+    tipoSelect.addEventListener('change', function() {
+        // função vazia por enquanto
+    });
+}
 
     // Fechar modal ao clicar no overlay
     const modal = document.getElementById('itemOrcamentoModal');
