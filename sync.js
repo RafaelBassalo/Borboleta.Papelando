@@ -59,9 +59,11 @@
                 localStorage.setItem(chave, valor);
             });
 
-            console.log('[sync] Dados carregados do servidor.');
+            console.log('[sync] Dados enviados ao servidor.');
+document.title = '✅ Sync OK ' + new Date().toLocaleTimeString();
         } catch (err) {
-            console.warn('[sync] Não foi possível carregar dados do servidor:', err);
+            console.warn('[sync] Falha ao enviar dados ao servidor:', err);
+document.title = '❌ Sync ERRO: ' + err.message;
             // Continua normalmente usando o que já está no localStorage local
         }
     }
