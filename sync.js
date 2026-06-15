@@ -135,5 +135,16 @@ localStorage.setItem = function (chave, valor) {
 
     // ── Inicialização ──
     window.syncPronto = sincronizarComServidor();
-
+    
+    // Botão manual de sync para debug
+window.syncManual = function() {
+    const dados = getDadosLocais();
+    alert('Enviando ' + Object.keys(dados).length + ' chaves...');
+    fetch('/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+    }).then(r => alert('Resultado: ' + r.status))
+      .catch(e => alert('Erro: ' + e.message));
+};
 })();
