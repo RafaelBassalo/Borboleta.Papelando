@@ -1,23 +1,5 @@
-// ============================================================
-//  SYNC.JS — sincroniza localStorage com o servidor
-// ============================================================
-//
-// Inclua este arquivo no <head> ou antes do </body> de TODAS as
-// páginas HTML, ANTES dos outros scripts que usam localStorage:
-//
-//   <script src="sync.js"></script>
-//   <script src="seu-script-principal.js"></script>
-//
-// Funcionamento:
-//  1. Ao carregar a página, busca os dados do servidor (/sync) e
-//     escreve no localStorage ANTES de qualquer outro script rodar.
-//  2. Depois disso, fica "ouvindo" alterações no localStorage e
-//     envia tudo para o servidor automaticamente (com um pequeno
-//     atraso, para não enviar a cada tecla digitada).
-
 (function () {
 
-    // Mesma lista de chaves usada no exportarBackup() do seu app
     const CHAVES_FIXAS = [
         'custosFixos',
         'produtosCadastrados',
@@ -46,55 +28,89 @@
         return [...chaves];
     }
 
-    // ── 1. Baixar dados do servidor e popular o localStorage ──
-    async function baixarDoServidor() {
-        try {
-            const resp = await fetch('/sync');
-            if (!resp.ok) throw new Error('Falha ao buscar /sync');
-            const dados = await resp.json();
-
-            Object.entries(dados).forEach(([chave, valor]) => {
-                if (valor === null || valor === undefined) return;
-                // O valor já vem como veio salvo (string, já que localStorage só guarda string)
-                localStorage.setItem(chave, valor);
-            });
-
-            console.log('[sync] Dados enviados ao servidor.');
-document.title = '✅ Sync OK ' + new Date().toLocaleTimeString();
-        } catch (err) {
-            console.warn('[sync] Falha ao enviar dados ao servidor:', err);
-document.title = '❌ Sync ERRO: ' + err.message;
-            // Continua normalmente usando o que já está no localStorage local
-        }
+    function getDadosLocais() {
+        const dados = {};
+        getTodasAsChaves().forEach(chave => {
+            const valor = localStorage.getItem(chave);
+            if (valor !== null) dados[chave] = valor;
+        });
+        return dados;
     }
 
-    // ── 2. Enviar dados do localStorage para o servidor ──
+    // ── Enviar dados locais para o servidor ──
     let enviandoTimeout = null;
 
     function enviarParaServidor() {
         clearTimeout(enviandoTimeout);
         enviandoTimeout = setTimeout(async () => {
             try {
-                const dados = {};
-                getTodasAsChaves().forEach(chave => {
-                    const valor = localStorage.getItem(chave);
-                    if (valor !== null) dados[chave] = valor;
-                });
-
-                await fetch('/sync', {
+                const dados = getDadosLocais();
+                const resp = await fetch('/sync', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
                 });
-
+                if (!resp.ok) throw new Error('Falha no POST /sync');
                 console.log('[sync] Dados enviados ao servidor.');
             } catch (err) {
-                console.warn('[sync] Falha ao enviar dados ao servidor:', err);
+                console.warn('[sync] Falha ao enviar:', err);
             }
-        }, 1500); // espera 1.5s de "silêncio" antes de enviar
+        }, 1500);
     }
 
-    // ── 3. Interceptar localStorage.setItem para disparar o envio ──
+    // ── Baixar dados do servidor e fazer merge ──
+    async function sincronizarComServidor() {
+        try {
+            // 1. Pega dados locais antes de qualquer coisa
+            const dadosLocais = getDadosLocais();
+            const temDadosLocais = Object.keys(dadosLocais).length > 0;
+
+            // 2. Busca dados do servidor
+            const resp = await fetch('/sync');
+            if (!resp.ok) throw new Error('Falha ao buscar /sync');
+            const dadosServidor = await resp.json();
+            const temDadosServidor = Object.keys(dadosServidor).length > 0;
+
+            if (!temDadosServidor) {
+                // Servidor vazio — envia dados locais
+                console.log('[sync] Servidor vazio, enviando dados locais.');
+                enviarParaServidor();
+                return;
+            }
+
+            if (!temDadosLocais) {
+                // Local vazio — baixa dados do servidor
+                console.log('[sync] Local vazio, carregando dados do servidor.');
+                Object.entries(dadosServidor).forEach(([chave, valor]) => {
+                    if (valor !== null && valor !== undefined) {
+                        localStorage.setItem(chave, valor);
+                    }
+                });
+                return;
+            }
+
+            // Ambos têm dados — merge: servidor ganha em chaves que existem nos dois,
+            // mas mantém dados locais que não estão no servidor
+            Object.entries(dadosServidor).forEach(([chave, valor]) => {
+                if (valor !== null && valor !== undefined) {
+                    localStorage.setItem(chave, valor);
+                }
+            });
+
+            // Envia para o servidor as chaves locais que o servidor não tinha
+            const chavesNovas = Object.keys(dadosLocais).filter(k => !(k in dadosServidor));
+            if (chavesNovas.length > 0) {
+                console.log('[sync] Enviando chaves novas ao servidor:', chavesNovas);
+                enviarParaServidor();
+            }
+
+            console.log('[sync] Dados carregados do servidor.');
+        } catch (err) {
+            console.warn('[sync] Erro na sincronização:', err);
+        }
+    }
+
+    // ── Interceptar localStorage.setItem ──
     const setItemOriginal = localStorage.setItem.bind(localStorage);
     localStorage.setItem = function (chave, valor) {
         setItemOriginal(chave, valor);
@@ -107,23 +123,14 @@ document.title = '❌ Sync ERRO: ' + err.message;
         enviarParaServidor();
     };
 
-    // ── 4. Também envia ao sair/trocar de página, por garantia ──
+    // ── Envia ao sair da página ──
     window.addEventListener('beforeunload', () => {
-        // Envio síncrono usando sendBeacon (mais confiável ao fechar a aba)
-        const dados = {};
-        getTodasAsChaves().forEach(chave => {
-            const valor = localStorage.getItem(chave);
-            if (valor !== null) dados[chave] = valor;
-        });
+        const dados = getDadosLocais();
         const blob = new Blob([JSON.stringify(dados)], { type: 'application/json' });
         navigator.sendBeacon('/sync', blob);
     });
 
     // ── Inicialização ──
-    // IMPORTANTE: como isso é assíncrono, os outros scripts podem rodar
-    // ANTES dos dados chegarem do servidor na primeiríssima carga.
-    // Por isso, expomos uma Promise que outros scripts podem aguardar
-    // se quiserem (opcional).
-    window.syncPronto = baixarDoServidor();
+    window.syncPronto = sincronizarComServidor();
 
 })();
