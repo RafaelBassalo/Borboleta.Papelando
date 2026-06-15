@@ -144,7 +144,8 @@ window.syncManual = function() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dados)
-    }).then(r => alert('Resultado: ' + r.status))
+    })
+    .then(r => r.json()).then(j => alert('Resultado: ' + JSON.stringify(j)))
       .catch(e => alert('Erro: ' + e.message));
 };
 })();
