@@ -37,6 +37,7 @@ function registrarRotasSync(app) {
     app.post('/sync', async (req, res) => {
         try {
             const dados = req.body;
+            console.log('POST /sync recebido, chaves:', Object.keys(dados).length);
 
             if (!dados || typeof dados !== 'object') {
                 return res.status(400).json({ erro: 'Corpo inválido' });
