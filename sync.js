@@ -114,10 +114,11 @@ alert('❌ Erro sync: ' + err.message);
 
     // ── Interceptar localStorage.setItem ──
     const setItemOriginal = localStorage.setItem.bind(localStorage);
-    localStorage.setItem = function (chave, valor) {
-        setItemOriginal(chave, valor);
-        enviarParaServidor();
-    };
+localStorage.setItem = function (chave, valor) {
+    setItemOriginal(chave, valor);
+    enviarParaServidor();
+    alert('setItem interceptado: ' + chave);
+};
 
     const removeItemOriginal = localStorage.removeItem.bind(localStorage);
     localStorage.removeItem = function (chave) {
