@@ -21,6 +21,8 @@ app.use(express.json({ limit: '10mb' }));
 // Rotas de sincronização com Supabase
 registrarRotasSync(app);
 
+app.get('/versao', (req, res) => res.json({ versao: '2.0', timestamp: Date.now() }));
+
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
