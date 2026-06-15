@@ -1,13 +1,4 @@
-const { error } = await getSupabase()
-    .from('app_data')
-    .upsert(linhas, { onConflict: 'chave' });
-
-if (error) {
-    console.log('Erro Supabase:', JSON.stringify(error));
-    throw error;
-}
 const { createClient } = require('@supabase/supabase-js');
-
 const ws = require('ws');
 
 function getSupabase() {
@@ -61,7 +52,10 @@ function registrarRotasSync(app) {
                 .from('app_data')
                 .upsert(linhas, { onConflict: 'chave' });
 
-            if (error) throw error;
+            if (error) {
+                console.log('Erro Supabase:', JSON.stringify(error));
+                throw error;
+            }
 
             res.json({ ok: true, total: linhas.length });
         } catch (err) {
