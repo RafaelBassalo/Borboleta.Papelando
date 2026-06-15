@@ -50,11 +50,13 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
                 });
-                if (!resp.ok) throw new Error('Falha no POST /sync');
-                console.log('[sync] Dados enviados ao servidor.');
-            } catch (err) {
+if (!resp.ok) throw new Error('Falha no POST /sync: ' + resp.status);
+console.log('[sync] Dados enviados ao servidor.');
+alert('✅ Sync enviado com sucesso!');
+  } catch (err) {
                 console.warn('[sync] Falha ao enviar:', err);
-            }
+alert('❌ Erro sync: ' + err.message);
+}
         }, 1500);
     }
 
