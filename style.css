@@ -899,4 +899,46 @@ footer a:hover{
         max-width: 100% !important;
         min-width: unset !important;
     }
+
+    /* Tabela de orçamento ocupa tela toda */
+    #orcamentoTable,
+    #orcamentoTable th,
+    #orcamentoTable td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    #abaOrcamento table {
+        width: 100%;
+        display: table;
+        overflow-x: auto;
+    }
+
+    /* Nav tabs com scroll horizontal */
+    .tab-nav {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        gap: 6px;
+        padding-bottom: 4px;
+    }
+
+    .tab-btn {
+        flex-shrink: 0;
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    /* Orçamento tradicional ocupa largura total */
+    #modoTradicional > div {
+        flex-direction: column !important;
+    }
+
+    #modoTradicional > div > div {
+        max-width: 100% !important;
+        min-width: unset !important;
+        flex: 1 1 100% !important;
+    }
 }
