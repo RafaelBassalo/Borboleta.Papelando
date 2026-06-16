@@ -129,4 +129,20 @@
     // Inicialização: só baixa
     window.syncPronto = baixarDoServidor();
 
+    window.forcaSync = async function() {
+    try {
+        const dados = getDadosLocais();
+        alert('Enviando ' + Object.keys(dados).length + ' itens...');
+        const r = await fetch('/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+        const j = await r.json();
+        alert('Resultado: ' + JSON.stringify(j));
+    } catch(e) {
+        alert('Erro: ' + e.message);
+    }
+};
+
 })();
