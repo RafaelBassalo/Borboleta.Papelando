@@ -36,30 +36,53 @@ function registrarRotasSync(app) {
     app.post('/sync', async (req, res) => {
         try {
             const dados = req.body;
-            console.log('POST /sync recebido, chaves:', Object.keys(dados).length);
 
             if (!dados || typeof dados !== 'object') {
                 return res.status(400).json({ erro: 'Corpo inválido' });
             }
 
-            const linhas = Object.entries(dados).map(([chave, valor]) => ({
-                chave,
-                valor,
-                atualizado_em: new Date().toISOString()
-            }));
-
-            const { error } = await getSupabase()
+            // Busca dados atuais do servidor para fazer merge por timestamp
+            const { data: dadosAtuais } = await getSupabase()
                 .from('app_data')
-                .upsert(linhas, { onConflict: 'chave' });
+                .select('chave, valor');
 
-if (error) {
-    console.log('Erro Supabase:', JSON.stringify(error));
-    throw error;
-}
+            const mapaAtual = {};
+            (dadosAtuais || []).forEach(row => {
+                mapaAtual[row.chave] = row.valor;
+            });
 
-console.log('Supabase upsert OK, linhas:', linhas.length);
-console.log('Primeira linha:', JSON.stringify(linhas[0]));
-res.json({ ok: true, total: linhas.length });
+            // Monta linhas para upsert — só atualiza se timestamp local for mais recente
+            const linhas = [];
+            Object.entries(dados).forEach(([chave, item]) => {
+                if (chave === '__sync_timestamps__') return;
+
+                const valorNovo = item?.valor ?? item;
+                const tsNovo = item?.ts || 0;
+                const atual = mapaAtual[chave];
+                const tsAtual = atual?.ts || 0;
+
+                if (tsNovo >= tsAtual) {
+                    linhas.push({
+                        chave,
+                        valor: { valor: valorNovo, ts: tsNovo },
+                        atualizado_em: new Date().toISOString()
+                    });
+                }
+            });
+
+            if (linhas.length > 0) {
+                const { error } = await getSupabase()
+                    .from('app_data')
+                    .upsert(linhas, { onConflict: 'chave' });
+
+                if (error) {
+                    console.log('Erro Supabase:', JSON.stringify(error));
+                    throw error;
+                }
+            }
+
+            console.log(`POST /sync: ${linhas.length} linhas atualizadas`);
+            res.json({ ok: true, total: linhas.length });
         } catch (err) {
             console.error('Erro ao salvar dados:', err);
             res.status(500).json({ erro: 'Erro ao salvar dados' });
