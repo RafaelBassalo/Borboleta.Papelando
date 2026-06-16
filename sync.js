@@ -9,17 +9,8 @@
         'chavePix', 'pixCode', 'logoEmpresa'
     ];
 
-    const STORAGE_TS_KEY = '__sync_timestamps__';
-
-    function getTimestamps() {
-        try {
-            return JSON.parse(localStorage.getItem(STORAGE_TS_KEY)) || {};
-        } catch { return {}; }
-    }
-
-    function saveTimestamps(ts) {
-        localStorage.setItem(STORAGE_TS_KEY, JSON.stringify(ts));
-    }
+    const setItemOriginal = localStorage.setItem.bind(localStorage);
+    const removeItemOriginal = localStorage.removeItem.bind(localStorage);
 
     function getTodasAsChaves() {
         const chaves = new Set(CHAVES_FIXAS);
@@ -31,108 +22,71 @@
 
     function getDadosLocais() {
         const dados = {};
-        const ts = getTimestamps();
         getTodasAsChaves().forEach(chave => {
             const valor = localStorage.getItem(chave);
-            if (valor !== null) {
-                dados[chave] = {
-                    valor,
-                    ts: ts[chave] || 0
-                };
-            }
+            if (valor !== null) dados[chave] = valor;
         });
         return dados;
-    }
-
-    // Interceptar setItem para registrar timestamp
-    const setItemOriginal = localStorage.setItem.bind(localStorage);
-    const removeItemOriginal = localStorage.removeItem.bind(localStorage);
-
-    localStorage.setItem = function (chave, valor) {
-        setItemOriginal(chave, valor);
-        if (chave !== STORAGE_TS_KEY) {
-            const ts = getTimestamps();
-            ts[chave] = Date.now();
-            saveTimestamps(ts);
-            agendarEnvio();
-        }
-    };
-
-    localStorage.removeItem = function (chave) {
-        removeItemOriginal(chave);
-        agendarEnvio();
-    };
-
-    // Envio com debounce
-    let enviandoTimeout = null;
-    function agendarEnvio() {
-        clearTimeout(enviandoTimeout);
-        enviandoTimeout = setTimeout(enviarParaServidor, 1500);
     }
 
     async function enviarParaServidor() {
         try {
             const dados = getDadosLocais();
+            if (Object.keys(dados).length === 0) return;
             await fetch('/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            console.log('[sync] Dados enviados.');
+            console.log('[sync] Enviado.');
         } catch (err) {
             console.warn('[sync] Erro ao enviar:', err);
         }
     }
 
-    async function sincronizarComServidor() {
+    async function baixarDoServidor() {
         try {
-            // 1. Envia dados locais com timestamps
-            const dadosLocais = getDadosLocais();
-            if (Object.keys(dadosLocais).length > 0) {
-                await fetch('/sync', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dadosLocais)
-                });
-            }
-
-            // 2. Baixa dados do servidor (já com merge por timestamp feito no servidor)
             const resp = await fetch('/sync');
             if (!resp.ok) throw new Error('Falha GET /sync');
-            const dadosServidor = await resp.json();
+            const dados = await resp.json();
 
-            const tsLocal = getTimestamps();
-            const novoTs = { ...tsLocal };
-
-            Object.entries(dadosServidor).forEach(([chave, item]) => {
-                if (!item || chave === STORAGE_TS_KEY) return;
-                const valorServidor = item.valor ?? item;
-                const tsServidor = item.ts || 0;
-                const tsLocalChave = tsLocal[chave] || 0;
-
-                if (tsServidor >= tsLocalChave) {
-                    setItemOriginal(chave, valorServidor);
-                    novoTs[chave] = tsServidor;
+            Object.entries(dados).forEach(([chave, item]) => {
+                const valor = item?.valor ?? item;
+                if (valor !== null && valor !== undefined) {
+                    setItemOriginal(chave, valor);
                 }
             });
-
-            saveTimestamps(novoTs);
-            console.log('[sync] Sincronização completa.');
+            console.log('[sync] Baixado do servidor.');
         } catch (err) {
-            console.warn('[sync] Erro sync:', err);
+            console.warn('[sync] Erro ao baixar:', err);
         }
     }
 
-    // Envia ao sair da página
+    // Interceptar setItem
+    let enviandoTimeout = null;
+    localStorage.setItem = function (chave, valor) {
+        setItemOriginal(chave, valor);
+        clearTimeout(enviandoTimeout);
+        enviandoTimeout = setTimeout(enviarParaServidor, 1500);
+    };
+
+    localStorage.removeItem = function (chave) {
+        removeItemOriginal(chave);
+        clearTimeout(enviandoTimeout);
+        enviandoTimeout = setTimeout(enviarParaServidor, 1500);
+    };
+
+    // Envia ao sair
     window.addEventListener('beforeunload', () => {
         const dados = getDadosLocais();
         const blob = new Blob([JSON.stringify(dados)], { type: 'application/json' });
         navigator.sendBeacon('/sync', blob);
     });
 
-    // Sync periódico a cada 5 segundos
-    setInterval(enviarParaServidor, 5000);
+    // Envio periódico a cada 4 segundos (para iOS)
+    setInterval(enviarParaServidor, 4000);
 
-    window.syncPronto = sincronizarComServidor();
+    // Inicialização: primeiro envia, depois baixa
+    window.syncPronto = enviarParaServidor().then(baixarDoServidor);
 
 })();
