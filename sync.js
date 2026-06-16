@@ -44,23 +44,33 @@
         }
     }
 
-    async function baixarDoServidor() {
-        try {
-            const resp = await fetch('/sync');
-            if (!resp.ok) throw new Error('Falha GET /sync');
-            const dados = await resp.json();
+   async function baixarDoServidor() {
+    try {
+        const resp = await fetch('/sync');
+        if (!resp.ok) throw new Error('Falha GET /sync');
+        const dados = await resp.json();
 
-            Object.entries(dados).forEach(([chave, item]) => {
-                const valor = item?.valor ?? item;
-                if (valor !== null && valor !== undefined) {
+        let mudou = false;
+        Object.entries(dados).forEach(([chave, item]) => {
+            const valor = item?.valor ?? item;
+            if (valor !== null && valor !== undefined) {
+                const atual = localStorage.getItem(chave);
+                if (atual !== valor) {
                     setItemOriginal(chave, valor);
+                    mudou = true;
                 }
-            });
-            console.log('[sync] Baixado do servidor.');
-        } catch (err) {
-            console.warn('[sync] Erro ao baixar:', err);
+            }
+        });
+
+        console.log('[sync] Baixado do servidor. Mudou:', mudou);
+        if (mudou) {
+            console.log('[sync] Dados novos detectados, recarregando...');
+            location.reload();
         }
+    } catch (err) {
+        console.warn('[sync] Erro ao baixar:', err);
     }
+}
 
     // Interceptar setItem
     let enviandoTimeout = null;
