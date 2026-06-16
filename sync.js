@@ -13,6 +13,8 @@
     const removeItemOriginal = localStorage.removeItem.bind(localStorage);
 
     let _alteracaoPendente = false;
+    let _btnSync = null;
+    let enviandoTimeout = null;
 
     function getTodasAsChaves() {
         const chaves = new Set(CHAVES_FIXAS);
@@ -31,9 +33,14 @@
         return dados;
     }
 
+    function mostrarBotao() {
+        if (_btnSync) _btnSync.style.display = 'block';
+    }
+
     async function enviarParaServidor() {
         if (!_alteracaoPendente) return;
         try {
+            if (_btnSync) _btnSync.textContent = '⏳ Salvando...';
             const dados = getDadosLocais();
             await fetch('/sync', {
                 method: 'POST',
@@ -42,8 +49,18 @@
             });
             _alteracaoPendente = false;
             console.log('[sync] Enviado.');
+            if (_btnSync) {
+                _btnSync.textContent = '✅ Salvo!';
+                setTimeout(() => {
+                    if (_btnSync) {
+                        _btnSync.textContent = '☁️ Salvar na nuvem';
+                        _btnSync.style.display = 'none';
+                    }
+                }, 2000);
+            }
         } catch (err) {
             console.warn('[sync] Erro ao enviar:', err);
+            if (_btnSync) _btnSync.textContent = '❌ Erro - tente novamente';
         }
     }
 
@@ -72,11 +89,11 @@
         }
     }
 
-    // Interceptar setItem — marca que houve alteração
-    let enviandoTimeout = null;
+    // Interceptar setItem
     localStorage.setItem = function (chave, valor) {
         setItemOriginal(chave, valor);
         _alteracaoPendente = true;
+        mostrarBotao();
         clearTimeout(enviandoTimeout);
         enviandoTimeout = setTimeout(enviarParaServidor, 1500);
     };
@@ -84,6 +101,7 @@
     localStorage.removeItem = function (chave) {
         removeItemOriginal(chave);
         _alteracaoPendente = true;
+        mostrarBotao();
         clearTimeout(enviandoTimeout);
         enviandoTimeout = setTimeout(enviarParaServidor, 1500);
     };
@@ -96,38 +114,19 @@
         navigator.sendBeacon('/sync', blob);
     });
 
-    // Inicialização: só baixa, não envia
+    // Cria botão após DOM carregar
+    window.addEventListener('DOMContentLoaded', function () {
+        _btnSync = document.createElement('button');
+        _btnSync.textContent = '☁️ Salvar na nuvem';
+        _btnSync.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#10b981;color:white;border:none;padding:12px 16px;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:none;';
+        _btnSync.onclick = function () {
+            _alteracaoPendente = true;
+            enviarParaServidor();
+        };
+        document.body.appendChild(_btnSync);
+    });
+
+    // Inicialização: só baixa
     window.syncPronto = baixarDoServidor();
 
-
- window.addEventListener('DOMContentLoaded', function() {
-    const btn = document.createElement('button');
-    btn.textContent = '☁️ Salvar na nuvem';
-    btn.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#10b981;color:white;border:none;padding:12px 16px;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:none;';
-    
-    btn.onclick = async function() {
-        btn.textContent = '⏳ Salvando...';
-        _alteracaoPendente = true;
-        await enviarParaServidor();
-        btn.textContent = '✅ Salvo!';
-        btn.style.background = '#059669';
-        setTimeout(() => { 
-            btn.textContent = '☁️ Salvar na nuvem';
-            btn.style.background = '#10b981';
-            btn.style.display = 'none';
-        }, 2000);
-    };
-    
-    document.body.appendChild(btn);
-
-    // Mostra o botão quando algo muda no localStorage
-    const _setOriginal = localStorage.setItem.bind(localStorage);
-    localStorage.setItem = function(chave, valor) {
-        _setOriginal(chave, valor);
-        _alteracaoPendente = true;
-        btn.style.display = 'block';
-        clearTimeout(enviandoTimeout);
-        enviandoTimeout = setTimeout(enviarParaServidor, 1500);
-    };
-});
 })();
