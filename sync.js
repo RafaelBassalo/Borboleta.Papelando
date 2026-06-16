@@ -93,10 +93,10 @@
         navigator.sendBeacon('/sync', blob);
     });
 
-    // Envio periódico a cada 4 segundos (para iOS)
+  // Envio periódico a cada 4 segundos (para iOS)
     setInterval(enviarParaServidor, 4000);
 
-    // Inicialização: primeiro envia, depois baixa
-    window.syncPronto = enviarParaServidor().then(baixarDoServidor);
+    // Inicialização: primeiro baixa do servidor
+    window.syncPronto = baixarDoServidor();
 
 })();
