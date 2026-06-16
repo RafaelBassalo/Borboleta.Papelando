@@ -857,3 +857,46 @@ footer a:hover{
     outline: none;
     border-color: #a78bfa;
 }
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        font-size: 13px;
+    }
+
+    table th, table td {
+        padding: 8px 6px;
+    }
+
+    .small-input {
+        width: 60px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    h3 {
+        font-size: 1rem;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* Evita overflow horizontal na página toda */
+    body {
+        overflow-x: hidden;
+    }
+
+    /* Stacks as colunas lado a lado no orcamento */
+    #abaOrcamento > section > div > div {
+        flex-direction: column !important;
+        max-width: 100% !important;
+        min-width: unset !important;
+    }
+}
