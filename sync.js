@@ -148,4 +148,15 @@ window.syncManual = function() {
     .then(r => r.json()).then(j => alert('Resultado: ' + JSON.stringify(j)))
       .catch(e => alert('Erro: ' + e.message));
 };
+
+// Fallback para iOS: envia a cada 3 segundos automaticamente
+setInterval(function() {
+    const dados = getDadosLocais();
+    fetch('/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+    }).catch(() => {});
+}, 3000);
+
 })();
