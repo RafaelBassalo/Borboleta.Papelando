@@ -61,56 +61,35 @@ alert('❌ Erro sync: ' + err.message);
     }
 
     // ── Baixar dados do servidor e fazer merge ──
-    async function sincronizarComServidor() {
-        try {
-            // 1. Pega dados locais antes de qualquer coisa
-            const dadosLocais = getDadosLocais();
-            const temDadosLocais = Object.keys(dadosLocais).length > 0;
-
-            // 2. Busca dados do servidor
-            const resp = await fetch('/sync');
-            if (!resp.ok) throw new Error('Falha ao buscar /sync');
-            const dadosServidor = await resp.json();
-            const temDadosServidor = Object.keys(dadosServidor).length > 0;
-
-            if (!temDadosServidor) {
-                // Servidor vazio — envia dados locais
-                console.log('[sync] Servidor vazio, enviando dados locais.');
-                enviarParaServidor();
-                return;
-            }
-
-            if (!temDadosLocais) {
-                // Local vazio — baixa dados do servidor
-                console.log('[sync] Local vazio, carregando dados do servidor.');
-                Object.entries(dadosServidor).forEach(([chave, valor]) => {
-                    if (valor !== null && valor !== undefined) {
-                        localStorage.setItem(chave, valor);
-                    }
-                });
-                return;
-            }
-
-            // Ambos têm dados — merge: servidor ganha em chaves que existem nos dois,
-            // mas mantém dados locais que não estão no servidor
-            Object.entries(dadosServidor).forEach(([chave, valor]) => {
-                if (valor !== null && valor !== undefined) {
-                    localStorage.setItem(chave, valor);
-                }
+async function sincronizarComServidor() {
+    try {
+        // 1. PRIMEIRO envia dados locais para o servidor
+        const dadosLocais = getDadosLocais();
+        if (Object.keys(dadosLocais).length > 0) {
+            await fetch('/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosLocais)
             });
-
-            // Envia para o servidor as chaves locais que o servidor não tinha
-            const chavesNovas = Object.keys(dadosLocais).filter(k => !(k in dadosServidor));
-            if (chavesNovas.length > 0) {
-                console.log('[sync] Enviando chaves novas ao servidor:', chavesNovas);
-                enviarParaServidor();
-            }
-
-            console.log('[sync] Dados carregados do servidor.');
-        } catch (err) {
-            console.warn('[sync] Erro na sincronização:', err);
+            console.log('[sync] Dados locais enviados primeiro.');
         }
+
+        // 2. DEPOIS baixa dados do servidor (merge)
+        const resp = await fetch('/sync');
+        if (!resp.ok) throw new Error('Falha ao buscar /sync');
+        const dadosServidor = await resp.json();
+
+        Object.entries(dadosServidor).forEach(([chave, valor]) => {
+            if (valor !== null && valor !== undefined) {
+                setItemOriginal(chave, valor);
+            }
+        });
+
+        console.log('[sync] Sincronização completa.');
+    } catch (err) {
+        console.warn('[sync] Erro na sincronização:', err);
     }
+}
 
     // ── Interceptar localStorage.setItem ──
     const setItemOriginal = localStorage.setItem.bind(localStorage);
