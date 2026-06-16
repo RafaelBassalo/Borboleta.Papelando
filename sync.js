@@ -129,19 +129,21 @@
     // Inicialização: só baixa
     window.syncPronto = baixarDoServidor();
 
-    window.forcaSync = async function() {
+window.forcaSync = async function() {
+    const btn = document.querySelector('button[onclick="forcaSync()"]');
     try {
+        if (btn) btn.textContent = '⏳ Salvando...';
         const dados = getDadosLocais();
-        alert('Enviando ' + Object.keys(dados).length + ' itens...');
-        const r = await fetch('/sync', {
+        await fetch('/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dados)
         });
-        const j = await r.json();
-        alert('Resultado: ' + JSON.stringify(j));
+        if (btn) btn.textContent = '✅ Salvo!';
+        setTimeout(() => { if (btn) btn.textContent = '☁️ Sync'; }, 2000);
     } catch(e) {
-        alert('Erro: ' + e.message);
+        if (btn) btn.textContent = '❌ Erro';
+        setTimeout(() => { if (btn) btn.textContent = '☁️ Sync'; }, 2000);
     }
 };
 
