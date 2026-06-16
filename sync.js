@@ -100,18 +100,34 @@
     window.syncPronto = baixarDoServidor();
 
 
-    // Botão de sync fixo na tela
-window.addEventListener('DOMContentLoaded', function() {
+ window.addEventListener('DOMContentLoaded', function() {
     const btn = document.createElement('button');
     btn.textContent = '☁️ Salvar na nuvem';
-    btn.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#10b981;color:white;border:none;padding:12px 16px;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
+    btn.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;background:#10b981;color:white;border:none;padding:12px 16px;border-radius:10px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:none;';
+    
     btn.onclick = async function() {
         btn.textContent = '⏳ Salvando...';
         _alteracaoPendente = true;
         await enviarParaServidor();
         btn.textContent = '✅ Salvo!';
-        setTimeout(() => { btn.textContent = '☁️ Salvar na nuvem'; }, 2000);
+        btn.style.background = '#059669';
+        setTimeout(() => { 
+            btn.textContent = '☁️ Salvar na nuvem';
+            btn.style.background = '#10b981';
+            btn.style.display = 'none';
+        }, 2000);
     };
+    
     document.body.appendChild(btn);
+
+    // Mostra o botão quando algo muda no localStorage
+    const _setOriginal = localStorage.setItem.bind(localStorage);
+    localStorage.setItem = function(chave, valor) {
+        _setOriginal(chave, valor);
+        _alteracaoPendente = true;
+        btn.style.display = 'block';
+        clearTimeout(enviandoTimeout);
+        enviandoTimeout = setTimeout(enviarParaServidor, 1500);
+    };
 });
 })();
