@@ -52,12 +52,14 @@ function registrarRotasSync(app) {
                 .from('app_data')
                 .upsert(linhas, { onConflict: 'chave' });
 
-            if (error) {
-                console.log('Erro Supabase:', JSON.stringify(error));
-                throw error;
-            }
+if (error) {
+    console.log('Erro Supabase:', JSON.stringify(error));
+    throw error;
+}
 
-            res.json({ ok: true, total: linhas.length });
+console.log('Supabase upsert OK, linhas:', linhas.length);
+console.log('Primeira linha:', JSON.stringify(linhas[0]));
+res.json({ ok: true, total: linhas.length });
         } catch (err) {
             console.error('Erro ao salvar dados:', err);
             res.status(500).json({ erro: 'Erro ao salvar dados' });
